@@ -14,7 +14,7 @@ This is a Maven project with the following coordinates:
         <version>0.1-SNAPSHOT</version>
     </dependency>
 
-You'll have to build it form source yourself using Maven.  This libraray is not currently available in any public repository.
+You'll have to build it form source yourself using Maven.  This library is not currently available in any public repository.
 
 ## Usage
 
@@ -34,15 +34,15 @@ You can then call `nextValue()` to read values form the input.
     parser.nextValue(); // returns a map with :x->1 and y->2
     parser.nextValue(); // returns Token.END_OF_INPUT;
 
-If the input is exhausted, `END_OF_INPUT` is returned. An Input implementation which wraps a java.io.Reader is also provided.
+If the input is exhausted, `END_OF_INPUT` is returned. An Input implementation which wraps a `java.io.Reader` is also provided.
 
 ## Mapping from EDN to Java
 
-*edn* values map mostly to regular Java types, except in such cases where Java doesn't provide something suitable. Suitable implementations are provided by the package `bpsm.edn.model`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations are provided in the package `bpsm.edn.model`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
-Integers are mapped to `Integer`, `Long` or `BigInteger` depending on the magnitude of the number. Appending `N` to an integer literal causes the integer to be mapped to `BigInteger` irrespective of its magnitude.
+Integers map to `Integer`, `Long` or `BigInteger` depending on the magnitude of the number. Appending `N` to an integer literal maps to `BigInteger` irrespective of the magnitude.
 
 Floating point numbers with the suffix `M` are  mapeped to `BigDecimal`. All others are mapped to `Double`.
 
