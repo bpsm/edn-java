@@ -22,7 +22,7 @@ public class ParserConfiguration {
     private BuilderFactory mapFactory = DEFAULT_MAP_FACTORY;
     private Map<Tag,TagHandler> tagHandlers =
             new HashMap<Tag,TagHandler>(DEFAULT_TAG_HANDLERS);
-    
+
     public BuilderFactory getListFactory() {
         return listFactory;
     }
