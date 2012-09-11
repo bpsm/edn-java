@@ -7,6 +7,7 @@ import static bpsm.edn.parser.scanner.Token.END_OF_INPUT;
 import static bpsm.edn.parser.scanner.Token.END_VECTOR;
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
+import bpsm.edn.parser.input.Input;
 import bpsm.edn.parser.scanner.Scanner;
 import bpsm.edn.parser.scanner.Token;
 
@@ -21,6 +22,12 @@ public class Parser {
         this.curr = scanner.nextToken();
         this.cfg = cfg;
         this.discard = 0;
+    }
+    
+    public static Parser newParser(Input in) {
+        Scanner scanner = new Scanner(in);
+        ParserConfiguration cfg = new ParserConfiguration();
+        return new Parser(scanner, cfg);
     }
 
     public ParserConfiguration getConfiguration() {
