@@ -1,0 +1,15 @@
+; comments begin with ';' and extend until the end of the line
+
+#_ "the value following the #_ is discarded"
+
+{
+    :keyword symbol
+    1        2.0
+    3N       4.0M
+}
+
+(1 1 2 3 5 8)
+
+#{ \newline \tab }
+
+[[[true false nil]]]
