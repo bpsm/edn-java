@@ -65,7 +65,7 @@ Handlers are provided automatically for `#inst` and `#uuid`, which return a `jav
 Handlers may be customized by manipulating the parser's configuration:
 
     parser.getConfiguration().getTagHandlers().put(
-        new Tag("bpsm", "uri"),
+        new Tag("bpsm", "url"),
         new TagHandler() {
             public Object transform(Tag tag, Object value) {
                 return new URL((String)value);
