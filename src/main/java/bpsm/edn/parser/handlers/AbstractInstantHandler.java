@@ -11,12 +11,17 @@ import bpsm.edn.model.Tag;
 import bpsm.edn.parser.EdnException;
 import bpsm.edn.parser.TagHandler;
 
-public class InstantHandler implements TagHandler {
+public abstract class AbstractInstantHandler implements TagHandler {
 
     private static final Pattern INSTANT = Pattern.compile(
             "(\\d\\d\\d\\d)(?:-(\\d\\d)(?:-(\\d\\d)(?:[T](\\d\\d)(?::(\\d\\d)"+
             "(?::(\\d\\d)(?:[.](\\d+))?)?)?)?)?)?"+
             "(?:[Z]|([-+])(\\d\\d):(\\d\\d))?");
+
+    protected abstract Object transform(
+            int years, int months, int days, 
+            int hours, int minutes, int seconds, int nanoseconds, 
+            int offsetSign, int offsetHours, int offsetMinutes);
     
     public Object transform(Tag tag, Object value) {
         if (!(value instanceof String)) {
@@ -50,13 +55,9 @@ public class InstantHandler implements TagHandler {
         int offsetHours = parseIntOrElse(m.group(9), 0);
         int offsetMinutes = parseIntOrElse(m.group(10), 0);
 
-        GregorianCalendar cal = new GregorianCalendar(
-                years, months - 1, days, hours, minutes, seconds);
-        cal.set(Calendar.MILLISECOND, nanoseconds/1000000);
-        cal.setTimeZone(TimeZone.getTimeZone(String.format(
-                "GMT%s%02d:%02d", offsetSign < 0 ? "-" : "+",
-                        offsetHours, offsetMinutes)));
-        return cal.getTime();
+        return transform(
+                years, months, days, hours, minutes, seconds, nanoseconds, 
+                offsetSign, offsetHours, offsetMinutes);
     }
     
     private int parseIntOrElse(String s, int alternative) {
