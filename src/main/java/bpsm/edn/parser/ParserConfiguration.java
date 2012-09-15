@@ -57,8 +57,8 @@ public class ParserConfiguration {
         return tagHandlers;
     }
 
-    private static final Tag EDN_UUID = new Tag(new Symbol(null, "uuid"));
-    private static final Tag EDN_INSTANT = new Tag(new Symbol(null, "inst"));
+    public static final Tag EDN_UUID = new Tag(new Symbol(null, "uuid"));
+    public static final Tag EDN_INSTANT = new Tag(new Symbol(null, "inst"));
 
     static final BuilderFactory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 
