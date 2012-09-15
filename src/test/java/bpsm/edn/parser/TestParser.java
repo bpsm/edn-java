@@ -21,6 +21,7 @@ import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
 import bpsm.edn.parser.Parser;
+import bpsm.edn.parser.input.CharSequenceInput;
 
 public class TestParser {
 
@@ -45,23 +46,23 @@ public class TestParser {
         assertEquals(expected, results);
 
     }
-    
+
     @Test
     public void parseTaggedValueWithUnkownTag() {
         assertEquals(new TaggedValue(new Tag(new Symbol("foo", "bar")), 1), parse("#foo/bar 1"));
     }
-    
+
     @Test
     public void parseTaggedInstant() {
         assertEquals(1347235200000L, ((Date)parse("#inst \"2012-09-10\"")).getTime());
     }
-    
+
     @Test
     public void parseTaggedUUID() {
         assertEquals(UUID.fromString("f81d4fae-7dec-11d0-a765-00a0c91e6bf6"),
                 parse("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\""));
     }
-    
+
     @Test(expected=NumberFormatException.class)
     public void invalidUUIDCausesException() {
         parse("#uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\"");
@@ -72,16 +73,17 @@ public class TestParser {
         // The given UUID is invalid, as demonstrated in the test above.
         // were the transformer for #uuid to be called despite the #_,
         // it would throw an exception and cause this test to fail.
-        
+
         assertEquals(123, parse("#_ #uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\" 123"));
     }
-    
+
     static Object parse(String input) {
         return parser(input).nextValue();
     }
-    
+
     static Parser parser(String input) {
-        return new Parser(TestScanner.scanner(input), new ParserConfiguration());
+        return Parser.newParser(ParserConfiguration.defaultConfiguration(),
+                new CharSequenceInput(input));
     }
 
     private Map<Object, Object> map(Object... kvs) {

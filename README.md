@@ -21,13 +21,13 @@ You'll have to build it form source yourself using Maven.  This library is not c
 You'll need to create a Parser and supply it with some Input.
 
     import bpsm.edn.parser.Parser;
+    import bpsm.edn.parser.input.Input;
     import bpsm.edn.parser.input.CharSequenceInput;
     import bpsm.edn.parser.scanner.Token;
 
     ...
-
-    Parser parser = Parser.newParser(
-                        new CharSequenceInput("{:x 1 y 2}"));
+    Input input = new CharSequenceInput("{:x 1 :y 2}");
+    Parser parser = Parser.newParser(input);
 
 You can then call `nextValue()` to read values form the input.
 
@@ -52,9 +52,19 @@ Lists and vectors are both mapped to implementations of `java.util.List`. List m
 
 Maps map to `java.util.HashMap` and sets to `java.util.HashSet`.
 
-The parser can be customized to use different collections by providing alternate implementations of `BuidlerFactory` to the Parser's configuration:
+The parser is customized by providing it with a ParserConfiguration when you create it:
 
-    parser.getConfiguration().setListFactory( ... )
+    Parser.newParser(ParserConfiguration.defaultConfiguration(), input)
+
+The parser can be customized to use different collection classes by first building the appropriate `ParserConfiguration`:
+
+    ParserConfiguration cfg =
+        ParserConfiguration.builder()
+            .setListFactory( new BuilderFactory() { ... } )
+            ...
+            .build();
+
+    Parser.newParser(cfg, input).nextValue();
 
 ## Tagged Values
 
@@ -70,14 +80,17 @@ Three handlers for `#inst` are available:
 
 Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 
-Handlers may be customized by manipulating the parser's configuration:
+Use custom handlers may by building an appropriate `ParserConfiguration`:
 
-    parser.getConfiguration().getTagHandlers().put(
-        new Tag("bpsm", "url"),
-        new TagHandler() {
-            public Object transform(Tag tag, Object value) {
-                return new URL((String)value);
-            }
-        });
+    ParserConfiguration.builder()
+        .putTagHandler(new Tag("bpsm", "url"),
+                       new TagHandler() {
+                           public Object transform(Tag tag, Object value) {
+                               return new URL((String)value);
+                           }
+                       })
+        .putTagHadler(ParserConfiguration.EDN_INSTANT,
+                      new InstantToCalendar())
+        .build();
 
 
