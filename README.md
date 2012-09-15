@@ -60,7 +60,15 @@ The parser can be customized to use different collections by providing alternate
 
 Tagged values with an unrecognized tag are mapped to `bpsm.edn.model.TaggedValue`.
 
-Handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively.
+
+Three handlers for `#inst` are available:
+
+ - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
+ - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original time zone.
+ - `InstantToTimestamp` converts each `#inst` to a `java.sql.Timstamp`, which presrves nanoseconds.
+
+Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 
 Handlers may be customized by manipulating the parser's configuration:
 
