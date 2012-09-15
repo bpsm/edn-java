@@ -29,6 +29,16 @@ public class Parser {
         return new Parser(cfg, scanner);
     }
 
+    /**
+     * Equivalent to:
+     * {@code newParser(ParserConfiguration.defaultConfiguration(), in)}
+     * @param in
+     * @return
+     */
+    public static Parser newParser(Input in) {
+        return newParser(ParserConfiguration.defaultConfiguration(), in);
+    }
+
     public ParserConfiguration getConfiguration() {
         return cfg;
     }
