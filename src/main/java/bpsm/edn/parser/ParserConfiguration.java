@@ -11,7 +11,7 @@ import java.util.Set;
 
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
-import bpsm.edn.parser.handlers.InstantHandler;
+import bpsm.edn.parser.handlers.InstantToDate;
 import bpsm.edn.parser.handlers.UuidHandler;
 
 public class ParserConfiguration {
@@ -70,7 +70,7 @@ public class ParserConfiguration {
     private static Map<Tag, TagHandler> createDefaultTagHandlers() {
         Map<Tag,TagHandler> m = new HashMap<Tag,TagHandler>();
         m.put(EDN_UUID, new UuidHandler());
-        m.put(EDN_INSTANT, new InstantHandler());
+        m.put(EDN_INSTANT, new InstantToDate());
         return Collections.unmodifiableMap(m);
     }
     
