@@ -17,17 +17,16 @@ public class Parser {
     private Object curr;
     private int discard;
 
-    public Parser(Scanner scanner, ParserConfiguration cfg) {
+    Parser(ParserConfiguration cfg, Scanner scanner) {
         this.scanner = scanner;
         this.curr = scanner.nextToken();
         this.cfg = cfg;
         this.discard = 0;
     }
-    
-    public static Parser newParser(Input in) {
+
+    public static Parser newParser(ParserConfiguration cfg, Input in) {
         Scanner scanner = new Scanner(in);
-        ParserConfiguration cfg = new ParserConfiguration();
-        return new Parser(scanner, cfg);
+        return new Parser(cfg, scanner);
     }
 
     public ParserConfiguration getConfiguration() {
@@ -59,7 +58,7 @@ public class Parser {
                 return parseIntoMap(cfg.getMapFactory());
             case DISCARD:
                 nextToken();
-                discardValue();   
+                discardValue();
                 return nextValue();
             case END_LIST:
             case END_MAP_OR_SET:
@@ -87,7 +86,7 @@ public class Parser {
     private Object nextToken() {
         return curr = scanner.nextToken();
     }
-    
+
     private Object nextValue(Tag t) {
         Object v = nextValue();
         if (discard == 0) {
@@ -140,6 +139,6 @@ public class Parser {
         nextToken();
         return (discard == 0) ? b.build() : null;
     }
-    
+
 
 }
