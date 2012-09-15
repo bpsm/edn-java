@@ -6,5 +6,5 @@ import bpsm.edn.model.Tag;
 public interface TagHandler {
 
     Object transform(Tag tag, Object value);
-    
+
 }

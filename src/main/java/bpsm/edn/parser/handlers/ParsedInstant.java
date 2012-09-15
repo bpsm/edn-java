@@ -11,7 +11,7 @@ public class ParsedInstant {
     public final int offsetSign;
     public final int offsetHours;
     public final int offsetMinutes;
-    
+
     public ParsedInstant(int years, int months, int days, int hours,
             int minutes, int seconds, int nanoseconds, int offsetSign,
             int offsetHours, int offsetMinutes) {
@@ -33,7 +33,7 @@ public class ParsedInstant {
                 years, months, days, hours, minutes, seconds, nanoseconds,
                 offsetSign > 0 ? "+" : "-", offsetHours, offsetMinutes);
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -95,7 +95,7 @@ public class ParsedInstant {
         }
         return true;
     }
-    
-    
-    
+
+
+
 }

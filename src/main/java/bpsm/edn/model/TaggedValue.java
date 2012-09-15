@@ -4,7 +4,7 @@ package bpsm.edn.model;
 public class TaggedValue {
     private final Tag tag;
     private final Object value;
-    
+
     public TaggedValue(Tag tag, Object value) {
         if (tag == null) {
             throw new IllegalArgumentException("tag must not be null");
@@ -12,15 +12,15 @@ public class TaggedValue {
         this.tag = tag;
         this.value = value;
     }
-    
+
     public Tag getTag() {
         return tag;
     }
-    
+
     public Object getValue() {
         return value;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -59,5 +59,5 @@ public class TaggedValue {
     public String toString() {
         return tag + " " + value;
     }
-    
+
 }

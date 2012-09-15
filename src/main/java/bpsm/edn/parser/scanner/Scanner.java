@@ -18,21 +18,21 @@ import bpsm.edn.parser.util.CharClassify;
 
 
 public class Scanner {
-    
+
     static final Symbol NIL_SYMBOL = new Symbol(null, "nil");
     static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
     static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
-    
+
     private Input input;    // source of characters
     private char curr;   // current character
     private char peek;   // next character 'peek'
-    
+
     public Scanner(Input input) {
         this.input = input;
         this.curr = input.next();
         this.peek = input.next();
     }
-    
+
     public Object nextToken() {
         skipWhitespaceAndComments();
         switch(curr) {
@@ -170,13 +170,13 @@ public class Scanner {
                     String.format("Unexpected character '%c', \\"+"u%04x", curr, (int)curr));
         }
     }
-    
+
     private char nextChar() {
         curr = peek;
         peek = input.next();
         return curr;
     }
-    
+
     private void skipWhitespaceAndComments() {
         skipWhitespace();
         while (curr == ';') {
@@ -197,19 +197,19 @@ public class Scanner {
             nextChar();
         } while (!isEndOfLine(curr) && curr != END);
     }
-    
+
     private static final boolean isEndOfLine(char c) {
         return c == '\n' || c == '\r';
     }
-    
-    
-    
+
+
+
     private char readCharacterLiteral() {
         assert curr == '\\';
         nextChar();
         if (isWhitespace(curr)) {
             throw new EdnException(
-                    "A backslash introducing character literal must not be "+ 
+                    "A backslash introducing character literal must not be "+
                     "immediately followed by whitespace.");
         }
         StringBuilder b = new StringBuilder();
@@ -219,7 +219,7 @@ public class Scanner {
         String s = b.toString();
         if (s.length() == 1) {
             return s.charAt(0);
-        } else { 
+        } else {
             return charForName(s);
         }
     }
@@ -261,7 +261,7 @@ public class Scanner {
                     "The character \\"+ name +" was not recognized.");
         }
     }
-    
+
     private String readStringLiteral() {
         assert curr == '"';
         nextChar();
@@ -308,9 +308,9 @@ public class Scanner {
             throw new EdnException("Unclosed string literal");
         }
         return b.toString();
-    }    
-    
-    private Number readNumber() {        
+    }
+
+    private Number readNumber() {
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
         do {
@@ -330,7 +330,7 @@ public class Scanner {
                 digits.append(curr);
             } while (isDigit(nextChar()));
         }
-        
+
         if (curr == 'e' || curr == 'E') {
             digits.append(curr);
             nextChar();
@@ -341,7 +341,7 @@ public class Scanner {
                 digits.append(curr);
             } while (isDigit(nextChar()));
         }
-        
+
         final boolean decimal;
         if (curr == 'M') {
             decimal = true;
@@ -349,11 +349,11 @@ public class Scanner {
         } else {
             decimal = false;
         }
-        
+
         if (!separatesTokens(curr)) {
             throw new EdnException("Not a number: '"+ digits + curr +"'.");
         }
-        
+
         if (decimal) {
             return new BigDecimal(digits.toString());
         } else {
@@ -362,7 +362,7 @@ public class Scanner {
     }
 
     private Number parseInteger(CharSequence digits) {
-        
+
         final boolean bigint;
         if (curr == 'N') {
             bigint = true;
@@ -370,13 +370,13 @@ public class Scanner {
         } else {
             bigint = false;
         }
-        
+
         if (!separatesTokens(curr)) {
             throw new EdnException("Not a number: '"+ digits + curr +"'.");
         }
-        
+
         final BigInteger n = new BigInteger(digits.toString());
-        
+
         if (bigint) {
             return n;
         } else {
@@ -389,7 +389,7 @@ public class Scanner {
             }
         }
     }
-    
+
     private Keyword readKeyword() {
         assert curr == ':';
         nextChar();
@@ -402,10 +402,10 @@ public class Scanner {
         return new Tag(readSymbol());
     }
 
-            
+
     private Symbol readSymbol() {
         assert CharClassify.symbolStart(curr);
-        
+
         StringBuilder b = new StringBuilder();
         int n = 0;
         int p = Integer.MIN_VALUE;
@@ -417,8 +417,8 @@ public class Scanner {
           b.append(curr);
           nextChar();
         } while (!separatesTokens(curr));
-        
-        validateUseOfSlash(b, n, p);        
+
+        validateUseOfSlash(b, n, p);
         return makeSymbol(b, n, p);
     }
 
@@ -452,12 +452,12 @@ public class Scanner {
             }
         }
     }
-    
+
     private static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
     private static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
     private static final BigInteger MIN_INTEGER = BigInteger.valueOf(Integer.MIN_VALUE);
     private static final BigInteger MAX_INTEGER = BigInteger.valueOf(Integer.MAX_VALUE);
 
 
-    
+
 }

@@ -8,12 +8,12 @@ import bpsm.edn.parser.EdnException;
 
 public class ReaderInput implements Input {
     Reader r;
-    
+
     ReaderInput(Reader r) {
         this.r = r;
     }
-    
-    
+
+
     public char next() {
         if (r == null) {
             return 0;

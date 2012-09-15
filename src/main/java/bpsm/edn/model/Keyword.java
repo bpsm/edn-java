@@ -3,7 +3,7 @@ package bpsm.edn.model;
 
 public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;
-    
+
     public final String getPrefix() {
         return sym.getPrefix();
     }
@@ -11,14 +11,14 @@ public final class Keyword implements Named, Comparable<Keyword> {
     public final String getName() {
         return sym.getName();
     }
-    
+
     public Keyword(Symbol sym) {
         if (sym == null) {
             throw new NullPointerException();
         }
         this.sym = sym;
     }
-    
+
     public Keyword(String prefix, String name) {
         this.sym = new Symbol(prefix, name);
     }
@@ -60,7 +60,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
     public int compareTo(Keyword o) {
         return sym.compareTo(o.sym);
     }
-    
-    
-    
+
+
+
 }

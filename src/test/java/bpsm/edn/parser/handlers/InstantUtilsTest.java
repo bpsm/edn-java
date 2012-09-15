@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import bpsm.edn.parser.EdnException;
@@ -41,14 +40,14 @@ public class InstantUtilsTest {
         assertEquals(pi(1987, 6, 5, 4, 3, 2, 123456789, -1, 7, 30),
                 parse("1987-06-05T04:03:02.123456789-07:30"));
     }
-    
+
     static ParsedInstant pi(int years, int months, int days, int hours,
             int minutes, int seconds, int nanoseconds, int offsetSign,
             int offsetHours, int offsetMinutes) {
         return new ParsedInstant(years, months, days, hours, minutes, seconds,
                 nanoseconds, offsetSign, offsetHours, offsetMinutes);
     }
-    
+
     @Test
     public void testExtragrammaticalVerificationAfterParse() {
         for (String x: Arrays.asList(
@@ -92,7 +91,7 @@ public class InstantUtilsTest {
             parse(x);
         }
         for (String x: Arrays.asList(
-                "1987-00", 
+                "1987-00",
                 "1987-13",
                 "1987-01-00",
                 "1987-01-32",
@@ -124,9 +123,9 @@ public class InstantUtilsTest {
             }
         }
     }
-    
-    
-    
+
+
+
     @Test
     public void testParseNanoseconds() {
         assertEquals(0, parseNanoseconds(""));
@@ -144,20 +143,20 @@ public class InstantUtilsTest {
                      "1987-06-05T04:03:02.123-07:30");
         testCalendar("1987-06-05T04:03:02.123+03:00",
                      "1987-06-05T04:03:02.123+03:00");
-        testCalendar("1987-01-01T00:00:00.000+03:00", 
+        testCalendar("1987-01-01T00:00:00.000+03:00",
                      "1987+03:00");
     }
-    
+
     void testCalendar(String expect, String input) {
         assertEquals(expect, calendarToString(makeCalendar(parse(input))));
     }
 
-    
+
     @Test
     public void testDate() {
-        testDate("1987-01-01T00:00:00.000-00:00", 
+        testDate("1987-01-01T00:00:00.000-00:00",
                  "1987");
-        testDate("1986-12-31T21:00:00.000-00:00", 
+        testDate("1986-12-31T21:00:00.000-00:00",
                  "1987+03:00");
         testDate("1987-06-05T10:33:02.123-00:00",
                  "1987-06-05T10:33:02.123456789-00:00");
@@ -169,21 +168,21 @@ public class InstantUtilsTest {
         assertEquals(expect, dateToString(makeDate(parse(input))));
     }
 
-    
+
     @Test
     public void testTimestamp() {
-        testTimestamp("1987-01-01T00:00:00.000000000-00:00", 
+        testTimestamp("1987-01-01T00:00:00.000000000-00:00",
                       "1987");
-        testTimestamp("1986-12-31T21:00:00.000000000-00:00", 
+        testTimestamp("1986-12-31T21:00:00.000000000-00:00",
                       "1987+03:00");
         testTimestamp("1987-06-05T10:33:02.123456789-00:00",
                       "1987-06-05T10:33:02.123456789-00:00");
         testTimestamp("1987-06-05T01:03:02.123456789-00:00",
                       "1987-06-05T04:03:02.123456789+03:00");
     }
-    
+
     void testTimestamp(String expect, String input) {
         assertEquals(expect, timestampToString(makeTimestamp(parse(input))));
     }
-    
+
 }

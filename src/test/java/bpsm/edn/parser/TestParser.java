@@ -1,9 +1,8 @@
 package bpsm.edn.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
-import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.input.CharSequenceInput;
 
 public class TestParser {

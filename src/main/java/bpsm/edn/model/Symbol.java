@@ -7,10 +7,10 @@ import bpsm.edn.parser.EdnException;
 import bpsm.edn.parser.util.CharClassify;
 
 public final class Symbol implements Named, Comparable<Symbol> {
-    
+
     final String prefix;
     final String name;
-    
+
     public final String getPrefix() {
         return prefix;
     }
@@ -18,14 +18,14 @@ public final class Symbol implements Named, Comparable<Symbol> {
     public final String getName() {
         return name;
     }
-     
-    
+
+
     public Symbol(String prefix, String name) {
         checkArguments(prefix, name);
         this.prefix = prefix;
         this.name = name;
     }
-    
+
     @Override
     public final int hashCode() {
         final int prime = 31;
@@ -61,7 +61,7 @@ public final class Symbol implements Named, Comparable<Symbol> {
             return name;
         return prefix + "/" + name;
     }
-    
+
     private static void checkArguments(String prefix, String name) {
         if (name == null) {
             throw new EdnException("name must not be null.");
@@ -71,7 +71,7 @@ public final class Symbol implements Named, Comparable<Symbol> {
             checkName("prefix", prefix);
         }
     }
-    
+
     private static void checkName(String label, String ident) {
         if (ident.length() == 0) {
             throw new EdnException("The "+ label +" '"+ ident +"' must not be empty.");
@@ -101,9 +101,9 @@ public final class Symbol implements Named, Comparable<Symbol> {
         }
         return this.name.compareTo(right.name);
     }
-    
+
     private static String nullToEmpty(String s) {
         return s == null ? "" : s;
     }
-    
+
 }

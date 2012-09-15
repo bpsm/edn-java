@@ -4,7 +4,7 @@ package bpsm.edn.model;
 
 public final class Tag implements Named, Comparable<Tag> {
     private final Symbol sym;
-    
+
     public final String getPrefix() {
         return sym.getPrefix();
     }
@@ -12,7 +12,7 @@ public final class Tag implements Named, Comparable<Tag> {
     public final String getName() {
         return sym.getName();
     }
-    
+
     public Tag(Symbol sym) {
         if (sym == null) {
             throw new NullPointerException();
@@ -57,7 +57,7 @@ public final class Tag implements Named, Comparable<Tag> {
     public int compareTo(Tag o) {
         return sym.compareTo(o.sym);
     }
-    
-    
-    
+
+
+
 }

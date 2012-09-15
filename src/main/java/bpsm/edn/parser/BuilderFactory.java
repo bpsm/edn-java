@@ -4,5 +4,5 @@ package bpsm.edn.parser;
 public interface BuilderFactory {
 
     CollectionBuilder builder();
-    
+
 }

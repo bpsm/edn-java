@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
-import bpsm.edn.parser.EdnException;
-
 class IOUtil {
 
     static final String ENCODING = "UTF-8";
@@ -21,7 +19,7 @@ class IOUtil {
         }
         return stringFromURL(url);
     }
-    
+
     static String stringFromURL(URL url) {
         try {
             InputStream urlStream = url.openStream();
