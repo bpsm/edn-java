@@ -22,8 +22,7 @@ class Scanner implements Closeable {
     static final Symbol NIL_SYMBOL = new Symbol(null, "nil");
     static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
     static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
-    static final char END = 0;
-    
+
     private Reader reader;
     private boolean eof;
     private char curr;   // current character
@@ -78,9 +77,10 @@ class Scanner implements Closeable {
 
     public Object nextToken() throws IOException {
         skipWhitespaceAndComments();
-        switch(curr) {
-        case END:
+        if (eof) {
             return Token.END_OF_INPUT;
+        }
+        switch(curr) {
         case 'a':
         case 'b':
         case 'c':
@@ -223,7 +223,7 @@ class Scanner implements Closeable {
     }
 
     private void skipWhitespace() throws IOException {
-        while (isWhitespace(curr) && curr != END) {
+        while (isWhitespace(curr) && !eof) {
             nextChar();
         }
     }
@@ -232,7 +232,7 @@ class Scanner implements Closeable {
         assert curr == ';';
         do {
             nextChar();
-        } while (!isEndOfLine(curr) && curr != END);
+        } while (!isEndOfLine(curr) && !eof);
     }
 
     private static final boolean isEndOfLine(char c) {
@@ -303,7 +303,7 @@ class Scanner implements Closeable {
         assert curr == '"';
         nextChar();
         StringBuffer b = new StringBuffer();
-        while (curr != '"' && curr != END) {
+        while (curr != '"' && !eof) {
             if (curr == '\\') {
                 nextChar();
                 switch(curr) {
