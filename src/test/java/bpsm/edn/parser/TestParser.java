@@ -19,7 +19,6 @@ import org.junit.Test;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
-import bpsm.edn.parser.input.CharSequenceInput;
 
 public class TestParser {
 
@@ -76,12 +75,19 @@ public class TestParser {
     }
 
     static Object parse(String input) {
-        return parser(input).nextValue();
+        try {
+            return parser(input).nextValue();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static Parser parser(String input) {
-        return Parser.newParser(ParserConfiguration.defaultConfiguration(),
-                new CharSequenceInput(input));
+        try {
+            return Parser.newParser(ParserConfiguration.defaultConfiguration(), input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<Object, Object> map(Object... kvs) {
