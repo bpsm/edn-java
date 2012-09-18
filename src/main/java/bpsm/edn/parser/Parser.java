@@ -125,7 +125,8 @@ public class Parser {
         while (curr != END_MAP_OR_SET) {
             Object o = nextValue();
             if (o == END_OF_INPUT) {
-                throw new EdnException();
+                throw new EdnException("Expected '}', but found end of input.\n" +
+                        String.valueOf(b.build()));
             }
             if (discard == 0) {
                 b.add(o);
