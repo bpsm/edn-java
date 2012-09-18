@@ -23,11 +23,10 @@ class Scanner implements Closeable {
     static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
     static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
     static final char END = 0;
-    
+
     private Reader reader;
-    private boolean eof;
-    private char curr;   // current character
-    private char peek;   // next character 'peek'
+    private char curr = 0;
+    private char peek = 0;
 
     /**
      * Scanner may throw an IOException during construction, in which case
@@ -40,19 +39,11 @@ class Scanner implements Closeable {
             throw new IllegalArgumentException("reader must not be null");
         }
         this.reader = reader;
-        this.eof = false;
-        this.curr = read();
-        this.peek = read();
-    }
-    
-    private char read() throws IOException {
-        if (eof) {
-            return 0;
-        }
         try {
-            int x = reader.read();
-            eof = (x < 0);
-            return (x < 0) ? 0 : (char) x;
+            this.curr = (char) Math.max(0, reader.read());
+            if (curr != 0) {
+                this.peek = (char) Math.max(0, reader.read());
+            }
         } catch (IOException e) {
             try {
                 reader.close();
@@ -65,7 +56,9 @@ class Scanner implements Closeable {
 
     private char nextChar() throws IOException {
         curr = peek;
-        peek = read();
+        if (curr != 0) {
+            peek = (char) Math.max(0,  reader.read());
+        }
         return curr;
     }
 
@@ -77,6 +70,19 @@ class Scanner implements Closeable {
     }
 
     public Object nextToken() throws IOException {
+        try {
+            return nextToken0();
+        } catch (IOException e) {
+            try {
+                close();
+            } catch (IOException _) {
+                ;
+            }
+            throw e;
+        }
+    }
+
+    private Object nextToken0() throws IOException {
         skipWhitespaceAndComments();
         switch(curr) {
         case END:
