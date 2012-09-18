@@ -1,32 +1,44 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
-import static bpsm.edn.parser.scanner.Token.END_LIST;
-import static bpsm.edn.parser.scanner.Token.END_MAP_OR_SET;
-import static bpsm.edn.parser.scanner.Token.END_OF_INPUT;
-import static bpsm.edn.parser.scanner.Token.END_VECTOR;
+import static bpsm.edn.parser.Token.END_LIST;
+import static bpsm.edn.parser.Token.END_MAP_OR_SET;
+import static bpsm.edn.parser.Token.END_OF_INPUT;
+import static bpsm.edn.parser.Token.END_VECTOR;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Reader;
+
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
-import bpsm.edn.parser.input.Input;
-import bpsm.edn.parser.scanner.Scanner;
-import bpsm.edn.parser.scanner.Token;
 
-public class Parser {
+public class Parser implements Closeable {
     private ParserConfiguration cfg;
     private Scanner scanner;
     private Object curr;
     private int discard;
 
-    Parser(ParserConfiguration cfg, Scanner scanner) {
+    Parser(ParserConfiguration cfg, Scanner scanner) throws IOException {
         this.scanner = scanner;
         this.curr = scanner.nextToken();
         this.cfg = cfg;
         this.discard = 0;
     }
+    
+    public void close() throws IOException {
+        if (scanner != null) {
+            scanner.close();
+            scanner = null;
+        }
+    }
 
-    public static Parser newParser(ParserConfiguration cfg, Input in) {
-        Scanner scanner = new Scanner(in);
-        return new Parser(cfg, scanner);
+    public static Parser newParser(ParserConfiguration cfg, Reader reader) throws IOException {
+        return new Parser(cfg, new Scanner(reader));
+    }
+    
+    public static Parser newParser(ParserConfiguration cfg, CharSequence input) throws IOException {
+        return new Parser(cfg, new Scanner(CharSequenceReader.newCharSequenceReader(input)));
     }
 
     /**
@@ -35,8 +47,8 @@ public class Parser {
      * @param in
      * @return
      */
-    public static Parser newParser(Input in) {
-        return newParser(ParserConfiguration.defaultConfiguration(), in);
+    public static Parser newParser(Reader reader) throws IOException {
+        return newParser(ParserConfiguration.defaultConfiguration(), reader);
     }
 
     public ParserConfiguration getConfiguration() {
@@ -50,7 +62,7 @@ public class Parser {
         this.cfg = cfg;
     }
 
-    public Object nextValue() {
+    public Object nextValue() throws IOException {
         assert discard >= 0;
         if (curr instanceof Token) {
             switch ((Token) curr) {
@@ -93,11 +105,21 @@ public class Parser {
         }
     }
 
-    private Object nextToken() {
-        return curr = scanner.nextToken();
+    private Object nextToken() throws IOException {
+        try {
+            return curr = scanner.nextToken();
+        } catch (IOException e) {
+            curr = Token.END_OF_INPUT;
+            try {
+                scanner.close();
+            } catch (IOException _) {
+                ;
+            }
+            throw e;
+        }
     }
 
-    private Object nextValue(Tag t) {
+    private Object nextValue(Tag t) throws IOException {
         Object v = nextValue();
         if (discard == 0) {
             TagHandler x = cfg.getTagHandlers().get(t);
@@ -111,7 +133,7 @@ public class Parser {
         }
     }
 
-    private void discardValue() {
+    private void discardValue() throws IOException {
         try {
             discard ++;
             nextValue();
@@ -120,7 +142,7 @@ public class Parser {
         }
     }
 
-    private Object parseIntoMap(BuilderFactory f) {
+    private Object parseIntoMap(BuilderFactory f) throws IOException {
         CollectionBuilder b = (discard == 0) ? f.builder() : null;
         while (curr != END_MAP_OR_SET) {
             Object o = nextValue();
@@ -136,7 +158,7 @@ public class Parser {
         return (discard == 0) ? b.build() : null;
     }
 
-    private Object parseIntoCollection(BuilderFactory f, Token end) {
+    private Object parseIntoCollection(BuilderFactory f, Token end) throws IOException {
         CollectionBuilder b = (discard == 0) ? f.builder() : null;
         while (curr != end) {
             Object value = nextValue();

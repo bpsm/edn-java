@@ -1,39 +1,82 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.parser.scanner;
+package bpsm.edn.parser;
 
-import static bpsm.edn.parser.input.Input.END;
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.isWhitespace;
 import static bpsm.edn.parser.util.CharClassify.separatesTokens;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
-import bpsm.edn.parser.EdnException;
-import bpsm.edn.parser.input.Input;
 import bpsm.edn.parser.util.CharClassify;
 
 
-public class Scanner {
+class Scanner implements Closeable {
 
     static final Symbol NIL_SYMBOL = new Symbol(null, "nil");
     static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
     static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
-
-    private Input input;    // source of characters
+    static final char END = 0;
+    
+    private Reader reader;
+    private boolean eof;
     private char curr;   // current character
     private char peek;   // next character 'peek'
 
-    public Scanner(Input input) {
-        this.input = input;
-        this.curr = input.next();
-        this.peek = input.next();
+    /**
+     * Scanner may throw an IOException during construction, in which case
+     * an attempt will be made to close Reader cleanly.
+     * @param reader
+     * @throws IOException
+     */
+    Scanner(Reader reader) throws IOException {
+        if (reader == null) {
+            throw new IllegalArgumentException("reader must not be null");
+        }
+        this.reader = reader;
+        this.eof = false;
+        this.curr = read();
+        this.peek = read();
+    }
+    
+    private char read() throws IOException {
+        if (eof) {
+            return 0;
+        }
+        try {
+            int x = reader.read();
+            eof = (x < 0);
+            return (x < 0) ? 0 : (char) x;
+        } catch (IOException e) {
+            try {
+                reader.close();
+            } catch (IOException _) {
+                ;
+            }
+            throw e;
+        }
     }
 
-    public Object nextToken() {
+    private char nextChar() throws IOException {
+        curr = peek;
+        peek = read();
+        return curr;
+    }
+
+    public void close() throws IOException {
+        if (reader != null) {
+            reader.close();
+            reader = null;
+        }
+    }
+
+    public Object nextToken() throws IOException {
         skipWhitespaceAndComments();
         switch(curr) {
         case END:
@@ -170,14 +213,8 @@ public class Scanner {
                     String.format("Unexpected character '%c', \\"+"u%04x", curr, (int)curr));
         }
     }
-
-    private char nextChar() {
-        curr = peek;
-        peek = input.next();
-        return curr;
-    }
-
-    private void skipWhitespaceAndComments() {
+    
+    private void skipWhitespaceAndComments() throws IOException {
         skipWhitespace();
         while (curr == ';') {
             skipComment();
@@ -185,13 +222,13 @@ public class Scanner {
         }
     }
 
-    private void skipWhitespace() {
+    private void skipWhitespace() throws IOException {
         while (isWhitespace(curr) && curr != END) {
             nextChar();
         }
     }
 
-    private void skipComment() {
+    private void skipComment() throws IOException {
         assert curr == ';';
         do {
             nextChar();
@@ -204,7 +241,7 @@ public class Scanner {
 
 
 
-    private char readCharacterLiteral() {
+    private char readCharacterLiteral() throws IOException {
         assert curr == '\\';
         nextChar();
         if (isWhitespace(curr)) {
@@ -262,7 +299,7 @@ public class Scanner {
         }
     }
 
-    private String readStringLiteral() {
+    private String readStringLiteral() throws IOException {
         assert curr == '"';
         nextChar();
         StringBuffer b = new StringBuffer();
@@ -310,7 +347,7 @@ public class Scanner {
         return b.toString();
     }
 
-    private Number readNumber() {
+    private Number readNumber() throws IOException {
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
         do {
@@ -324,7 +361,7 @@ public class Scanner {
         }
     }
 
-    private Number parseFloat(StringBuffer digits) {
+    private Number parseFloat(StringBuffer digits) throws IOException {
         if (curr == '.') {
             do {
                 digits.append(curr);
@@ -361,7 +398,7 @@ public class Scanner {
         }
     }
 
-    private Number parseInteger(CharSequence digits) {
+    private Number parseInteger(CharSequence digits) throws IOException {
 
         final boolean bigint;
         if (curr == 'N') {
@@ -390,20 +427,20 @@ public class Scanner {
         }
     }
 
-    private Keyword readKeyword() {
+    private Keyword readKeyword() throws IOException {
         assert curr == ':';
         nextChar();
         return new Keyword(readSymbol());
     }
 
-    private Tag readTag() {
+    private Tag readTag() throws IOException {
         assert curr == '#';
         nextChar();
         return new Tag(readSymbol());
     }
 
 
-    private Symbol readSymbol() {
+    private Symbol readSymbol() throws IOException {
         assert CharClassify.symbolStart(curr);
 
         StringBuilder b = new StringBuilder();

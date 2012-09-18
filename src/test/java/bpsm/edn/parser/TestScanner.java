@@ -1,7 +1,9 @@
 package bpsm.edn.parser;
 
+import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -9,9 +11,6 @@ import org.junit.Test;
 
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
-import bpsm.edn.parser.input.CharSequenceInput;
-import bpsm.edn.parser.scanner.Scanner;
-import bpsm.edn.parser.scanner.Token;
 
 public class TestScanner {
 
@@ -218,7 +217,7 @@ public class TestScanner {
     }
 
     @Test
-    public void sequenceOfTokens() {
+    public void sequenceOfTokens() throws IOException {
         String txt = "; comment\n" +
                 "\t\n" +
                 "true false nil \\#{:keyword  [1 2N 3.0 4.0M]}symbol\n" +
@@ -246,11 +245,19 @@ public class TestScanner {
     }
 
     static Object scan(String input) {
-        return scanner(input).nextToken();
+        try {
+            return scanner(input).nextToken();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static Scanner scanner(String input) {
-        return new Scanner(new CharSequenceInput(input));
+        try {
+            return new Scanner(newCharSequenceReader(input));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static Symbol sym(String name) {
