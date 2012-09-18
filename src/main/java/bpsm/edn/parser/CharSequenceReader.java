@@ -22,11 +22,13 @@ class CharSequenceReader extends Reader {
 
     @Override
     public int read() throws IOException {
+        if (cs == null) {
+            throw new IOException("Can't read form a closed Reader");
+        }
         if (leftMostUnread >= cs.length()) {
             return -1;
-        } else {
-            return cs.charAt(leftMostUnread++);
         }
+        return cs.charAt(leftMostUnread++);
     }
     
     @Override
