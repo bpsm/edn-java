@@ -317,7 +317,7 @@ public class Scanner {
             digits.append(curr);
         } while (isDigit(nextChar()));
 
-        if (curr == '.' || curr == 'e' || curr == 'E') {
+        if (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M') {
             return parseFloat(digits);
         } else {
             return parseInteger(digits);
