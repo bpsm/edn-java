@@ -65,8 +65,18 @@ public class TestScanner {
     }
 
     @Test(expected=EdnException.class)
-    public void symbolStartsWithDashDigit() {
+    public void symbolStartsWithDotDigit() {
         scan(".4symbol");
+    }
+    
+    @Test(expected=EdnException.class)
+    public void symbolStartsWithDashDigit() {
+        scan("-4symbol");
+    }
+    
+    @Test(expected=EdnException.class)
+    public void symbolStartsWithPlusDigit() {
+        scan("+4symbol");
     }
 
     @Test
@@ -148,6 +158,7 @@ public class TestScanner {
     @Test
     public void maxInteger() {
         assertEquals(2147483647, scan("2147483647"));
+        assertEquals(2147483647, scan("+2147483647"));
     }
 
     @Test
@@ -179,6 +190,8 @@ public class TestScanner {
     @Test
     public void floatWithFractionAndExponent() {
         assertEquals(-1.23456e3d, scan("-1.23456E3"));
+        assertEquals(1.23456e3d, scan("+1.23456E3"));
+        assertEquals(1.23456e3d, scan("1.23456E3"));
     }
 
     @Test

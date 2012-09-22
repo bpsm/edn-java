@@ -157,15 +157,15 @@ class Scanner implements Closeable {
         case 'Y':
         case 'Z':
         case '*':
-        case '+':
         case '!':
         case '_':
         case '?':
         case '/':
         case '.':
             return readSymbol();
+        case '+':
         case '-':
-            if ('0' <= peek && peek <= '9') {
+            if (isDigit(peek)) {
                 return readNumber();
             } else {
                 return readSymbol();
@@ -356,11 +356,16 @@ class Scanner implements Closeable {
     }
 
     private Number readNumber() throws IOException {
+        assert curr == '+' || curr == '-' || isDigit(curr);
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
-        do {
+        
+        if (curr != '+') {
             digits.append(curr);
-        } while (isDigit(nextChar()));
+        }
+        while (isDigit(nextChar())) {
+            digits.append(curr);
+        }
 
         if (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M') {
             return parseFloat(digits);
