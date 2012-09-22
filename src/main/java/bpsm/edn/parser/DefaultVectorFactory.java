@@ -1,6 +1,7 @@
 package bpsm.edn.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 final class DefaultVectorFactory implements BuilderFactory {
     public CollectionBuilder builder() {
@@ -10,7 +11,7 @@ final class DefaultVectorFactory implements BuilderFactory {
                 list.add(o);
             }
             public Object build() {
-                return list;
+                return Collections.unmodifiableList(list);
             }
         };
     }

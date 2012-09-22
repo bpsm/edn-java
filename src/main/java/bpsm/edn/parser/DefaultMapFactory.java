@@ -1,5 +1,6 @@
 package bpsm.edn.parser;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ final class DefaultMapFactory implements BuilderFactory {
                     throw new IllegalStateException(
                             "Every map must have an equal number of keys and values.");
                 }
-                return map;
+                return Collections.unmodifiableMap(map);
             }
         };
     }

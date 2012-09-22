@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -72,6 +73,28 @@ public class TestParser {
         // it would throw an exception and cause this test to fail.
 
         assertEquals(123, parse("#_ #uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\" 123"));
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void parserShouldReturnUnmodifiableListByDefault() {
+        ((List<?>)parse("(1)")).remove(0);
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void parserShouldReturnUnmodifiableVectorByDefault() {
+        ((List<?>)parse("[1]")).remove(0);
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void parserShouldReturnUnmodifiableSetByDefault() {
+        ((Set<?>)parse("#{1}")).remove(1);
+
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void parserShouldReturnUnmodifiableMapByDefault() {
+        ((Map<?,?>)parse("{1,-1}")).remove(1);
+
     }
 
     static Object parse(String input) {

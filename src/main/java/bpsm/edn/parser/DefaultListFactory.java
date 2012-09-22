@@ -1,5 +1,6 @@
 package bpsm.edn.parser;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 final class DefaultListFactory implements BuilderFactory {
@@ -10,7 +11,7 @@ final class DefaultListFactory implements BuilderFactory {
                 list.add(o);
             }
             public Object build() {
-                return list;
+                return Collections.unmodifiableList(list);
             }
         };
     }

@@ -1,5 +1,6 @@
 package bpsm.edn.parser;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +12,7 @@ final class DefaultSetFactory implements BuilderFactory {
                 set.add(o);
             }
             public Object build() {
-                return set;
+                return Collections.unmodifiableSet(set);
             }
         };
     }
