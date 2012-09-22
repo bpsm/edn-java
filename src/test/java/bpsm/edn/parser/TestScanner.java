@@ -73,10 +73,11 @@ public class TestScanner {
     public void keywordWithoutPrefix() {
         assertEquals(key("+"), scan(":+"));
     }
-
-    @Test
-    public void keywordSlash() {
-        assertEquals(key("/"), scan(":/"));
+    
+    /** issue 5 */
+    @Test(expected=EdnException.class)
+    public void colonSlashIsNotAValidKeyword() {
+        scan(":/");
     }
 
     @Test

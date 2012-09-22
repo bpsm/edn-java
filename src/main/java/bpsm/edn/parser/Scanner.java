@@ -22,6 +22,8 @@ class Scanner implements Closeable {
     static final Symbol NIL_SYMBOL = new Symbol(null, "nil");
     static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
     static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
+    static final Symbol SLASH_SYMBOL = new Symbol(null, "/");
+    
     static final char END = 0;
 
     private Reader reader;
@@ -436,7 +438,11 @@ class Scanner implements Closeable {
     private Keyword readKeyword() throws IOException {
         assert curr == ':';
         nextChar();
-        return new Keyword(readSymbol());
+        Symbol sym = readSymbol();
+        if (SLASH_SYMBOL.equals(sym)) {
+            throw new EdnException("':/' is not a valid keyword.");
+        }
+        return new Keyword(sym);
     }
 
     private Tag readTag() throws IOException {
