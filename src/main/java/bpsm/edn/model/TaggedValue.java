@@ -1,16 +1,20 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.model;
 
-public class TaggedValue {
+public final class TaggedValue {
     private final Tag tag;
     private final Object value;
 
-    public TaggedValue(Tag tag, Object value) {
+    private TaggedValue(Tag tag, Object value) {
+        this.tag = tag;
+        this.value = value;
+    }
+    
+    public static TaggedValue newTaggedValue(Tag tag, Object value) {
         if (tag == null) {
             throw new IllegalArgumentException("tag must not be null");
         }
-        this.tag = tag;
-        this.value = value;
+        return new TaggedValue(tag, value);
     }
 
     public Tag getTag() {

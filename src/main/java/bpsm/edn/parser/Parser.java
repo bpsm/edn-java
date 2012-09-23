@@ -1,6 +1,7 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
+import static bpsm.edn.model.TaggedValue.newTaggedValue;
 import static bpsm.edn.parser.Token.END_LIST;
 import static bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static bpsm.edn.parser.Token.END_OF_INPUT;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import bpsm.edn.model.Tag;
-import bpsm.edn.model.TaggedValue;
 
 public class Parser implements Closeable {
     private ParserConfiguration cfg;
@@ -126,7 +126,7 @@ public class Parser implements Closeable {
             if (x != null) {
                 return x.transform(t, v);
             } else {
-                return new TaggedValue(t, v);
+                return newTaggedValue(t, v);
             }
         } else {
             return null;

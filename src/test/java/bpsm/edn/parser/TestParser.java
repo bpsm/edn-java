@@ -1,6 +1,8 @@
 package bpsm.edn.parser;
 
+import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.model.Tag.newTag;
+import static bpsm.edn.model.TaggedValue.newTaggedValue;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -17,9 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
-
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.TaggedValue;
 
 public class TestParser {
 
@@ -48,7 +47,7 @@ public class TestParser {
 
     @Test
     public void parseTaggedValueWithUnkownTag() {
-        assertEquals(new TaggedValue(newTag(Symbol.newSymbol("foo", "bar")), 1), parse("#foo/bar 1"));
+        assertEquals(newTaggedValue(newTag(newSymbol("foo", "bar")), 1), parse("#foo/bar 1"));
     }
 
     @Test
