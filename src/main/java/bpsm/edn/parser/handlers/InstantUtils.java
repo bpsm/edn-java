@@ -132,10 +132,7 @@ class InstantUtils {
     }
 
     static GregorianCalendar makeCalendar(ParsedInstant pi) {
-        final String tzID = String.format("GMT%s%02d:%02d",
-                (pi.offsetSign > 0 ? "+" : "-"),
-                pi.offsetHours, pi.offsetMinutes);
-        final TimeZone tz = TimeZone.getTimeZone(tzID);
+        final TimeZone tz = getTimeZone(pi.offsetSign, pi.offsetHours, pi.offsetMinutes);
         final GregorianCalendar cal = new GregorianCalendar(tz);
         cal.set(GregorianCalendar.YEAR, pi.years);
         cal.set(GregorianCalendar.MONTH, pi.months - 1);
@@ -146,6 +143,29 @@ class InstantUtils {
         int millis = pi.nanoseconds / NANOSECS_PER_MILLISEC;
         cal.set(GregorianCalendar.MILLISECOND, millis);
         return cal;
+    }
+
+    private static final int TZ_LIMIT = 23;
+    
+    private static final TimeZone[] TZ_CACHE;
+    static {
+        TimeZone[] tzs = new TimeZone[TZ_LIMIT*2+1];
+        for (int h = -TZ_LIMIT; h <= TZ_LIMIT; h++) {
+            tzs[h+TZ_LIMIT] = TimeZone.getTimeZone(String.format("GMT%+03d:00", h));
+        }
+        TZ_CACHE = tzs;
+    }
+    
+    private static TimeZone getTimeZone(int offsetSign, int offsetHours, int offsetMinutes) {
+        if (offsetMinutes == 0 && offsetHours <= TZ_LIMIT) {
+            int i = offsetHours * (offsetSign < 0 ? -1 : 1) + TZ_LIMIT;
+            return TZ_CACHE[i];   
+        }
+        final String tzID = String.format("GMT%s%02d:%02d",
+                (offsetSign > 0 ? "+" : "-"),
+                offsetHours, offsetMinutes);
+        TimeZone tz = TimeZone.getTimeZone(tzID);
+        return tz;
     }
 
     private static final int NANOSECS_PER_MILLISEC = 1000000;

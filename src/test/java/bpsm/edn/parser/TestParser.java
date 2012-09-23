@@ -96,6 +96,30 @@ public class TestParser {
         ((Map<?,?>)parse("{1,-1}")).remove(1);
 
     }
+    
+    //@Test
+    public void performanceOfInstantParsing() {
+        StringBuilder b = new StringBuilder();
+        for (int h = -12; h <= 12; h++) {
+            b.append("#inst ")
+             .append('"')
+             .append("2012-11-25T10:11:12.343")
+             .append(String.format("%+03d", h))
+             .append(":00")
+             .append('"')
+             .append(' ');
+        }
+        for (int i = 0; i <  9; i++) {
+            b.append(b.toString());
+        }
+        String txt = "[" + b.toString() + "]";
+        long ns = System.nanoTime();
+        List<?> result = (List<?>) parse(txt);
+        ns = System.nanoTime() - ns;
+        long ms = ns / 1000000; 
+        System.out.printf("%d insts took %d ms (%1.2f ms/inst)\n",
+                result.size(), ms, (1.0*ms)/result.size()); 
+    }
 
     static Object parse(String input) {
         try {
