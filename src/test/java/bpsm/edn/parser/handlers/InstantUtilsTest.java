@@ -119,7 +119,7 @@ public class InstantUtilsTest {
                 parse(x);
                 fail(x);
             } catch (EdnException _) {
-                ; // pass
+                // pass
             }
         }
     }

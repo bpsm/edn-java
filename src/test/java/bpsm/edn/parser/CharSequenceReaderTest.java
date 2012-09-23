@@ -66,7 +66,7 @@ public class CharSequenceReaderTest {
             r.read();
             fail();
         } catch (IOException _) {
-            ; //ok
+            //ok
         }
     }
     

@@ -29,7 +29,8 @@ public class TestParser {
         Parser parser = parser(IOUtil
                 .stringFromResource("bpsm/edn/edn-sample.txt"));
 
-        List<Object> expected = Arrays.asList(
+        @SuppressWarnings("unchecked")
+		List<Object> expected = Arrays.asList(
                 map(TestScanner.key("keyword"), TestScanner.sym("symbol"), 1,
                         2.0d, new BigInteger("3"), new BigDecimal("4.0")),
                 Arrays.asList(1, 1, 2, 3, 5, 8),

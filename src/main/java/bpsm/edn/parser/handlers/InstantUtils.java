@@ -182,7 +182,7 @@ class InstantUtils {
                     "yyyy-MM-dd'T'HH:mm:ss");
             f.setTimeZone(GMT);
             return f;
-        };
+        }
     };
 
 }
