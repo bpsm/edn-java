@@ -356,7 +356,6 @@ class Scanner implements Closeable {
     }
 
     private Number readNumber() throws IOException {
-        assert curr == '+' || curr == '-' || isDigit(curr);
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
         
