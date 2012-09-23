@@ -113,7 +113,7 @@ public class Parser implements Closeable {
             try {
                 scanner.close();
             } catch (IOException _) {
-                // TODO: Handle exception
+                // suppress _ in favor of e
             }
             throw e;
         }
