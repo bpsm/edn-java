@@ -13,52 +13,46 @@ public class ParserConfigurationBuilder {
     }
 
     public ParserConfigurationBuilder setListFactory(BuilderFactory listFactory) {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.listFactory = listFactory;
         return this;
     }
 
     public ParserConfigurationBuilder setVectorFactory(BuilderFactory vectorFactory) {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.vectorFactory = vectorFactory;
         return this;
     }
 
     public ParserConfigurationBuilder setSetFactory(BuilderFactory setFactory) {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.setFactory = setFactory;
         return this;
     }
 
     public ParserConfigurationBuilder setMapFactory(BuilderFactory mapFactory) {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.mapFactory = mapFactory;
         return this;
     }
 
     public ParserConfigurationBuilder putTagHandler(Tag tag, TagHandler handler) {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.tagHandlers.put(tag, handler);
         return this;
     }
 
     public ParserConfiguration build() {
-        if (pc == null) {
-            throw new IllegalStateException("Builder is single-use. Not usable after build()");
-        }
+        checkState();
         pc.tagHandlers = Collections.unmodifiableMap(pc.tagHandlers);
         ParserConfiguration result = pc;
         pc = null;
         return result;
+    }
+
+    private void checkState() {
+        if (pc == null) {
+            throw new IllegalStateException("Builder is single-use. Not usable after build()");
+        }
     }
 }
