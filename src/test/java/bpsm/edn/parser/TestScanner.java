@@ -2,6 +2,7 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -302,6 +303,11 @@ public class TestScanner {
             m.put(o, o);
         }
         assertEquals(6, m.size());
+    }
+    
+    @Test
+    public void internedKeywordsAreIdentical() {
+    	assertTrue(scan(":foo")==scan(":foo"));
     }
 
     @Test
