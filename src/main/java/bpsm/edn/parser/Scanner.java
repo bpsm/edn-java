@@ -47,7 +47,7 @@ class Scanner implements Closeable {
         
         keywords = Interners.newKeywordInterner(cfg.shouldInternKeywords());
         symbols = Interners.newSymbolInterner(cfg.shouldInternSymbols());
-        strings = Interners.newStirngInterner(cfg.maxInternedStringLength());
+        strings = Interners.newStringInterner(cfg.maxInternedStringLength());
         
         this.reader = reader;
         try {

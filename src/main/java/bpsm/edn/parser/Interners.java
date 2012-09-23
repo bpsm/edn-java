@@ -24,7 +24,7 @@ class Interners {
         }
     }
     
-    static Interner<String> newStirngInterner(int maxInternedStringLength) {
+    static Interner<String> newStringInterner(int maxInternedStringLength) {
         if (maxInternedStringLength == 0) {
             return new EmptyString();
         } else if (maxInternedStringLength > 0) {
