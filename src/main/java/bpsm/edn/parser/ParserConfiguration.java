@@ -1,10 +1,11 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
+import static bpsm.edn.model.Symbol.newSymbol;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.parser.handlers.InstantToDate;
 import bpsm.edn.parser.handlers.UuidHandler;
@@ -57,8 +58,9 @@ public class ParserConfiguration {
         return tagHandlers;
     }
 
-    public static final Tag EDN_UUID = new Tag(new Symbol(null, "uuid"));
-    public static final Tag EDN_INSTANT = new Tag(new Symbol(null, "inst"));
+    public static final Tag EDN_UUID = new Tag(newSymbol(null, "uuid"));
+    
+    public static final Tag EDN_INSTANT = new Tag(newSymbol(null, "inst"));
 
     static final BuilderFactory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 

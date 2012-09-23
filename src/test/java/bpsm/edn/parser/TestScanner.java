@@ -1,6 +1,7 @@
 package bpsm.edn.parser;
 
 import static bpsm.edn.model.Keyword.newKeyword;
+import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -283,11 +284,11 @@ public class TestScanner {
     }
 
     static Symbol sym(String name) {
-        return new Symbol(null, name);
+        return newSymbol(null, name);
     }
 
     static Symbol sym(String prefix, String name) {
-        return new Symbol(prefix, name);
+        return newSymbol(prefix, name);
     }
 
     static Keyword key(String name) {

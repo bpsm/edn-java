@@ -19,11 +19,14 @@ public final class Symbol implements Named, Comparable<Symbol> {
         return name;
     }
 
-
-    public Symbol(String prefix, String name) {
-        checkArguments(prefix, name);
+    private Symbol(String prefix, String name) {
         this.prefix = prefix;
         this.name = name;
+    }
+    
+    public static Symbol newSymbol(String prefix, String name) {
+        checkArguments(prefix, name);
+        return new Symbol(prefix, name);
     }
 
     @Override

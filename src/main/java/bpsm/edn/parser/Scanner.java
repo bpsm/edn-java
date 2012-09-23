@@ -1,6 +1,7 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
+import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.isWhitespace;
 import static bpsm.edn.parser.util.CharClassify.separatesTokens;
@@ -19,10 +20,10 @@ import bpsm.edn.parser.util.CharClassify;
 
 class Scanner implements Closeable {
 
-    static final Symbol NIL_SYMBOL = new Symbol(null, "nil");
-    static final Symbol TRUE_SYMBOL = new Symbol(null, "true");
-    static final Symbol FALSE_SYMBOL = new Symbol(null, "false");
-    static final Symbol SLASH_SYMBOL = new Symbol(null, "/");
+    static final Symbol NIL_SYMBOL = newSymbol(null, "nil");
+    static final Symbol TRUE_SYMBOL = newSymbol(null, "true");
+    static final Symbol FALSE_SYMBOL = newSymbol(null, "false");
+    static final Symbol SLASH_SYMBOL = newSymbol(null, "/");
     
     static final char END = 0;
 
@@ -477,14 +478,14 @@ class Scanner implements Closeable {
 
     private Symbol makeSymbol(StringBuilder b, int slashCount, int slashPos) {
         if (slashCount == 0) {
-            return new Symbol(null, b.toString());
+            return newSymbol(null, b.toString());
         } else {
             assert slashCount == 1;
             if (slashPos == 0) {
                 assert b.length() == 1 && b.charAt(0) == '/';
-                return new Symbol(null, b.toString());
+                return newSymbol(null, b.toString());
             } else {
-                return new Symbol(b.substring(0, slashPos), b.substring(slashPos+1));
+                return newSymbol(b.substring(0, slashPos), b.substring(slashPos+1));
             }
         }
     }

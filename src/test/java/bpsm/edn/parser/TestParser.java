@@ -48,7 +48,7 @@ public class TestParser {
 
     @Test
     public void parseTaggedValueWithUnkownTag() {
-        assertEquals(new TaggedValue(new Tag(new Symbol("foo", "bar")), 1), parse("#foo/bar 1"));
+        assertEquals(new TaggedValue(new Tag(Symbol.newSymbol("foo", "bar")), 1), parse("#foo/bar 1"));
     }
 
     @Test
