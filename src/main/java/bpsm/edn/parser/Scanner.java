@@ -446,7 +446,7 @@ class Scanner implements Closeable {
         if (SLASH_SYMBOL.equals(sym)) {
             throw new EdnException("':/' is not a valid keyword.");
         }
-        return new Keyword(sym);
+        return Keyword.newKeyword(sym);
     }
 
     private Tag readTag() throws IOException {

@@ -1,12 +1,15 @@
 package bpsm.edn.parser;
 
+import static bpsm.edn.model.Keyword.newKeyword;
 import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import bpsm.edn.model.Keyword;
@@ -229,6 +232,11 @@ public class TestScanner {
         assertEquals(' ', scan("\\space"));
         assertEquals('\b', scan("\\backspace"));
     }
+    
+    @Test
+    public void keywordsAreInternedGlobally() {
+        assertSame(scan(":foo/bar"), scan(":foo/bar"));
+    }
 
     @Test
     public void sequenceOfTokens() throws IOException {
@@ -283,11 +291,11 @@ public class TestScanner {
     }
 
     static Keyword key(String name) {
-        return new Keyword(sym(null, name));
+        return newKeyword(sym(null, name));
     }
 
     static Keyword key(String prefix, String name) {
-        return new Keyword(sym(prefix, name));
+        return newKeyword(sym(prefix, name));
     }
 
 

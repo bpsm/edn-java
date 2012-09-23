@@ -1,6 +1,11 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.model;
 
+import java.lang.ref.Reference;
+import java.util.concurrent.ConcurrentHashMap;
+
+import bpsm.edn.parser.util.Interner;
+
 public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;
 
@@ -11,16 +16,16 @@ public final class Keyword implements Named, Comparable<Keyword> {
     public final String getName() {
         return sym.getName();
     }
+    
+    public static Keyword newKeyword(Symbol sym) {
+        return INTERNER.intern(sym, new Keyword(sym));
+    }
 
-    public Keyword(Symbol sym) {
+    private Keyword(Symbol sym) {
         if (sym == null) {
             throw new NullPointerException();
         }
         this.sym = sym;
-    }
-
-    public Keyword(String prefix, String name) {
-        this.sym = new Symbol(prefix, name);
     }
 
     public String toString() {
@@ -61,6 +66,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
         return sym.compareTo(o.sym);
     }
 
-
+    private static final Interner<Symbol, Keyword> INTERNER =
+            new Interner<Symbol, Keyword>();
 
 }
