@@ -26,8 +26,6 @@ class Scanner implements Closeable {
     
     static final char END = 0;
 
-    private Interner<Keyword> keywords = new Interner<Keyword>();
-    
     private Reader reader;
     private char curr = 0;
     private char peek = 0;
@@ -448,7 +446,7 @@ class Scanner implements Closeable {
         if (SLASH_SYMBOL.equals(sym)) {
             throw new EdnException("':/' is not a valid keyword.");
         }
-        return keywords.intern(new Keyword(sym));
+        return new Keyword(sym);
     }
 
     private Tag readTag() throws IOException {

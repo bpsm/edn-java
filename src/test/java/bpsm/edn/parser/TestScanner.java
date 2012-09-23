@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import bpsm.edn.model.Keyword;
@@ -257,12 +256,6 @@ public class TestScanner {
     @Test
     public void simpleStringWithLinebreak() {
         assertEquals("\n", scan("\"\n\""));
-    }
-    
-    @Test
-    public void keywordsShouldBeInternedByScanner() throws IOException {
-        Scanner s = scanner(":foo :foo");
-        Assert.assertSame(s.nextToken(), s.nextToken());
     }
 
     static Object scan(String input) {
