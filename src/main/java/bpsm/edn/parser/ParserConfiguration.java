@@ -2,6 +2,7 @@
 package bpsm.edn.parser;
 
 import static bpsm.edn.model.Symbol.newSymbol;
+import static bpsm.edn.model.Tag.newTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,9 +59,9 @@ public class ParserConfiguration {
         return tagHandlers;
     }
 
-    public static final Tag EDN_UUID = new Tag(newSymbol(null, "uuid"));
+    public static final Tag EDN_UUID = newTag(newSymbol(null, "uuid"));
     
-    public static final Tag EDN_INSTANT = new Tag(newSymbol(null, "inst"));
+    public static final Tag EDN_INSTANT = newTag(newSymbol(null, "inst"));
 
     static final BuilderFactory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 

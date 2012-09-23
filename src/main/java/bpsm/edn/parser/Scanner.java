@@ -2,6 +2,7 @@
 package bpsm.edn.parser;
 
 import static bpsm.edn.model.Symbol.newSymbol;
+import static bpsm.edn.model.Tag.newTag;
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.isWhitespace;
 import static bpsm.edn.parser.util.CharClassify.separatesTokens;
@@ -453,7 +454,7 @@ class Scanner implements Closeable {
     private Tag readTag() throws IOException {
         assert curr == '#';
         nextChar();
-        return new Tag(readSymbol());
+        return newTag(readSymbol());
     }
 
 
