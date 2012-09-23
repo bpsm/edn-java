@@ -59,7 +59,7 @@ class Scanner implements Closeable {
             try {
                 reader.close();
             } catch (IOException _) {
-                ;
+                // TODO: handle exception
             }
             throw e;
         }
@@ -87,7 +87,7 @@ class Scanner implements Closeable {
             try {
                 close();
             } catch (IOException _) {
-                ;
+                // TODO: handle exception
             }
             throw e;
         }
