@@ -54,6 +54,7 @@ public class CharClassify {
         NUMBER_START = new BitSet(128);
         NUMBER_START.or(DIGIT);
         NUMBER_START.set('-');
+        NUMBER_START.set('+');
     }
 
     private static final BitSet SYMBOL_START;
