@@ -1,19 +1,8 @@
 package bpsm.edn.parser;
 
-import java.util.HashMap;
-import java.util.Map;
 
-class Interner<T> {
-
-    Map<T,T> m = new HashMap<T,T>();
+interface Interner<T> {
     
-    public T intern(T t) {
-        T interned = m.get(t);
-        if (interned != null) {
-            return interned;
-        }
-        m.put(t, t);
-        return t;
-    }
+    public T intern(T t);
     
 }
