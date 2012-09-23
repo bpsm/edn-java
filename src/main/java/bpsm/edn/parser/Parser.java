@@ -34,11 +34,11 @@ public class Parser implements Closeable {
     }
 
     public static Parser newParser(ParserConfiguration cfg, Reader reader) throws IOException {
-        return new Parser(cfg, new Scanner(cfg, reader));
+        return new Parser(cfg, new Scanner(reader));
     }
     
     public static Parser newParser(ParserConfiguration cfg, CharSequence input) throws IOException {
-        return new Parser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
+        return new Parser(cfg, new Scanner(CharSequenceReader.newCharSequenceReader(input)));
     }
 
     /**

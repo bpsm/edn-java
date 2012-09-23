@@ -26,9 +26,7 @@ class Scanner implements Closeable {
     
     static final char END = 0;
 
-    private final Interner<Keyword> keywords;
-    private final Interner<Symbol> symbols;
-    private final Interner<String> strings;
+    private Interner<Keyword> keywords = new Interner<Keyword>();
     
     private Reader reader;
     private char curr = 0;
@@ -40,15 +38,10 @@ class Scanner implements Closeable {
      * @param reader
      * @throws IOException
      */
-    Scanner(ParserConfiguration cfg, Reader reader) throws IOException {
+    Scanner(Reader reader) throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException("reader must not be null");
         }
-        
-        keywords = Interners.newKeywordInterner(cfg.shouldInternKeywords());
-        symbols = Interners.newSymbolInterner(cfg.shouldInternSymbols());
-        strings = Interners.newStringInterner(cfg.maxInternedStringLength());
-        
         this.reader = reader;
         try {
             this.curr = (char) Math.max(0, reader.read());
@@ -103,11 +96,11 @@ class Scanner implements Closeable {
         case 'c':
         case 'd':
         case 'e':
-            return symbols.intern(readSymbol());
+            return readSymbol();
         case 'f':
         {
             Symbol sym = readSymbol();
-            return FALSE_SYMBOL.equals(sym) ? false : symbols.intern(sym);
+            return FALSE_SYMBOL.equals(sym) ? false : sym;
         }
         case 'g':
         case 'h':
@@ -116,11 +109,11 @@ class Scanner implements Closeable {
         case 'k':
         case 'l':
         case 'm':
-            return symbols.intern(readSymbol());
+            return readSymbol();
         case 'n':
         {
             Symbol sym = readSymbol();
-            return NIL_SYMBOL.equals(sym) ? Token.NIL : symbols.intern(sym);
+            return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
         }
         case 'o':
         case 'p':
@@ -131,7 +124,7 @@ class Scanner implements Closeable {
         case 't':
         {
             Symbol sym = readSymbol();
-            return TRUE_SYMBOL.equals(sym) ? true : symbols.intern(sym);
+            return TRUE_SYMBOL.equals(sym) ? true : sym;
         }
         case 'u':
         case 'v':
@@ -171,16 +164,16 @@ class Scanner implements Closeable {
         case '?':
         case '/':
         case '.':
-            return symbols.intern(readSymbol());
+            return readSymbol();
         case '+':
         case '-':
             if (isDigit(peek)) {
                 return readNumber();
             } else {
-                return symbols.intern(readSymbol());
+                return readSymbol();
             }
         case ':':
-            return keywords.intern(readKeyword());
+            return readKeyword();
         case '0':
         case '1':
         case '2':
@@ -222,7 +215,7 @@ class Scanner implements Closeable {
                 return readTag();
             }
         case '"':
-            return strings.intern(readStringLiteral());
+            return readStringLiteral();
         case '\\':
             return readCharacterLiteral();
         default:
@@ -455,7 +448,7 @@ class Scanner implements Closeable {
         if (SLASH_SYMBOL.equals(sym)) {
             throw new EdnException("':/' is not a valid keyword.");
         }
-        return new Keyword(sym);
+        return keywords.intern(new Keyword(sym));
     }
 
     private Tag readTag() throws IOException {

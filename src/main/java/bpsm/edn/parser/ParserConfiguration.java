@@ -16,9 +16,6 @@ public class ParserConfiguration {
     BuilderFactory setFactory;
     BuilderFactory mapFactory;
     Map<Tag,TagHandler> tagHandlers;
-    boolean shouldInternKeywords = true;
-    boolean shouldInternSymbols = false;
-    int maxInternedStringLength = 0;
 
     private ParserConfiguration() {
         listFactory = DEFAULT_LIST_FACTORY;
@@ -58,18 +55,6 @@ public class ParserConfiguration {
 
     public Map<Tag, TagHandler> getTagHandlers() {
         return tagHandlers;
-    }
-    
-    public boolean shouldInternKeywords() {
-        return shouldInternKeywords;
-    }
-    
-    public boolean shouldInternSymbols() {
-        return shouldInternSymbols;
-    }
-    
-    public int maxInternedStringLength() {
-        return maxInternedStringLength;
     }
 
     public static final Tag EDN_UUID = new Tag(new Symbol(null, "uuid"));
