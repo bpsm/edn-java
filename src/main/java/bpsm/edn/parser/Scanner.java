@@ -26,9 +26,9 @@ class Scanner implements Closeable {
     
     static final char END = 0;
 
-    private final Interner<Keyword> keywords;
-    private final Interner<Symbol> symbols;
-    private final Interner<String> strings;
+    private static final Interner<Keyword> keywords = Interners.newKeywordInterner(true);
+    private static final Interner<Symbol> symbols= Interners.newSymbolInterner(false);
+    private static final Interner<String> strings = Interners.newStringInterner(0);
     
     private Reader reader;
     private char curr = 0;
@@ -44,10 +44,6 @@ class Scanner implements Closeable {
         if (reader == null) {
             throw new IllegalArgumentException("reader must not be null");
         }
-        
-        keywords = Interners.newKeywordInterner(cfg.shouldInternKeywords());
-        symbols = Interners.newSymbolInterner(cfg.shouldInternSymbols());
-        strings = Interners.newStirngInterner(cfg.maxInternedStringLength());
         
         this.reader = reader;
         try {

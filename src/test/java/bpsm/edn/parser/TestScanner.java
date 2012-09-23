@@ -258,47 +258,10 @@ public class TestScanner {
     
     @Test
     public void testInterning() throws IOException {
-        
         // By default we intern keywords and the empty string.
         String txt = ":a b \"\" \"hi\" :a b \"\" \"hi\"";
         Scanner s = scanner(txt);
         IdentityHashMap<Object, Object> m = new IdentityHashMap<Object,Object>();
-        for (Object o = s.nextToken(); o != Token.END_OF_INPUT; o = s.nextToken()) {
-            m.put(o, o);
-        }
-        assertEquals(6, m.size());
-        
-        // We can customize the configuration to also intern all symbols
-        // and all strings
-        ParserConfiguration cfg = ParserConfiguration.builder()
-                .shouldInternSymbols(true)
-                .setMaxInternedStringLength(Integer.MAX_VALUE)
-                .build();
-        s = scanner(cfg, txt);
-        m = new IdentityHashMap<Object,Object>();
-        for (Object o = s.nextToken(); o != Token.END_OF_INPUT; o = s.nextToken()) {
-            m.put(o, o);
-        }
-        assertEquals(4, m.size());
-        
-        // We can disable interning entirely, if we like
-        cfg = ParserConfiguration.builder()
-                .shouldInternKeywords(false)
-                .setMaxInternedStringLength(-1)
-                .build();
-        s = scanner(cfg, txt);
-        m = new IdentityHashMap<Object,Object>();
-        for (Object o = s.nextToken(); o != Token.END_OF_INPUT; o = s.nextToken()) {
-            m.put(o, o);
-        }
-        assertEquals(8, m.size());
-        
-        // We can choose to intern only strings up to a given maximum length
-        cfg = ParserConfiguration.builder()
-                .setMaxInternedStringLength(3)
-                .build();
-        s = scanner(cfg, "\"\" \"\" \"a\" \"a\" \"ab\" \"ab\" \"abc\"  \"abc\"  \"abcd\"  \"abcd\" ");
-        m = new IdentityHashMap<Object,Object>();
         for (Object o = s.nextToken(); o != Token.END_OF_INPUT; o = s.nextToken()) {
             m.put(o, o);
         }
@@ -308,6 +271,11 @@ public class TestScanner {
     @Test
     public void internedKeywordsAreIdentical() {
     	assertTrue(scan(":foo")==scan(":foo"));
+    }
+    
+    @Test
+    public void internedEmptyStringsAreIdentical() {
+    	assertTrue(scan("\"\"")==scan("\"\""));
     }
 
     @Test
