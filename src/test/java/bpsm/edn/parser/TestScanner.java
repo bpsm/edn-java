@@ -5,6 +5,7 @@ import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -236,6 +237,16 @@ public class TestScanner {
     @Test
     public void keywordsAreInternedGlobally() {
         assertSame(scan(":foo/bar"), scan(":foo/bar"));
+    }
+    
+    @Test
+    public void keywordsAreInternedGloballyWithoutPrefix() {
+        assertSame(scan(":foo"), scan(":foo"));
+    }
+    
+    @Test
+    public void keywordWithDifferentPrefixNotIdentical() {
+        assertTrue(scan(":a/foo")!=scan(":b/foo"));
     }
 
     @Test
