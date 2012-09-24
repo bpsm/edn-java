@@ -1,12 +1,12 @@
 package bpsm.edn.parser;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 
 final class DefaultListFactory implements BuilderFactory {
     public CollectionBuilder builder() {
         return new CollectionBuilder() {
-            LinkedList<Object> list = new LinkedList<Object>();
+            ArrayList<Object> list = new ArrayList<Object>();
             public void add(Object o) {
                 list.add(o);
             }
