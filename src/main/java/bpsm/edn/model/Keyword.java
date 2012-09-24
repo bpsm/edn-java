@@ -37,4 +37,9 @@ public final class Keyword implements Named, Comparable<Keyword> {
     private static final Interner<Symbol, Keyword> INTERNER =
             new Interner<Symbol, Keyword>();
 
+    @Override
+    public boolean equals(Object o) {
+    	// we can compare based on object identity, because keywords are globally interned
+    	return (this==o);
+    }
 }
