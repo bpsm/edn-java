@@ -30,7 +30,9 @@ public final class Keyword implements Named, Comparable<Keyword> {
     }
 
     public int compareTo(Keyword o) {
-    	if (this==o) return 0;
+    	if (this == o) {
+            return 0;
+        }
         return sym.compareTo(o.sym);
     }
 
