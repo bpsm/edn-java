@@ -5,6 +5,7 @@ import bpsm.edn.parser.util.Interner;
 
 public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;
+    private final int hash;
 
     public final String getPrefix() {
         return sym.getPrefix();
@@ -23,6 +24,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
             throw new NullPointerException();
         }
         this.sym = sym;
+        hash = sym.hashCode() + 0x9e3779b9;
     }
 
     public String toString() {
@@ -41,5 +43,10 @@ public final class Keyword implements Named, Comparable<Keyword> {
     public boolean equals(Object o) {
     	// we can compare based on object identity, because keywords are globally interned
     	return (this==o);
+    }
+    
+    @Override
+    public int hashCode() {
+    	return hash;
     }
 }
