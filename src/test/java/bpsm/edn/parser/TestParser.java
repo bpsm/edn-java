@@ -61,9 +61,11 @@ public class TestParser {
                 parse("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\""));
     }
 
+    private static final String INVALID_UUID = "#uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\"";
+    
     @Test(expected=NumberFormatException.class)
     public void invalidUUIDCausesException() {
-        parse("#uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\"");
+        parse(INVALID_UUID);
     }
 
     @Test
@@ -72,7 +74,7 @@ public class TestParser {
         // were the transformer for #uuid to be called despite the #_,
         // it would throw an exception and cause this test to fail.
 
-        assertEquals(123, parse("#_ #uuid \"f81d4fae-XXXX-11d0-a765-00a0c91e6bf6\" 123"));
+        assertEquals(123L, parse("#_ " + INVALID_UUID + " 123"));
     }
     
     @Test(expected=UnsupportedOperationException.class)
