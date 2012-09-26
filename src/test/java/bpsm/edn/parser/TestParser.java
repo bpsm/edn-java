@@ -3,6 +3,11 @@ package bpsm.edn.parser;
 import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.model.Tag.newTag;
 import static bpsm.edn.model.TaggedValue.newTaggedValue;
+import static bpsm.edn.parser.ParserConfiguration.BIG_DECIMAL_TAG;
+import static bpsm.edn.parser.ParserConfiguration.BIG_INTEGER_TAG;
+import static bpsm.edn.parser.ParserConfiguration.DOUBLE_TAG;
+import static bpsm.edn.parser.ParserConfiguration.LONG_TAG;
+import static bpsm.edn.parser.ParserConfiguration.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -20,6 +25,8 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import bpsm.edn.model.Tag;
+
 public class TestParser {
 
     @Test
@@ -30,9 +37,9 @@ public class TestParser {
 
         @SuppressWarnings("unchecked")
 		List<Object> expected = Arrays.asList(
-                map(TestScanner.key("keyword"), TestScanner.sym("symbol"), 1,
+                map(TestScanner.key("keyword"), TestScanner.sym("symbol"), 1L,
                         2.0d, new BigInteger("3"), new BigDecimal("4.0")),
-                Arrays.asList(1, 1, 2, 3, 5, 8),
+                Arrays.asList(1L, 1L, 2L, 3L, 5L, 8L),
                 new HashSet<Object>(Arrays.asList('\n', '\t')),
                 Arrays.asList(Arrays.asList(Arrays.asList(true, false, null))));
 
@@ -47,7 +54,7 @@ public class TestParser {
 
     @Test
     public void parseTaggedValueWithUnkownTag() {
-        assertEquals(newTaggedValue(newTag(newSymbol("foo", "bar")), 1), parse("#foo/bar 1"));
+        assertEquals(newTaggedValue(newTag(newSymbol("foo", "bar")), 1L), parse("#foo/bar 1"));
     }
 
     @Test
@@ -99,6 +106,70 @@ public class TestParser {
 
     }
     
+    @Test
+    public void integersParseAsLongByDefault() {
+        List<?> expected = Arrays.asList(
+                Long.MIN_VALUE, (long)Integer.MIN_VALUE, 
+                -1L, 0L, 1L, 
+                (long)Integer.MAX_VALUE, Long.MAX_VALUE);
+        List<?> results = (List<?>)parse("[" +
+                Long.MIN_VALUE + ", " + Integer.MIN_VALUE + 
+                ", -1, 0, 1, " + 
+                Integer.MAX_VALUE + ", " + Long.MAX_VALUE + "]");
+        // In Java Integer and Long are never equal(), even if they have
+        // the same value.
+        assertEquals(expected, results);
+    }
+    
+    @Test
+    public void integersAutoPromoteToBigIfTooBig() {
+        BigInteger tooNegative = BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE);
+        BigInteger tooPositive = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
+        List<?> expected = Arrays.asList(tooNegative, tooPositive);
+        List<?> results = (List<?>)parse("[" + tooNegative +" " + tooPositive + "]");
+        assertEquals(expected, results);       
+    }
+
+    @Test
+    public void canCustomizeParsingOfInteger() {
+        ParserConfiguration cfg = ParserConfiguration.builder()
+                .putTagHandler(LONG_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        return Integer.valueOf(((Long)value).intValue());
+                    }})
+                .putTagHandler(BIG_INTEGER_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        return Integer.valueOf(((BigInteger)value).intValue());
+                    }})
+                .build();
+        List<Integer> expected = Arrays.asList(-1, 0, 0, 1);
+        List<?> results = (List<?>) parse(cfg, "[-1N, 0, 0N, 1]");
+        assertEquals(expected, results);
+    }
+    
+    @Test
+    public void canCustomizeParsingOfFloats() {
+        ParserConfiguration cfg = ParserConfiguration.builder()
+                .putTagHandler(DOUBLE_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        Double d = (Double) value;
+                        return d * 2.0;
+                    }})
+                .putTagHandler(BIG_DECIMAL_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        BigDecimal d = (BigDecimal)value;
+                        return d.multiply(BigDecimal.TEN);
+                    }})
+                .build();
+        @SuppressWarnings("unchecked")
+        List<?> expected = Arrays.asList(BigDecimal.TEN.negate(),
+                                              BigDecimal.ZERO,
+                                              BigDecimal.TEN,
+                                              -2.0d, 0.0d, 2.0d);
+        List<?> results = (List<?>) parse(cfg, "[-1M, 0M, 1M, -1.0, 0.0, 1.0]");
+        assertEquals(expected, results);
+    }
+    
     //@Test
     public void performanceOfInstantParsing() {
         StringBuilder b = new StringBuilder();
@@ -124,16 +195,24 @@ public class TestParser {
     }
 
     static Object parse(String input) {
+        return parse(defaultConfiguration(), input);
+    }
+    
+    static Object parse(ParserConfiguration cfg, String input) {
         try {
-            return parser(input).nextValue();
+            return parser(cfg, input).nextValue();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     static Parser parser(String input) {
+        return parser(defaultConfiguration(), input);
+    }
+    
+    static Parser parser(ParserConfiguration cfg, String input) {
         try {
-            return Parser.newParser(ParserConfiguration.defaultConfiguration(), input);
+            return Parser.newParser(cfg, input);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

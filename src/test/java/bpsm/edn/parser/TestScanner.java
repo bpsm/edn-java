@@ -146,7 +146,7 @@ public class TestScanner {
 
     @Test
     public void zero() {
-        assertEquals(0, scan("0"));
+        assertEquals(0L, scan("0"));
     }
 
     @Test
@@ -161,13 +161,13 @@ public class TestScanner {
 
     @Test
     public void maxInteger() {
-        assertEquals(2147483647, scan("2147483647"));
-        assertEquals(2147483647, scan("+2147483647"));
+        assertEquals(2147483647L, scan("2147483647"));
+        assertEquals(2147483647L, scan("+2147483647"));
     }
 
     @Test
     public void minInteger() {
-        assertEquals(-2147483648, scan("-2147483648"));
+        assertEquals(-2147483648L, scan("-2147483648"));
     }
 
     @Test
@@ -259,11 +259,11 @@ public class TestScanner {
         Object[] expected = {
                 true, false, Token.NIL, '#',
                 Token.BEGIN_MAP, key("keyword"),
-                Token.BEGIN_VECTOR, 1, BigInteger.valueOf(2),
+                Token.BEGIN_VECTOR, 1L, BigInteger.valueOf(2),
                 3.0d, new BigDecimal("4.0"), Token.END_VECTOR,
                 Token.END_MAP_OR_SET, sym("symbol"), '\n',
                 "some text", 'x', Token.BEGIN_LIST, Token.END_LIST,
-                Token.BEGIN_SET, -42, Token.END_MAP_OR_SET,
+                Token.BEGIN_SET, -42L, Token.END_MAP_OR_SET,
                 Token.END_OF_INPUT
         };
         Scanner s = scanner(txt);
@@ -287,7 +287,8 @@ public class TestScanner {
 
     static Scanner scanner(String input) {
         try {
-            return new Scanner(newCharSequenceReader(input));
+            return new Scanner(ParserConfiguration.defaultConfiguration(), 
+                    newCharSequenceReader(input));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

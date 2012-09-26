@@ -3,6 +3,10 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.model.Tag.newTag;
+import static bpsm.edn.parser.ParserConfiguration.BIG_DECIMAL_TAG;
+import static bpsm.edn.parser.ParserConfiguration.BIG_INTEGER_TAG;
+import static bpsm.edn.parser.ParserConfiguration.DOUBLE_TAG;
+import static bpsm.edn.parser.ParserConfiguration.LONG_TAG;
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.isWhitespace;
 import static bpsm.edn.parser.util.CharClassify.separatesTokens;
@@ -12,6 +16,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
@@ -28,9 +33,15 @@ class Scanner implements Closeable {
     
     static final char END = 0;
 
+    private final TagHandler longHandler;
+    private final TagHandler bigDecimalHandler;
+    private final TagHandler bigIntegerHandler;
+    private final TagHandler doubleHandler;
+    
     private Reader reader;
     private char curr = 0;
     private char peek = 0;
+    
 
     /**
      * Scanner may throw an IOException during construction, in which case
@@ -38,10 +49,20 @@ class Scanner implements Closeable {
      * @param reader
      * @throws IOException
      */
-    Scanner(Reader reader) throws IOException {
+    Scanner(ParserConfiguration cfg, Reader reader) throws IOException {
+        if (cfg == null) {
+            throw new IllegalArgumentException("cfg must not be null");
+        }
         if (reader == null) {
             throw new IllegalArgumentException("reader must not be null");
         }
+        
+        Map<Tag, TagHandler> th = cfg.getTagHandlers();
+        this.longHandler = th.get(LONG_TAG);
+        this.bigIntegerHandler = th.get(BIG_INTEGER_TAG);
+        this.doubleHandler = th.get(DOUBLE_TAG);
+        this.bigDecimalHandler = th.get(BIG_DECIMAL_TAG);
+        
         this.reader = reader;
         try {
             this.curr = (char) Math.max(0, reader.read());
@@ -357,7 +378,7 @@ class Scanner implements Closeable {
         return b.toString();
     }
 
-    private Number readNumber() throws IOException {
+    private Object readNumber() throws IOException {
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
         
@@ -375,7 +396,7 @@ class Scanner implements Closeable {
         }
     }
 
-    private Number parseFloat(StringBuffer digits) throws IOException {
+    private Object parseFloat(StringBuffer digits) throws IOException {
         if (curr == '.') {
             do {
                 digits.append(curr);
@@ -406,14 +427,15 @@ class Scanner implements Closeable {
         }
 
         if (decimal) {
-            return new BigDecimal(digits.toString());
+            BigDecimal d = new BigDecimal(digits.toString());
+            return bigDecimalHandler.transform(BIG_DECIMAL_TAG, d);
         } else {
-            return Double.parseDouble(digits.toString());
+            double d = Double.parseDouble(digits.toString());
+            return doubleHandler.transform(DOUBLE_TAG, d);
         }
     }
-
-    private Number parseInteger(CharSequence digits) throws IOException {
-
+    
+    private Object parseInteger(CharSequence digits) throws IOException {
         final boolean bigint;
         if (curr == 'N') {
             bigint = true;
@@ -428,16 +450,10 @@ class Scanner implements Closeable {
 
         final BigInteger n = new BigInteger(digits.toString());
 
-        if (bigint) {
-            return n;
+        if (bigint || MIN_LONG.compareTo(n) > 0 || n.compareTo(MAX_LONG) > 0) {
+            return bigIntegerHandler.transform(BIG_INTEGER_TAG, n);
         } else {
-            if (MIN_INTEGER.compareTo(n) <= 0 && n.compareTo(MAX_INTEGER) <= 0) {
-                return Integer.valueOf(n.intValue());
-            } else if (MIN_LONG.compareTo(n) <= 0 && n.compareTo(MAX_LONG) <= 0) {
-                return Long.valueOf(n.longValue());
-            } else {
-                return n;
-            }
+            return longHandler.transform(LONG_TAG, n.longValue());
         }
     }
 
@@ -510,9 +526,6 @@ class Scanner implements Closeable {
 
     private static final BigInteger MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
     private static final BigInteger MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
-    private static final BigInteger MIN_INTEGER = BigInteger.valueOf(Integer.MIN_VALUE);
-    private static final BigInteger MAX_INTEGER = BigInteger.valueOf(Integer.MAX_VALUE);
-
 
 
 }
