@@ -25,7 +25,7 @@ public final class Tag implements Named, Comparable<Tag> {
     }
 
     public String toString() {
-        return ":" + sym.toString();
+        return "#" + sym.toString();
     }
 
     @Override
