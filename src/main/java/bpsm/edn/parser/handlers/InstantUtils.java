@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import bpsm.edn.parser.EdnException;
 
-class InstantUtils {
+public class InstantUtils {
 
     private static final Pattern INSTANT = Pattern.compile(
             "(\\d\\d\\d\\d)(?:-(\\d\\d)(?:-(\\d\\d)" +
@@ -171,7 +171,7 @@ class InstantUtils {
     private static final int NANOSECS_PER_MILLISEC = 1000000;
 
 
-    static String calendarToString(GregorianCalendar cal) {
+    public static String calendarToString(GregorianCalendar cal) {
         String s = String.format("%1$tFT%1$tT.%1$tL%1$tz", cal);
         /* s is almost right, but is missing the colon in the offset */
         assert Pattern.matches(".*[-+][0-9]{4}$", s);
@@ -179,7 +179,7 @@ class InstantUtils {
         return s.substring(0, n-2) + ":" + s.substring(n-2);
     }
 
-    static String dateToString(Date date) {
+    public static String dateToString(Date date) {
         GregorianCalendar c = new GregorianCalendar(GMT);
         c.setTime(date);
         String s = calendarToString(c);
@@ -190,7 +190,7 @@ class InstantUtils {
     private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
 
-    static String timestampToString(Timestamp ts) {
+    public static String timestampToString(Timestamp ts) {
         return TIMESTAMP_FORMAT.get().format(ts)
              + String.format(".%09d-00:00", ts.getNanos());
     }
