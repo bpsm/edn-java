@@ -49,14 +49,14 @@ public class ParserConfiguration {
 
     public static final Tag EDN_INSTANT = newTag(newSymbol(null, "inst"));
 
-    static final BuilderFactory DEFAULT_LIST_FACTORY = new DefaultListFactory();
+    static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 
-    static final BuilderFactory DEFAULT_VECTOR_FACTORY =
+    static final CollectionBuilder.Factory DEFAULT_VECTOR_FACTORY =
             new DefaultVectorFactory();
 
-    static final BuilderFactory DEFAULT_SET_FACTORY = new DefaultSetFactory();
+    static final CollectionBuilder.Factory DEFAULT_SET_FACTORY = new DefaultSetFactory();
 
-    static final BuilderFactory DEFAULT_MAP_FACTORY = new DefaultMapFactory();
+    static final CollectionBuilder.Factory DEFAULT_MAP_FACTORY = new DefaultMapFactory();
 
     static final TagHandler INSTANT_TO_DATE = new InstantToDate();
 
@@ -73,10 +73,10 @@ public class ParserConfiguration {
     }
     
     
-    BuilderFactory listFactory;
-    BuilderFactory vectorFactory;
-    BuilderFactory setFactory;
-    BuilderFactory mapFactory;
+    CollectionBuilder.Factory listFactory;
+    CollectionBuilder.Factory vectorFactory;
+    CollectionBuilder.Factory setFactory;
+    CollectionBuilder.Factory mapFactory;
     Map<Tag, TagHandler> tagHandlers;
 
     private ParserConfiguration() {
@@ -103,19 +103,19 @@ public class ParserConfiguration {
         return new ParserConfigurationBuilder(new ParserConfiguration());
     }
 
-    public BuilderFactory getListFactory() {
+    public CollectionBuilder.Factory getListFactory() {
         return listFactory;
     }
 
-    public BuilderFactory getVectorFactory() {
+    public CollectionBuilder.Factory getVectorFactory() {
         return vectorFactory;
     }
 
-    public BuilderFactory getSetFactory() {
+    public CollectionBuilder.Factory getSetFactory() {
         return setFactory;
     }
 
-    public BuilderFactory getMapFactory() {
+    public CollectionBuilder.Factory getMapFactory() {
         return mapFactory;
     }
 

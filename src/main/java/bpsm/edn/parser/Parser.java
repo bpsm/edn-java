@@ -142,7 +142,7 @@ public class Parser implements Closeable {
         }
     }
 
-    private Object parseIntoMap(BuilderFactory f) throws IOException {
+    private Object parseIntoMap(CollectionBuilder.Factory f) throws IOException {
         CollectionBuilder b = (discard == 0) ? f.builder() : null;
         while (curr != END_MAP_OR_SET) {
             Object o = nextValue();
@@ -158,7 +158,7 @@ public class Parser implements Closeable {
         return (discard == 0) ? b.build() : null;
     }
 
-    private Object parseIntoCollection(BuilderFactory f, Token end) throws IOException {
+    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end) throws IOException {
         CollectionBuilder b = (discard == 0) ? f.builder() : null;
         while (curr != end) {
             Object value = nextValue();

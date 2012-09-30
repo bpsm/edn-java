@@ -19,7 +19,7 @@ public class SimpleParserConfigTest {
     @Test
     public void test() throws IOException {
         ParserConfiguration cfg =
-            ParserConfiguration.builder().setSetFactory(new BuilderFactory() {
+            ParserConfiguration.builder().setSetFactory(new CollectionBuilder.Factory() {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();

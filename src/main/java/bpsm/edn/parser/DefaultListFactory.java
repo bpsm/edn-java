@@ -3,7 +3,7 @@ package bpsm.edn.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 
-final class DefaultListFactory implements BuilderFactory {
+final class DefaultListFactory implements CollectionBuilder.Factory {
     public CollectionBuilder builder() {
         return new CollectionBuilder() {
             ArrayList<Object> list = new ArrayList<Object>();

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-final class DefaultMapFactory implements BuilderFactory {
+final class DefaultMapFactory implements CollectionBuilder.Factory {
     public CollectionBuilder builder() {
         return new CollectionBuilder() {
             final Object none = new Object();

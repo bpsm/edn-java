@@ -12,25 +12,25 @@ public class ParserConfigurationBuilder {
         this.pc = pc;
     }
 
-    public ParserConfigurationBuilder setListFactory(BuilderFactory listFactory) {
+    public ParserConfigurationBuilder setListFactory(CollectionBuilder.Factory listFactory) {
         checkState();
         pc.listFactory = listFactory;
         return this;
     }
 
-    public ParserConfigurationBuilder setVectorFactory(BuilderFactory vectorFactory) {
+    public ParserConfigurationBuilder setVectorFactory(CollectionBuilder.Factory vectorFactory) {
         checkState();
         pc.vectorFactory = vectorFactory;
         return this;
     }
 
-    public ParserConfigurationBuilder setSetFactory(BuilderFactory setFactory) {
+    public ParserConfigurationBuilder setSetFactory(CollectionBuilder.Factory setFactory) {
         checkState();
         pc.setFactory = setFactory;
         return this;
     }
 
-    public ParserConfigurationBuilder setMapFactory(BuilderFactory mapFactory) {
+    public ParserConfigurationBuilder setMapFactory(CollectionBuilder.Factory mapFactory) {
         checkState();
         pc.mapFactory = mapFactory;
         return this;
