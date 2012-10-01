@@ -1,4 +1,4 @@
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

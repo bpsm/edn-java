@@ -1,5 +1,5 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
 
 public final class InstantToDate extends AbstractInstantHandler {

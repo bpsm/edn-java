@@ -19,7 +19,7 @@ import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.handlers.InstantUtils;
+import bpsm.edn.parser.inst.InstantUtils;
 import bpsm.edn.protocols.Function;
 import bpsm.edn.protocols.Protocol;
 import bpsm.edn.protocols.Protocols;
