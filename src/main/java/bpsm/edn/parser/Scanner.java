@@ -3,10 +3,10 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.model.Symbol.newSymbol;
 import static bpsm.edn.model.Tag.newTag;
-import static bpsm.edn.parser.ParserConfiguration.BIG_DECIMAL_TAG;
-import static bpsm.edn.parser.ParserConfiguration.BIG_INTEGER_TAG;
-import static bpsm.edn.parser.ParserConfiguration.DOUBLE_TAG;
-import static bpsm.edn.parser.ParserConfiguration.LONG_TAG;
+import static bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
+import static bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
+import static bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
+import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.isWhitespace;
 import static bpsm.edn.parser.util.CharClassify.separatesTokens;
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Map;
 
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
@@ -49,7 +48,7 @@ class Scanner implements Closeable {
      * @param reader
      * @throws IOException
      */
-    Scanner(ParserConfiguration cfg, Reader reader) throws IOException {
+    Scanner(Parser.Config cfg, Reader reader) throws IOException {
         if (cfg == null) {
             throw new IllegalArgumentException("cfg must not be null");
         }
@@ -57,11 +56,10 @@ class Scanner implements Closeable {
             throw new IllegalArgumentException("reader must not be null");
         }
         
-        Map<Tag, TagHandler> th = cfg.getTagHandlers();
-        this.longHandler = th.get(LONG_TAG);
-        this.bigIntegerHandler = th.get(BIG_INTEGER_TAG);
-        this.doubleHandler = th.get(DOUBLE_TAG);
-        this.bigDecimalHandler = th.get(BIG_DECIMAL_TAG);
+        this.longHandler = cfg.getTagHandler(LONG_TAG);
+        this.bigIntegerHandler = cfg.getTagHandler(BIG_INTEGER_TAG);
+        this.doubleHandler = cfg.getTagHandler(DOUBLE_TAG);
+        this.bigDecimalHandler = cfg.getTagHandler(BIG_DECIMAL_TAG);
         
         this.reader = reader;
         try {

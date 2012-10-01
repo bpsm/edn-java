@@ -26,27 +26,24 @@ package bpsm.edn.examples;
 
 import static bpsm.edn.model.Keyword.newKeyword;
 import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.parser.ParserConfiguration.defaultConfiguration;
+import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.Map;
-
 import org.junit.Test;
-
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Token;
+import bpsm.edn.parser.Parsers;
 
 public class ParseASingleMapTest {
     @Test
     public void simpleUsageExample() throws IOException {
-        Parser p = Parser.newParser(defaultConfiguration(), "{:x 1, :y 2}");
+        Parser p = Parsers.newParser(defaultConfiguration(), "{:x 1, :y 2}");
         try {
             Map<?, ?> m = (Map<?, ?>) p.nextValue();
             assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
             assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
 
-            assertEquals(Token.END_OF_INPUT, p.nextValue());
+            assertEquals(Parser.END_OF_INPUT, p.nextValue());
         } finally {
             p.close();
         }
@@ -80,25 +77,21 @@ The parser can be customized to use different collection classes by first buildi
 package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.junit.Test;
-
-import bpsm.edn.parser.BuilderFactory;
 import bpsm.edn.parser.CollectionBuilder;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 
 public class SimpleParserConfigTest {
     @Test
     public void test() throws IOException {
-        ParserConfiguration cfg =
-            ParserConfiguration.builder().setSetFactory(new BuilderFactory() {
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder().setSetFactory(new CollectionBuilder.Factory() {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
@@ -107,7 +100,7 @@ public class SimpleParserConfigTest {
                     };
                 }
             }).build();
-        Parser p = Parser.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
+        Parser p = Parsers.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
         SortedSet<?> s = (SortedSet<?>) p.nextValue();
         // The elements of s are sorted since our SetFactory
         // builds a SortedSet, not a (Hash)Set.
@@ -145,32 +138,25 @@ import java.net.URISyntaxException;
 import org.junit.Test;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
-import bpsm.edn.parser.EdnException;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
 
 public class CustomTagHandler {
     @Test
     public void test() throws IOException, URISyntaxException {
-        ParserConfiguration cfg =
-            ParserConfiguration
-                .builder()
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder()
                 .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
                     new TagHandler() {
                         public Object transform(Tag tag, Object value) {
-                            try {
-                                return new URI((String) value);
-                            } catch (URISyntaxException e) {
-                                throw new EdnException(e);
-                            }
+                            return URI.create((String) value);
                         }
                     }).build();
-        Parser p = Parser.newParser(cfg, "#bpsm/uri \"http://example.com\"");
+        Parser p = Parsers.newParser(cfg, "#bpsm/uri \"http://example.com\"");
         assertEquals(new URI("http://example.com"), (URI) p.nextValue());
     }
 }
-
 ```
 
 #### Using pseudo-tags to influence the parsing of numbers
@@ -182,29 +168,31 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.math.BigInteger;
 import org.junit.Test;
-import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
 
-public class CustomTagHandler {
+public class CustomLongHandler {
     @Test
-    public void test() throws IOException, URISyntaxException {
-        ParserConfiguration cfg =
-            ParserConfiguration
-                .builder()
-                .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
-                    new TagHandler() {
-                        public Object transform(Tag tag, Object value) {
-                            return URI.create((String) value);
+    public void test() throws IOException {
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder()
+                .putTagHandler(Parser.Config.LONG_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        long n = (Long) value;
+                        if (Integer.MIN_VALUE <= n && n <= Integer.MAX_VALUE) {
+                            return Integer.valueOf((int) n);
+                        } else {
+                            return BigInteger.valueOf(n);
                         }
-                    }).build();
-        Parser p = Parser.newParser(cfg, "#bpsm/uri \"http://example.com\"");
-        assertEquals(new URI("http://example.com"), (URI) p.nextValue());
+                    }
+                }).build();
+        Parser p = Parsers.newParser(cfg, "1024, 2147483648");
+        assertEquals(1024, p.nextValue());
+        assertEquals(BigInteger.valueOf(2147483648L), p.nextValue());
     }
 }
 ```
@@ -256,7 +244,7 @@ import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI = 
+    private static final Tag BPSM_URI =
         Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
     @Test
     public void test() throws IOException {

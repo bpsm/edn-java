@@ -287,7 +287,7 @@ public class TestScanner {
 
     static Scanner scanner(String input) {
         try {
-            return new Scanner(ParserConfiguration.defaultConfiguration(), 
+            return new Scanner(Parsers.defaultConfiguration(), 
                     newCharSequenceReader(input));
         } catch (IOException e) {
             throw new RuntimeException(e);

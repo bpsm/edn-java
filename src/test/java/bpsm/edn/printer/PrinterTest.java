@@ -1,6 +1,6 @@
 package bpsm.edn.printer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,9 +9,7 @@ import java.io.StringWriter;
 import org.junit.Test;
 
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Token;
-import bpsm.edn.printer.Printer;
-import bpsm.edn.printer.Printers;
+import bpsm.edn.parser.Parsers;
 
 public class PrinterTest {
 
@@ -53,7 +51,7 @@ public class PrinterTest {
     void assertRoundTrip(String ednText) {
         try {
             Parser parser;
-            parser = Parser.newParser(new StringReader(ednText));
+            parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(ednText));
             Object originalParsedValue = parser.nextValue();
 
             StringWriter sw = new StringWriter();
@@ -61,12 +59,12 @@ public class PrinterTest {
             ew.printValue(originalParsedValue);
             ew.close();
 
-            parser = Parser.newParser(new StringReader(sw.toString()));
+            parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(sw.toString()));
             Object secondGenerationParsedValue = parser.nextValue();
             assertEquals("'" + ednText + "' => '" + sw.toString()
                     + "' did not round-trip.", originalParsedValue,
                     secondGenerationParsedValue);
-            assertEquals(Token.END_OF_INPUT, parser.nextValue());
+            assertEquals(Parser.END_OF_INPUT, parser.nextValue());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
