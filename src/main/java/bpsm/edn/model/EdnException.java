@@ -1,5 +1,5 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.parser;
+package bpsm.edn.model;
 
 public class EdnException extends RuntimeException {
     private static final long serialVersionUID = 1L;

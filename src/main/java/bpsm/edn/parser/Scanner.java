@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import bpsm.edn.model.EdnException;
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;

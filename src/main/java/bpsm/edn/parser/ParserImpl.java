@@ -8,6 +8,7 @@ import static bpsm.edn.parser.Token.END_VECTOR;
 
 import java.io.IOException;
 
+import bpsm.edn.model.EdnException;
 import bpsm.edn.model.Tag;
 
 class ParserImpl implements Parser {

@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.model.EdnException;
 
 public class InstantUtilsTest {
 

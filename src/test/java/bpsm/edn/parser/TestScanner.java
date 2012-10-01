@@ -13,6 +13,7 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
+import bpsm.edn.model.EdnException;
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
 

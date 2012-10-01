@@ -3,8 +3,8 @@ package bpsm.edn.parser.handlers;
 
 import java.util.UUID;
 
+import bpsm.edn.model.EdnException;
 import bpsm.edn.model.Tag;
-import bpsm.edn.parser.EdnException;
 import bpsm.edn.parser.TagHandler;
 
 public class UuidHandler implements TagHandler {

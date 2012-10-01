@@ -3,7 +3,6 @@ package bpsm.edn.model;
 
 import static bpsm.edn.parser.util.CharClassify.isDigit;
 import static bpsm.edn.parser.util.CharClassify.symbolStart;
-import bpsm.edn.parser.EdnException;
 import bpsm.edn.parser.util.CharClassify;
 
 public final class Symbol implements Named, Comparable<Symbol> {
