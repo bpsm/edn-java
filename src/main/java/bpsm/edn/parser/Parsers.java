@@ -17,7 +17,6 @@ import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
 import bpsm.edn.parser.Parser.Config.Builder;
 import bpsm.edn.parser.handlers.InstantToDate;
-import bpsm.edn.parser.handlers.UuidHandler;
 
 public class Parsers {
 
