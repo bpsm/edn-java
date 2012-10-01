@@ -8,7 +8,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import bpsm.edn.model.EdnException;
+import bpsm.edn.EdnException;
 
 public class InstantUtils {
 

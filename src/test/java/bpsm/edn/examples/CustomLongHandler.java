@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.junit.Test;
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;

@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
 import bpsm.edn.parser.Parser.Config.Builder;

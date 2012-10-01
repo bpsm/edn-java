@@ -13,11 +13,11 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.UUID;
 
-import bpsm.edn.model.EdnException;
-import bpsm.edn.model.Keyword;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
-import bpsm.edn.model.TaggedValue;
+import bpsm.edn.EdnException;
+import bpsm.edn.Keyword;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
+import bpsm.edn.TaggedValue;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.inst.InstantUtils;
 import bpsm.edn.protocols.Function;

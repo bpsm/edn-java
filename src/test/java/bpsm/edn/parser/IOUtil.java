@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
-import bpsm.edn.model.EdnException;
+import bpsm.edn.EdnException;
 
 class IOUtil {
 

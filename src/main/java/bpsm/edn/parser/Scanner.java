@@ -1,8 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.model.Tag.newTag;
+import static bpsm.edn.Symbol.newSymbol;
+import static bpsm.edn.Tag.newTag;
 import static bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
 import static bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
 import static bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
@@ -17,10 +17,10 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import bpsm.edn.model.EdnException;
-import bpsm.edn.model.Keyword;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
+import bpsm.edn.EdnException;
+import bpsm.edn.Keyword;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
 import bpsm.edn.util.CharClassify;
 
 

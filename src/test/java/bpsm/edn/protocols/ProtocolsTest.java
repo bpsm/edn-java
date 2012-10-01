@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import bpsm.edn.model.EdnException;
+import bpsm.edn.EdnException;
 
 public class ProtocolsTest {
 

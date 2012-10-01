@@ -1,12 +1,12 @@
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.model.Tag.newTag;
+import static bpsm.edn.Symbol.newSymbol;
+import static bpsm.edn.Tag.newTag;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 
 public interface Parser extends Closeable {
 

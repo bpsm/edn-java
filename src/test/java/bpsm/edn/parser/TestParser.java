@@ -1,8 +1,8 @@
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.model.Tag.newTag;
-import static bpsm.edn.model.TaggedValue.newTaggedValue;
+import static bpsm.edn.Symbol.newSymbol;
+import static bpsm.edn.Tag.newTag;
+import static bpsm.edn.TaggedValue.newTaggedValue;
 import static bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
 import static bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
 import static bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 
 public class TestParser {
 

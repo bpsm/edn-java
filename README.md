@@ -24,8 +24,8 @@ You'll need to create a Parser and supply it with some input. Factory methods ar
 ```java
 package bpsm.edn.examples;
 
-import static bpsm.edn.model.Keyword.newKeyword;
-import static bpsm.edn.model.Symbol.newSymbol;
+import static bpsm.edn.Keyword.newKeyword;
+import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class ParseASingleMapTest {
 
 ### Mapping from EDN to Java
 
-Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn.model`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
@@ -112,7 +112,7 @@ public class SimpleParserConfigTest {
 
 ### Tagged Values
 
-By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.model.TaggedValue`.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.TaggedValue`.
 
 #### Customizing the parsing of instants
 
@@ -136,8 +136,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
@@ -170,7 +170,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.junit.Test;
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
@@ -201,9 +201,9 @@ public class CustomLongHandler {
 
 The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
 
- - `bpsm.edn.model.Keyword`
- - `bpsm.edn.model.Symbol`
- - `bpsm.edn.model.TaggedValue`
+ - `bpsm.edn.Keyword`
+ - `bpsm.edn.Symbol`
+ - `bpsm.edn.TaggedValue`
  - `java.lang.Boolean`
  - `java.lang.Byte`
  - `java.lang.CharSequence`, which includes `java.lang.String`.
@@ -237,8 +237,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import org.junit.Test;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
 import bpsm.edn.printer.PrintFn;
 import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;

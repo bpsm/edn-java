@@ -1,4 +1,4 @@
-package bpsm.edn.model;
+package bpsm.edn;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;

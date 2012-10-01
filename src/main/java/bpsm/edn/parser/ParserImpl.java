@@ -1,15 +1,15 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.TaggedValue.newTaggedValue;
+import static bpsm.edn.TaggedValue.newTaggedValue;
 import static bpsm.edn.parser.Token.END_LIST;
 import static bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static bpsm.edn.parser.Token.END_VECTOR;
 
 import java.io.IOException;
 
-import bpsm.edn.model.EdnException;
-import bpsm.edn.model.Tag;
+import bpsm.edn.EdnException;
+import bpsm.edn.Tag;
 
 class ParserImpl implements Parser {
     private Config cfg;

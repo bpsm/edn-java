@@ -1,7 +1,7 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser;
 
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 
 public interface TagHandler {
 

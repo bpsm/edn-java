@@ -1,15 +1,12 @@
 package bpsm.edn.examples;
 
-import static bpsm.edn.model.Keyword.newKeyword;
-import static bpsm.edn.model.Symbol.newSymbol;
+import static bpsm.edn.Keyword.newKeyword;
+import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.Map;
-
 import org.junit.Test;
-
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 
