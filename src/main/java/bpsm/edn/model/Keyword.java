@@ -1,7 +1,6 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.model;
 
-import bpsm.edn.parser.util.Interner;
 
 public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;

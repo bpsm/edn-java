@@ -1,4 +1,4 @@
-package bpsm.edn.parser.util;
+package bpsm.edn.model;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -6,7 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Interner<K,V> {
+class Interner<K,V> {
 
     private final ConcurrentHashMap<K, Reference<V>> table = 
             new ConcurrentHashMap<K, Reference<V>>();
