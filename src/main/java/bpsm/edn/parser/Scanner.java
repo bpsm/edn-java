@@ -7,9 +7,9 @@ import static bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
 import static bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
 import static bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
 import static bpsm.edn.parser.Parser.Config.LONG_TAG;
-import static bpsm.edn.parser.util.CharClassify.isDigit;
-import static bpsm.edn.parser.util.CharClassify.isWhitespace;
-import static bpsm.edn.parser.util.CharClassify.separatesTokens;
+import static bpsm.edn.util.CharClassify.isDigit;
+import static bpsm.edn.util.CharClassify.isWhitespace;
+import static bpsm.edn.util.CharClassify.separatesTokens;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import bpsm.edn.model.EdnException;
 import bpsm.edn.model.Keyword;
 import bpsm.edn.model.Symbol;
 import bpsm.edn.model.Tag;
-import bpsm.edn.parser.util.CharClassify;
+import bpsm.edn.util.CharClassify;
 
 
 class Scanner implements Closeable {

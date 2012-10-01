@@ -20,10 +20,10 @@ import bpsm.edn.model.Tag;
 import bpsm.edn.model.TaggedValue;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.handlers.InstantUtils;
-import bpsm.edn.parser.util.CharClassify;
 import bpsm.edn.protocols.Function;
 import bpsm.edn.protocols.Protocol;
 import bpsm.edn.protocols.Protocols;
+import bpsm.edn.util.CharClassify;
 
 public class Printers {
 
