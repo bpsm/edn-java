@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import bpsm.edn.Tag;
 
-public class TestParser {
+public class ParserTest {
 
     @Test
     public void parseEdnSample() throws IOException {
@@ -38,7 +38,7 @@ public class TestParser {
 
         @SuppressWarnings("unchecked")
 		List<Object> expected = Arrays.asList(
-                map(TestScanner.key("keyword"), TestScanner.sym("symbol"), 1L,
+                map(ScannerTest.key("keyword"), ScannerTest.sym("symbol"), 1L,
                         2.0d, new BigInteger("3"), new BigDecimal("4.0")),
                 Arrays.asList(1L, 1L, 2L, 3L, 5L, 8L),
                 new HashSet<Object>(Arrays.asList('\n', '\t')),

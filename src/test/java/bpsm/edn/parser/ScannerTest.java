@@ -17,7 +17,7 @@ import bpsm.edn.EdnException;
 import bpsm.edn.Keyword;
 import bpsm.edn.Symbol;
 
-public class TestScanner {
+public class ScannerTest {
 
     @Test
     public void testEmpty() {
