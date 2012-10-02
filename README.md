@@ -208,9 +208,77 @@ public class CustomTagHandler {
     }
 }
 ```
+
+## Printing
+
+The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
+
+ - `bpsm.edn.model.Keyword`
+ - `bpsm.edn.model.Symbol`
+ - `bpsm.edn.model.TaggedValue`
+ - `java.lang.Boolean`
+ - `java.lang.Byte`
+ - `java.lang.CharSequence`, which includes `java.lang.String`.
+ - `java.lang.Character`
+ - `java.lang.Double`
+ - `java.lang.Float`
+ - `java.lang.Integer`
+ - `java.lang.Long`
+ - `java.lang.Short`
+ - `java.math.BigInteger`
+ - `java.meth.BigDecimal`
+ - `java.sql.Timestamp`, as `#inst`.
+ - `java.util.Date`, as `#inst`.
+ - `java.util.GregorianCalendar`, as `#inst`.
+ - `java.util.List`, as `[...]` or `(...)`.
+ - `java.util.Map`
+ - `java.util.Set`
+ - `java.util.UUID`, as `#uuid`.
+
+### Supporting additional types
+
+To support additional types, you'll need to provide a `Printer.Config` to the `Printer` which binds your custom `PrintFn` to the class (or interface) it is responsible for.
+
+As an example, we'll add printing support for URIs:
+
+```java
+package bpsm.edn.examples;
+
+import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
+import org.junit.Test;
+import bpsm.edn.model.Symbol;
+import bpsm.edn.model.Tag;
+import bpsm.edn.printer.PrintFn;
+import bpsm.edn.printer.Printer;
+import bpsm.edn.printer.Printers;
+
+public class CustomTagPrinter {
+    private static final Tag BPSM_URI = 
+        Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
+    @Test
+    public void test() throws IOException {
+        StringWriter w = new StringWriter();
+        Printer.Config cfg = Printers.newPrinterConfigBuilder()
+            .bind(URI.class, new PrintFn<URI>() {
+                @Override
+                protected void eval(URI self, Printer writer)
+                    throws IOException {
+                    writer.printValue(BPSM_URI).printValue(self.toString());
+                }})
+            .build();
+        Printer p = Printers.newPrinter(cfg, w);
+        p.printValue(URI.create("http://example.com"));
+        p.close();
+        assertEquals("#bpsm/uri\"http://example.com\"", w.toString());
     }
 }
 ```
 
+### Limitations
 
+ - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
+ - Currently, the printer doesn't pretty-print. This is fine when using edn for communication, but less than helpful for debugging or storage in version control.
 
