@@ -225,6 +225,8 @@ The package `bpsm.edn.printer` provides an extensible printer for converting jav
  - `java.util.Set`
  - `java.util.UUID`, as `#uuid`.
 
+The `Printer` writes *characters* to the underlying `Writer`. To serialize this text to a file or across a network you'll need to arrange to convert the characters to bytes. Use *UTF-8*, as *edn* specifies.
+
 ### Supporting additional types
 
 To support additional types, you'll need to provide a `Printer.Config` to the `Printer` which binds your custom `PrintFn` to the class (or interface) it is responsible for.
