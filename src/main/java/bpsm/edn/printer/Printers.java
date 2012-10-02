@@ -13,17 +13,17 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.UUID;
 
-import bpsm.edn.model.Keyword;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
-import bpsm.edn.model.TaggedValue;
-import bpsm.edn.parser.EdnException;
-import bpsm.edn.parser.ParserConfiguration;
-import bpsm.edn.parser.handlers.InstantUtils;
-import bpsm.edn.parser.util.CharClassify;
+import bpsm.edn.EdnException;
+import bpsm.edn.Keyword;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
+import bpsm.edn.TaggedValue;
+import bpsm.edn.parser.Parser;
+import bpsm.edn.parser.inst.InstantUtils;
 import bpsm.edn.protocols.Function;
 import bpsm.edn.protocols.Protocol;
 import bpsm.edn.protocols.Protocols;
+import bpsm.edn.util.CharClassify;
 
 public class Printers {
 
@@ -364,7 +364,7 @@ public class Printers {
         return new PrintFn<UUID>() {
             @Override
             protected void eval(UUID self, Printer writer) throws IOException {
-                writer.printValue(ParserConfiguration.EDN_UUID)
+                writer.printValue(Parser.Config.EDN_UUID)
                     .printValue(self.toString());
             }
         };
@@ -374,7 +374,7 @@ public class Printers {
         return new PrintFn<Date>() {
             @Override
             protected void eval(Date self, Printer writer) throws IOException {
-                writer.printValue(ParserConfiguration.EDN_INSTANT)
+                writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.dateToString(self));
             }
         };
@@ -384,7 +384,7 @@ public class Printers {
         return new PrintFn<Timestamp>() {
             @Override
             protected void eval(Timestamp self, Printer writer) throws IOException {
-                writer.printValue(ParserConfiguration.EDN_INSTANT)
+                writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.timestampToString(self));
             }
         };
@@ -394,7 +394,7 @@ public class Printers {
         return new PrintFn<GregorianCalendar>() {
             @Override
             protected void eval(GregorianCalendar self, Printer writer) throws IOException {
-                writer.printValue(ParserConfiguration.EDN_INSTANT)
+                writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.calendarToString(self));
             }
         };

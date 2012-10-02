@@ -1,25 +1,21 @@
 package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.junit.Test;
-
-import bpsm.edn.parser.BuilderFactory;
 import bpsm.edn.parser.CollectionBuilder;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 
 public class SimpleParserConfigTest {
     @Test
     public void test() throws IOException {
-        ParserConfiguration cfg =
-            ParserConfiguration.builder().setSetFactory(new BuilderFactory() {
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder().setSetFactory(new CollectionBuilder.Factory() {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
@@ -28,7 +24,7 @@ public class SimpleParserConfigTest {
                     };
                 }
             }).build();
-        Parser p = Parser.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
+        Parser p = Parsers.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
         SortedSet<?> s = (SortedSet<?>) p.nextValue();
         // The elements of s are sorted since our SetFactory
         // builds a SortedSet, not a (Hash)Set.

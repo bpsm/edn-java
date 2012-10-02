@@ -1,7 +1,7 @@
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.Keyword.newKeyword;
-import static bpsm.edn.model.Symbol.newSymbol;
+import static bpsm.edn.Keyword.newKeyword;
+import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -13,10 +13,11 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-import bpsm.edn.model.Keyword;
-import bpsm.edn.model.Symbol;
+import bpsm.edn.EdnException;
+import bpsm.edn.Keyword;
+import bpsm.edn.Symbol;
 
-public class TestScanner {
+public class ScannerTest {
 
     @Test
     public void testEmpty() {
@@ -287,7 +288,7 @@ public class TestScanner {
 
     static Scanner scanner(String input) {
         try {
-            return new Scanner(ParserConfiguration.defaultConfiguration(), 
+            return new Scanner(Parsers.defaultConfiguration(), 
                     newCharSequenceReader(input));
         } catch (IOException e) {
             throw new RuntimeException(e);

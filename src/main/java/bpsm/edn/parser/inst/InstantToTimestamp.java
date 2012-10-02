@@ -1,4 +1,4 @@
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
 public class InstantToTimestamp extends AbstractInstantHandler {
 

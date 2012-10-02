@@ -1,4 +1,4 @@
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -8,7 +8,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.EdnException;
 
 public class InstantUtils {
 

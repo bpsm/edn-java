@@ -3,7 +3,7 @@ package bpsm.edn.protocols;
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.EdnException;
 
 @SuppressWarnings("rawtypes")
 public class Protocols {

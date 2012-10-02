@@ -1,13 +1,13 @@
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
-import static bpsm.edn.parser.handlers.InstantUtils.calendarToString;
-import static bpsm.edn.parser.handlers.InstantUtils.dateToString;
-import static bpsm.edn.parser.handlers.InstantUtils.makeCalendar;
-import static bpsm.edn.parser.handlers.InstantUtils.makeDate;
-import static bpsm.edn.parser.handlers.InstantUtils.makeTimestamp;
-import static bpsm.edn.parser.handlers.InstantUtils.parse;
-import static bpsm.edn.parser.handlers.InstantUtils.parseNanoseconds;
-import static bpsm.edn.parser.handlers.InstantUtils.timestampToString;
+import static bpsm.edn.parser.inst.InstantUtils.calendarToString;
+import static bpsm.edn.parser.inst.InstantUtils.dateToString;
+import static bpsm.edn.parser.inst.InstantUtils.makeCalendar;
+import static bpsm.edn.parser.inst.InstantUtils.makeDate;
+import static bpsm.edn.parser.inst.InstantUtils.makeTimestamp;
+import static bpsm.edn.parser.inst.InstantUtils.parse;
+import static bpsm.edn.parser.inst.InstantUtils.parseNanoseconds;
+import static bpsm.edn.parser.inst.InstantUtils.timestampToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -15,7 +15,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.EdnException;
+import bpsm.edn.parser.inst.ParsedInstant;
 
 public class InstantUtilsTest {
 

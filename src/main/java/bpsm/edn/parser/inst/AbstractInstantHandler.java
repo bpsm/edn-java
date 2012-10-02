@@ -1,8 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.parser.handlers;
+package bpsm.edn.parser.inst;
 
-import bpsm.edn.model.Tag;
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.EdnException;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.TagHandler;
 
 public abstract class AbstractInstantHandler implements TagHandler {

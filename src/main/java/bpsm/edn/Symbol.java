@@ -1,10 +1,9 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.model;
+package bpsm.edn;
 
-import static bpsm.edn.parser.util.CharClassify.isDigit;
-import static bpsm.edn.parser.util.CharClassify.symbolStart;
-import bpsm.edn.parser.EdnException;
-import bpsm.edn.parser.util.CharClassify;
+import static bpsm.edn.util.CharClassify.isDigit;
+import static bpsm.edn.util.CharClassify.symbolStart;
+import bpsm.edn.util.CharClassify;
 
 public final class Symbol implements Named, Comparable<Symbol> {
 

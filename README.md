@@ -2,7 +2,7 @@
 
 *edn-java* is a library to parse (read) and print (write) [edn](https://github.com/edn-format/edn).
 
-This is very early days. Consider all of this library subject to change, incomplete and probably buggy. There are still rough edges in the design which may see me moving things around some before I'm happy with the result.
+This is very early days. There are still rough edges in the design which may see me moving things around some before I'm happy with the result.
 
 ## Installation
 
@@ -18,35 +18,32 @@ You'll have to build it form source yourself using Maven.  This library is not c
 
 ## Parsing
 
-You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Token.END_OF_INPUT`.
+You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `java.lang.CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
 
 
 ```java
 package bpsm.edn.examples;
 
-import static bpsm.edn.model.Keyword.newKeyword;
-import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.parser.ParserConfiguration.defaultConfiguration;
+import static bpsm.edn.Keyword.newKeyword;
+import static bpsm.edn.Symbol.newSymbol;
+import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.Map;
-
 import org.junit.Test;
-
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Token;
+import bpsm.edn.parser.Parsers;
 
 public class ParseASingleMapTest {
     @Test
     public void simpleUsageExample() throws IOException {
-        Parser p = Parser.newParser(defaultConfiguration(), "{:x 1, :y 2}");
+        Parser p = Parsers.newParser(defaultConfiguration(), "{:x 1, :y 2}");
         try {
             Map<?, ?> m = (Map<?, ?>) p.nextValue();
             assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
             assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
 
-            assertEquals(Token.END_OF_INPUT, p.nextValue());
+            assertEquals(Parser.END_OF_INPUT, p.nextValue());
         } finally {
             p.close();
         }
@@ -56,7 +53,7 @@ public class ParseASingleMapTest {
 
 ### Mapping from EDN to Java
 
-Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn.model`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
@@ -66,39 +63,35 @@ Floating point numbers with the suffix `M` are  mapeped to `BigDecimal`. All oth
 
 Characters are mapped to `Character`, booleans to `Boolean` and strings to `String`. No great shock there, I trust.
 
-Lists "(...)" and vectors "[...]" are both mapped to implementations of `java.util.List`. A vector maps to a List implementation that also implements `java.util.RandomAccess`.
+Lists "(...)" and vectors "[...]" are both mapped to implementations of `java.util.List`. A vector maps to a List implementation that also implements the marker interface `java.util.RandomAccess`.
 
 Maps map to `java.util.HashMap` and sets to `java.util.HashSet`.
 
-The parser is customized by providing it with a ParserConfiguration when you create it:
+The parser is provided a a configuration when created:
 
-    Parser.newParser(ParserConfiguration.defaultConfiguration(), input)
+    Parsers.newParser(Parsers.defaultConfiguration(), input)
 
-The parser can be customized to use different collection classes by first building the appropriate `ParserConfiguration`:
+The parser can be customized to use different collection classes by first building the appropriate `Parser.Config`:
 
 ```java
 package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.junit.Test;
-
-import bpsm.edn.parser.BuilderFactory;
 import bpsm.edn.parser.CollectionBuilder;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 
 public class SimpleParserConfigTest {
     @Test
     public void test() throws IOException {
-        ParserConfiguration cfg =
-            ParserConfiguration.builder().setSetFactory(new BuilderFactory() {
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder().setSetFactory(new CollectionBuilder.Factory() {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
@@ -107,7 +100,7 @@ public class SimpleParserConfigTest {
                     };
                 }
             }).build();
-        Parser p = Parser.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
+        Parser p = Parsers.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
         SortedSet<?> s = (SortedSet<?>) p.nextValue();
         // The elements of s are sorted since our SetFactory
         // builds a SortedSet, not a (Hash)Set.
@@ -119,21 +112,21 @@ public class SimpleParserConfigTest {
 
 ### Tagged Values
 
-By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.model.TaggedValue`.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.TaggedValue`.
 
 #### Customizing the parsing of instants
 
-The package `bpsm.edn.parser.handlers` makes three handlers for `#inst` available:
+The package `bpsm.edn.parser.inst` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
- - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original time zone.
+ - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
  - `InstantToTimestamp` converts each `#inst` to a `java.sql.Timstamp`, which presrves nanoseconds.
 
 Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 
 #### Adding support for your own tags
 
-Use custom handlers may by building an appropriate `ParserConfiguration`:
+Use custom handlers may by building an appropriate `Parser.Config`:
 
 ```java
 package bpsm.edn.examples;
@@ -143,79 +136,76 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
-import bpsm.edn.parser.EdnException;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
 import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
+import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
 
 public class CustomTagHandler {
     @Test
     public void test() throws IOException, URISyntaxException {
-        ParserConfiguration cfg =
-            ParserConfiguration
-                .builder()
-                .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
-                    new TagHandler() {
-                        public Object transform(Tag tag, Object value) {
-                            try {
-                                return new URI((String) value);
-                            } catch (URISyntaxException e) {
-                                throw new EdnException(e);
-                            }
-                        }
-                    }).build();
-        Parser p = Parser.newParser(cfg, "#bpsm/uri \"http://example.com\"");
-        assertEquals(new URI("http://example.com"), (URI) p.nextValue());
-    }
-}
-
-```
-
-#### Using pseudo-tags to influence the parsing of numbers
-
-By default, integers not marked as arbitrary precision by the suffix "N" will parse as `java.lang.Long`. This can be influenced by installing handlers for the tag named by the constant `ParserConfig.LONG_TAG`.
-
-```java
-package bpsm.edn.examples;
-
-import static org.junit.Assert.assertEquals;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.junit.Test;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
-import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.ParserConfiguration;
-import bpsm.edn.parser.TagHandler;
-
-public class CustomTagHandler {
-    @Test
-    public void test() throws IOException, URISyntaxException {
-        ParserConfiguration cfg =
-            ParserConfiguration
-                .builder()
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder()
                 .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
                     new TagHandler() {
                         public Object transform(Tag tag, Object value) {
                             return URI.create((String) value);
                         }
                     }).build();
-        Parser p = Parser.newParser(cfg, "#bpsm/uri \"http://example.com\"");
+        Parser p = Parsers.newParser(cfg, "#bpsm/uri \"http://example.com\"");
         assertEquals(new URI("http://example.com"), (URI) p.nextValue());
     }
 }
 ```
 
+#### Using pseudo-tags to influence the parsing of numbers
+
+By default, integers not marked as arbitrary precision by the suffix "N" will parse as `java.lang.Long`. This can be influenced by installing handlers for the tag named by the constant `Parser.Config.LONG_TAG`.
+
+```java
+package bpsm.edn.examples;
+
+import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.math.BigInteger;
+import org.junit.Test;
+import bpsm.edn.Tag;
+import bpsm.edn.parser.Parser;
+import bpsm.edn.parser.Parsers;
+import bpsm.edn.parser.TagHandler;
+
+public class CustomLongHandler {
+    @Test
+    public void test() throws IOException {
+        Parser.Config cfg =
+            Parsers.newParserConfigBuilder()
+                .putTagHandler(Parser.Config.LONG_TAG, new TagHandler() {
+                    public Object transform(Tag tag, Object value) {
+                        long n = (Long) value;
+                        if (Integer.MIN_VALUE <= n && n <= Integer.MAX_VALUE) {
+                            return Integer.valueOf((int) n);
+                        } else {
+                            return BigInteger.valueOf(n);
+                        }
+                    }
+                }).build();
+        Parser p = Parsers.newParser(cfg, "1024, 2147483648");
+        assertEquals(1024, p.nextValue());
+        assertEquals(BigInteger.valueOf(2147483648L), p.nextValue());
+    }
+}
+```
+
+`Parser` also provides `BIG_DECIMAL_TAG`, `DOUBLE_TAG` and `BIG_INTEGER_TAG` to cover customizing all varieties of numbers.
+
 ## Printing
 
 The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
 
- - `bpsm.edn.model.Keyword`
- - `bpsm.edn.model.Symbol`
- - `bpsm.edn.model.TaggedValue`
+ - `bpsm.edn.Keyword`
+ - `bpsm.edn.Symbol`
+ - `bpsm.edn.TaggedValue`
  - `java.lang.Boolean`
  - `java.lang.Byte`
  - `java.lang.CharSequence`, which includes `java.lang.String`.
@@ -235,6 +225,8 @@ The package `bpsm.edn.printer` provides an extensible printer for converting jav
  - `java.util.Set`
  - `java.util.UUID`, as `#uuid`.
 
+The `Printer` writes *characters* to the underlying `Writer`. To serialize this text to a file or across a network you'll need to arrange to convert the characters to bytes. Use *UTF-8*, as *edn* specifies.
+
 ### Supporting additional types
 
 To support additional types, you'll need to provide a `Printer.Config` to the `Printer` which binds your custom `PrintFn` to the class (or interface) it is responsible for.
@@ -249,14 +241,14 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import org.junit.Test;
-import bpsm.edn.model.Symbol;
-import bpsm.edn.model.Tag;
+import bpsm.edn.Symbol;
+import bpsm.edn.Tag;
 import bpsm.edn.printer.PrintFn;
 import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI = 
+    private static final Tag BPSM_URI =
         Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
     @Test
     public void test() throws IOException {

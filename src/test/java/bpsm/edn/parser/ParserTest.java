@@ -1,13 +1,14 @@
 package bpsm.edn.parser;
 
-import static bpsm.edn.model.Symbol.newSymbol;
-import static bpsm.edn.model.Tag.newTag;
-import static bpsm.edn.model.TaggedValue.newTaggedValue;
-import static bpsm.edn.parser.ParserConfiguration.BIG_DECIMAL_TAG;
-import static bpsm.edn.parser.ParserConfiguration.BIG_INTEGER_TAG;
-import static bpsm.edn.parser.ParserConfiguration.DOUBLE_TAG;
-import static bpsm.edn.parser.ParserConfiguration.LONG_TAG;
-import static bpsm.edn.parser.ParserConfiguration.defaultConfiguration;
+import static bpsm.edn.Symbol.newSymbol;
+import static bpsm.edn.Tag.newTag;
+import static bpsm.edn.TaggedValue.newTaggedValue;
+import static bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
+import static bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
+import static bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
+import static bpsm.edn.parser.Parser.Config.LONG_TAG;
+import static bpsm.edn.parser.Parsers.defaultConfiguration;
+import static bpsm.edn.parser.Parsers.newParserConfigBuilder;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -25,19 +26,19 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import bpsm.edn.model.Tag;
+import bpsm.edn.Tag;
 
-public class TestParser {
+public class ParserTest {
 
     @Test
     public void parseEdnSample() throws IOException {
 
-        Parser parser = parser(IOUtil
-                .stringFromResource("bpsm/edn/edn-sample.txt"));
+        Parser parser = parser(Parsers.defaultConfiguration(), 
+                IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
 
         @SuppressWarnings("unchecked")
 		List<Object> expected = Arrays.asList(
-                map(TestScanner.key("keyword"), TestScanner.sym("symbol"), 1L,
+                map(ScannerTest.key("keyword"), ScannerTest.sym("symbol"), 1L,
                         2.0d, new BigInteger("3"), new BigDecimal("4.0")),
                 Arrays.asList(1L, 1L, 2L, 3L, 5L, 8L),
                 new HashSet<Object>(Arrays.asList('\n', '\t')),
@@ -132,7 +133,7 @@ public class TestParser {
 
     @Test
     public void canCustomizeParsingOfInteger() {
-        ParserConfiguration cfg = ParserConfiguration.builder()
+        Parser.Config cfg = newParserConfigBuilder()
                 .putTagHandler(LONG_TAG, new TagHandler() {
                     public Object transform(Tag tag, Object value) {
                         return Integer.valueOf(((Long)value).intValue());
@@ -149,7 +150,7 @@ public class TestParser {
     
     @Test
     public void canCustomizeParsingOfFloats() {
-        ParserConfiguration cfg = ParserConfiguration.builder()
+        Parser.Config cfg = newParserConfigBuilder()
                 .putTagHandler(DOUBLE_TAG, new TagHandler() {
                     public Object transform(Tag tag, Object value) {
                         Double d = (Double) value;
@@ -198,7 +199,7 @@ public class TestParser {
         return parse(defaultConfiguration(), input);
     }
     
-    static Object parse(ParserConfiguration cfg, String input) {
+    static Object parse(Parser.Config cfg, String input) {
         try {
             return parser(cfg, input).nextValue();
         } catch (IOException e) {
@@ -210,9 +211,9 @@ public class TestParser {
         return parser(defaultConfiguration(), input);
     }
     
-    static Parser parser(ParserConfiguration cfg, String input) {
+    static Parser parser(Parser.Config cfg, String input) {
         try {
-            return Parser.newParser(cfg, input);
+            return Parsers.newParser(cfg, input);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

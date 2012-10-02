@@ -1,5 +1,5 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package bpsm.edn.model;
+package bpsm.edn;
 
 
 public final class Tag implements Named, Comparable<Tag> {
