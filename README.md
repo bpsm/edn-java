@@ -2,7 +2,7 @@
 
 *edn-java* is a library to parse (read) and print (write) [edn](https://github.com/edn-format/edn).
 
-This is very early days. Consider all of this library subject to change, incomplete and probably buggy. There are still rough edges in the design which may see me moving things around some before I'm happy with the result.
+This is very early days. There are still rough edges in the design which may see me moving things around some before I'm happy with the result.
 
 ## Installation
 
@@ -18,7 +18,7 @@ You'll have to build it form source yourself using Maven.  This library is not c
 
 ## Parsing
 
-You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Token.END_OF_INPUT`.
+You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `java.lang.CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
 
 
 ```java
@@ -63,15 +63,15 @@ Floating point numbers with the suffix `M` are  mapeped to `BigDecimal`. All oth
 
 Characters are mapped to `Character`, booleans to `Boolean` and strings to `String`. No great shock there, I trust.
 
-Lists "(...)" and vectors "[...]" are both mapped to implementations of `java.util.List`. A vector maps to a List implementation that also implements `java.util.RandomAccess`.
+Lists "(...)" and vectors "[...]" are both mapped to implementations of `java.util.List`. A vector maps to a List implementation that also implements the marker interface `java.util.RandomAccess`.
 
 Maps map to `java.util.HashMap` and sets to `java.util.HashSet`.
 
-The parser is customized by providing it with a ParserConfiguration when you create it:
+The parser is provided a a configuration when created:
 
-    Parser.newParser(ParserConfiguration.defaultConfiguration(), input)
+    Parsers.newParser(Parsers.defaultConfiguration(), input)
 
-The parser can be customized to use different collection classes by first building the appropriate `ParserConfiguration`:
+The parser can be customized to use different collection classes by first building the appropriate `Parser.Config`:
 
 ```java
 package bpsm.edn.examples;
@@ -116,17 +116,17 @@ By default, handlers are provided automatically for `#inst` and `#uuid`, which r
 
 #### Customizing the parsing of instants
 
-The package `bpsm.edn.parser.handlers` makes three handlers for `#inst` available:
+The package `bpsm.edn.parser.inst` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
- - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original time zone.
+ - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
  - `InstantToTimestamp` converts each `#inst` to a `java.sql.Timstamp`, which presrves nanoseconds.
 
 Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 
 #### Adding support for your own tags
 
-Use custom handlers may by building an appropriate `ParserConfiguration`:
+Use custom handlers may by building an appropriate `Parser.Config`:
 
 ```java
 package bpsm.edn.examples;
@@ -161,7 +161,7 @@ public class CustomTagHandler {
 
 #### Using pseudo-tags to influence the parsing of numbers
 
-By default, integers not marked as arbitrary precision by the suffix "N" will parse as `java.lang.Long`. This can be influenced by installing handlers for the tag named by the constant `ParserConfig.LONG_TAG`.
+By default, integers not marked as arbitrary precision by the suffix "N" will parse as `java.lang.Long`. This can be influenced by installing handlers for the tag named by the constant `Parser.Config.LONG_TAG`.
 
 ```java
 package bpsm.edn.examples;
