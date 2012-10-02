@@ -1,3 +1,4 @@
+// (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.protocols;
 
 import java.util.HashMap;

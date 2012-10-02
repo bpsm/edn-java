@@ -1,3 +1,4 @@
+// (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.parser.inst;
 
 import static bpsm.edn.parser.inst.InstantUtils.calendarToString;
