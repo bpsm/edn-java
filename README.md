@@ -197,6 +197,8 @@ public class CustomLongHandler {
 }
 ```
 
+`Parser` also provides `BIG_DECIMAL_TAG`, `DOUBLE_TAG` and `BIG_INTEGER_TAG` to cover customizing all varieties of numbers.
+
 ## Printing
 
 The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
