@@ -1,16 +1,15 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.printer;
 
-import bpsm.edn.EdnIOException;
 import bpsm.edn.protocols.Function;
 
 public interface Printer {
 
-    Printer printValue(Object ednValue) throws EdnIOException;
-    Printer append(CharSequence csq) throws EdnIOException;
-    Printer append(char c) throws EdnIOException;
+    Printer printValue(Object ednValue);
+    Printer append(CharSequence csq);
+    Printer append(char c);
     Printer softspace();
-    void close() throws EdnIOException;
+    void close();
 
     public interface Config {
 

@@ -25,7 +25,7 @@ class ParserImpl implements Parser {
         this.discard = 0;
     }
     
-    public void close() throws EdnIOException {
+    public void close() {
         if (scanner != null) {
             try {
                 scanner.close();
@@ -37,7 +37,7 @@ class ParserImpl implements Parser {
         }
     }
 
-    public Object nextValue() throws EdnIOException {
+    public Object nextValue() {
         try {
             return nextValue0();
         } catch (IOException e) {

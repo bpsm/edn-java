@@ -41,7 +41,7 @@ public class Parsers {
         }
     };
     
-    public static Parser newParser(Parser.Config cfg, Reader reader) throws EdnIOException {
+    public static Parser newParser(Parser.Config cfg, Reader reader) {
         try {
             return newParser(cfg, new Scanner(cfg, reader));
         } catch (IOException e) {
@@ -49,7 +49,7 @@ public class Parsers {
         }
     }
     
-    public static Parser newParser(Parser.Config cfg, CharSequence input) throws EdnIOException {
+    public static Parser newParser(Parser.Config cfg, CharSequence input) {
         try {
             return newParser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
         } catch (IOException e) {

@@ -3,15 +3,14 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.Tag.newTag;
-import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 
 public interface Parser {
 
     public static final Object END_OF_INPUT = Token.END_OF_INPUT;
     
-    public Object nextValue() throws EdnIOException;
-    public void close() throws EdnIOException;
+    public Object nextValue();
+    public void close();
 
     public interface Config {
         

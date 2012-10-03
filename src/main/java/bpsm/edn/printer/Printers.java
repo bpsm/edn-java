@@ -34,7 +34,7 @@ public class Printers {
         return new Printer() {
             int softspace = 0;
             
-            public void close() throws EdnIOException {
+            public void close() {
                 try {
                     writer.close();
                 } catch (IOException e) {
@@ -42,7 +42,7 @@ public class Printers {
                 }
             }
 
-            public Printer append(CharSequence csq) throws EdnIOException {
+            public Printer append(CharSequence csq) {
                 try {
                     if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
                         writer.append(' ');
@@ -55,7 +55,7 @@ public class Printers {
                 }
             }
 
-            public Printer append(char c) throws EdnIOException {
+            public Printer append(char c) {
                 try {
                     if (softspace > 1 && !CharClassify.isWhitespace(c)) {
                         writer.append(' ');
@@ -68,7 +68,7 @@ public class Printers {
                 }
             }
 
-            public Printer printValue(Object ednValue) throws EdnIOException {
+            public Printer printValue(Object ednValue) {
                 Function printFn = cfg.getPrintFn(ednValue);
                 if (printFn == null) {
                     throw new EdnException(String.format(
