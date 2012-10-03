@@ -148,6 +148,16 @@ public class Printers {
         return newPrinterConfigBuilder().build();
     }
     
+    public static String printString(Printer.Config cfg, Object ednValue) {
+        StringBuilder sb = new StringBuilder();
+        newPrinter(cfg, sb).printValue(ednValue).close();
+        return sb.toString();
+    }
+    
+    public static String printString(Object ednValue) {
+        return printString(defaultPrinterConfig(), ednValue);
+    }
+    
     static Function writeNullFn() {
         return new PrintFn<Void>() {
             @Override
