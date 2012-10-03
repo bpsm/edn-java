@@ -91,35 +91,39 @@ public class Printers {
 
         };
     }
+    
+    private static Protocol.Builder defaultProtocolBuilder() {
+    	Protocol.Builder protocolBuilder = Protocols.builder("print")
+                .put(null, writeNullFn())
+                .put(List.class, writeListFn())
+                .put(Map.class, writeMapFn())
+                .put(Set.class, writeSetFn())
+                .put(Keyword.class, writeKeywordFn())
+                .put(Symbol.class, writeSymbolFn())
+                .put(CharSequence.class, writeCharSequenceFn())
+                .put(Character.class, writeCharacterFn())
+                .put(Boolean.class, writeBooleanFn())
+                .put(Byte.class, writeLongValueFn())
+                .put(Short.class, writeLongValueFn())
+                .put(Integer.class, writeLongValueFn())
+                .put(Long.class, writeLongValueFn())
+                .put(BigInteger.class, writeBigIntegerFn())
+                .put(Float.class, writeDoubleValueFn())
+                .put(Double.class, writeDoubleValueFn())
+                .put(BigDecimal.class, writeBigDecimalFn())
+                .put(UUID.class, writeUuidFn())
+                .put(Date.class, writeDateFn())
+                .put(Timestamp.class, writeTimestampFn())
+                .put(GregorianCalendar.class, writeCalendarFn())
+                .put(TaggedValue.class, writeTaggedValueFn())
+                .put(Tag.class, writeTagFn());
+    	return protocolBuilder;
+    }
 
     public static Printer.Config.Builder newPrinterConfigBuilder() {
         return new Printer.Config.Builder() {
-            Protocol.Builder protocolBuilder = Protocols.builder("print")
-                    .put(null, writeNullFn())
-                    .put(List.class, writeListFn())
-                    .put(Map.class, writeMapFn())
-                    .put(Set.class, writeSetFn())
-                    .put(Keyword.class, writeKeywordFn())
-                    .put(Symbol.class, writeSymbolFn())
-                    .put(CharSequence.class, writeCharSequenceFn())
-                    .put(Character.class, writeCharacterFn())
-                    .put(Boolean.class, writeBooleanFn())
-                    .put(Byte.class, writeLongValueFn())
-                    .put(Short.class, writeLongValueFn())
-                    .put(Integer.class, writeLongValueFn())
-                    .put(Long.class, writeLongValueFn())
-                    .put(BigInteger.class, writeBigIntegerFn())
-                    .put(Float.class, writeDoubleValueFn())
-                    .put(Double.class, writeDoubleValueFn())
-                    .put(BigDecimal.class, writeBigDecimalFn())
-                    .put(UUID.class, writeUuidFn())
-                    .put(Date.class, writeDateFn())
-                    .put(Timestamp.class, writeTimestampFn())
-                    .put(GregorianCalendar.class, writeCalendarFn())
-                    .put(TaggedValue.class, writeTaggedValueFn())
-                    .put(Tag.class, writeTagFn());
+            Protocol.Builder protocolBuilder = defaultProtocolBuilder();
 
-            @SuppressWarnings("rawtypes")
             public Printer.Config.Builder bind(Class ednValueClass,
                     Function printFn) {
                 protocolBuilder.put(ednValueClass, printFn);
