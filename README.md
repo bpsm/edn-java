@@ -8,11 +8,13 @@ This is very early days. There are still rough edges in the design which may see
 
 This is a Maven project with the following coordinates:
 
+```java
     <dependency>
         <groupId>info.bsmithmannschott</groupId>
         <artifactId>edn-java</artifactId>
         <version>0.2.0-SNAPSHOT</version>
     </dependency>
+```
 
 You'll have to build it form source yourself using Maven.  This library is not currently available in any public repository.
 
