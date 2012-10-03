@@ -10,6 +10,7 @@ import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +42,9 @@ public class Parsers {
         }
     };
 
-    public static Parser newParser(Parser.Config cfg, Reader reader) {
+    public static Parser newParser(Parser.Config cfg, Readable readable) {
         try {
-            return newParser(cfg, new Scanner(cfg, reader));
+            return newParser(cfg, new Scanner(cfg, readable));
         } catch (IOException e) {
             throw new EdnIOException(e);
         }
@@ -51,7 +52,7 @@ public class Parsers {
 
     public static Parser newParser(Parser.Config cfg, CharSequence input) {
         try {
-            return newParser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
+            return newParser(cfg, new Scanner(cfg, CharBuffer.wrap(input)));
         } catch (IOException e) {
             throw new EdnIOException(e);
         }

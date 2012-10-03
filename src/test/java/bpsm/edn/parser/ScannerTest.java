@@ -3,7 +3,6 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.Keyword.newKeyword;
 import static bpsm.edn.Symbol.newSymbol;
-import static bpsm.edn.parser.CharSequenceReader.newCharSequenceReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.CharBuffer;
 
 import org.junit.Test;
 
@@ -223,7 +223,7 @@ public class ScannerTest {
     @Test
     public void simpleStringEscapes() {
         assertEquals("\t\n\r\f\"\'\b\\",
-                scan("\"\\t\\n\\r\\f\\\"\\\'\\b\\\\\""));
+            scan("\"\\t\\n\\r\\f\\\"\\\'\\b\\\\\""));
     }
 
     @Test
@@ -254,19 +254,19 @@ public class ScannerTest {
     @Test
     public void sequenceOfTokens() throws IOException {
         String txt = "; comment\n" +
-                "\t\n" +
-                "true false nil \\#{:keyword  [1 2N 3.0 4.0M]}symbol\n" +
-                "\\newline \"some text\"\\x ; another comment\n" +
-                "() #{-42}";
+            "\t\n" +
+            "true false nil \\#{:keyword  [1 2N 3.0 4.0M]}symbol\n" +
+            "\\newline \"some text\"\\x ; another comment\n" +
+            "() #{-42}";
         Object[] expected = {
-                true, false, Token.NIL, '#',
-                Token.BEGIN_MAP, key("keyword"),
-                Token.BEGIN_VECTOR, 1L, BigInteger.valueOf(2),
-                3.0d, new BigDecimal("4.0"), Token.END_VECTOR,
-                Token.END_MAP_OR_SET, sym("symbol"), '\n',
-                "some text", 'x', Token.BEGIN_LIST, Token.END_LIST,
-                Token.BEGIN_SET, -42L, Token.END_MAP_OR_SET,
-                Token.END_OF_INPUT
+            true, false, Token.NIL, '#',
+            Token.BEGIN_MAP, key("keyword"),
+            Token.BEGIN_VECTOR, 1L, BigInteger.valueOf(2),
+            3.0d, new BigDecimal("4.0"), Token.END_VECTOR,
+            Token.END_MAP_OR_SET, sym("symbol"), '\n',
+            "some text", 'x', Token.BEGIN_LIST, Token.END_LIST,
+            Token.BEGIN_SET, -42L, Token.END_MAP_OR_SET,
+            Token.END_OF_INPUT
         };
         Scanner s = scanner(txt);
         for (Object o: expected) {
@@ -290,7 +290,7 @@ public class ScannerTest {
     static Scanner scanner(String input) {
         try {
             return new Scanner(Parsers.defaultConfiguration(),
-                    newCharSequenceReader(input));
+                CharBuffer.wrap(input));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
