@@ -26,6 +26,10 @@ import bpsm.edn.protocols.Protocols;
 import bpsm.edn.util.CharClassify;
 
 public class Printers {
+	
+	public static Printer newPrinter(final Writer writer) {
+		return newPrinter(defaultPrinterConfig(),writer);
+	}
 
     public static Printer newPrinter(final Printer.Config cfg,
             final Writer writer) {
@@ -86,35 +90,39 @@ public class Printers {
 
         };
     }
+    
+    private static Protocol.Builder defaultProtocolBuilder() {
+    	Protocol.Builder protocolBuilder = Protocols.builder("print")
+                .put(null, writeNullFn())
+                .put(List.class, writeListFn())
+                .put(Map.class, writeMapFn())
+                .put(Set.class, writeSetFn())
+                .put(Keyword.class, writeKeywordFn())
+                .put(Symbol.class, writeSymbolFn())
+                .put(CharSequence.class, writeCharSequenceFn())
+                .put(Character.class, writeCharacterFn())
+                .put(Boolean.class, writeBooleanFn())
+                .put(Byte.class, writeLongValueFn())
+                .put(Short.class, writeLongValueFn())
+                .put(Integer.class, writeLongValueFn())
+                .put(Long.class, writeLongValueFn())
+                .put(BigInteger.class, writeBigIntegerFn())
+                .put(Float.class, writeDoubleValueFn())
+                .put(Double.class, writeDoubleValueFn())
+                .put(BigDecimal.class, writeBigDecimalFn())
+                .put(UUID.class, writeUuidFn())
+                .put(Date.class, writeDateFn())
+                .put(Timestamp.class, writeTimestampFn())
+                .put(GregorianCalendar.class, writeCalendarFn())
+                .put(TaggedValue.class, writeTaggedValueFn())
+                .put(Tag.class, writeTagFn());
+    	return protocolBuilder;
+    }
 
     public static Printer.Config.Builder newPrinterConfigBuilder() {
         return new Printer.Config.Builder() {
-            Protocol.Builder protocolBuilder = Protocols.builder("print")
-                    .put(null, writeNullFn())
-                    .put(List.class, writeListFn())
-                    .put(Map.class, writeMapFn())
-                    .put(Set.class, writeSetFn())
-                    .put(Keyword.class, writeKeywordFn())
-                    .put(Symbol.class, writeSymbolFn())
-                    .put(CharSequence.class, writeCharSequenceFn())
-                    .put(Character.class, writeCharacterFn())
-                    .put(Boolean.class, writeBooleanFn())
-                    .put(Byte.class, writeLongValueFn())
-                    .put(Short.class, writeLongValueFn())
-                    .put(Integer.class, writeLongValueFn())
-                    .put(Long.class, writeLongValueFn())
-                    .put(BigInteger.class, writeBigIntegerFn())
-                    .put(Float.class, writeDoubleValueFn())
-                    .put(Double.class, writeDoubleValueFn())
-                    .put(BigDecimal.class, writeBigDecimalFn())
-                    .put(UUID.class, writeUuidFn())
-                    .put(Date.class, writeDateFn())
-                    .put(Timestamp.class, writeTimestampFn())
-                    .put(GregorianCalendar.class, writeCalendarFn())
-                    .put(TaggedValue.class, writeTaggedValueFn())
-                    .put(Tag.class, writeTagFn());
+            Protocol.Builder protocolBuilder = defaultProtocolBuilder();
 
-            @SuppressWarnings("rawtypes")
             public Printer.Config.Builder bind(Class ednValueClass,
                     Function printFn) {
                 protocolBuilder.put(ednValueClass, printFn);
@@ -153,11 +161,11 @@ public class Printers {
             protected void eval(List<?> self, Printer writer)
                     throws IOException {
                 boolean vec = self instanceof RandomAccess;
-                writer.append(vec ? "[" : "(");
+                writer.append(vec ? '[' : '(');
                 for (Object o: self) {
                     writer.printValue(o);
                 }
-                writer.append(vec ? "]" : ")");
+                writer.append(vec ? ']' : ')');
             }
         };
     }
@@ -171,7 +179,7 @@ public class Printers {
                 for (Object o: self) {
                     writer.printValue(o);
                 }
-                writer.append("}");
+                writer.append('}');
             }            
         };
     }
@@ -181,12 +189,12 @@ public class Printers {
             @Override
             protected void eval(Map<?,?> self, Printer writer)
                     throws IOException {
-                writer.append("{");
+                writer.append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
                         .printValue(p.getValue());
                 }
-                writer.append("}");
+                writer.append('}');
             }            
         };
     }
