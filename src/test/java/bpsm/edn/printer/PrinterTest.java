@@ -2,10 +2,12 @@
 package bpsm.edn.printer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -49,6 +51,23 @@ public class PrinterTest {
         		" :omega [a b c d \\a\\b\\c#{}]}");
     }
 
+    
+    @Test 
+    public void testDefaultPrinter() {
+    	StringWriter sw=new StringWriter();
+    	Printer p=Printers.newPrinter(sw);
+    	
+    	ArrayList<Object> al=new ArrayList<Object>();
+    	al.add(1);
+    	al.add(2);
+    	try {
+			p.printValue(al);
+		} catch (IOException e) {
+			fail("Unexpected IO Exception");
+		}
+    	assertEquals("[1 2]", sw.toString());
+    }
+    
     void assertRoundTrip(String ednText) {
         try {
             Parser parser;
