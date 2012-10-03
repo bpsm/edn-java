@@ -8,7 +8,7 @@ This is very early days. There are still rough edges in the design which may see
 
 This is a Maven project with the following coordinates:
 
-```java
+```xml
 <dependency>
     <groupId>info.bsmithmannschott</groupId>
     <artifactId>edn-java</artifactId>
