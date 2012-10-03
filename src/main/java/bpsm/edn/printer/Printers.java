@@ -33,26 +33,28 @@ public class Printers {
 		return newPrinter(defaultPrinterConfig(),writer);
 	}
 
-    public static Printer newPrinter(final Printer.Config cfg,
-            final Writer writer) {
+    public static Printer newPrinter(final Printer.Config cfg, 
+        final Appendable out) {
         return new Printer() {
             int softspace = 0;
             
             public void close() {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                   throw new EdnIOException(e);
+                if (out instanceof Writer) {
+                    try {
+                        ((Writer)out).close();
+                    } catch (IOException e) {
+                       throw new EdnIOException(e);
+                    }
                 }
             }
 
             public Printer append(CharSequence csq) {
                 try {
                     if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
-                        writer.append(' ');
+                        out.append(' ');
                     }
                     softspace = 0;
-                    writer.append(csq);
+                    out.append(csq);
                     return this;
                 } catch (IOException e) {
                     throw new EdnIOException(e);
@@ -62,10 +64,10 @@ public class Printers {
             public Printer append(char c) {
                 try {
                     if (softspace > 1 && !CharClassify.isWhitespace(c)) {
-                        writer.append(' ');
+                        out.append(' ');
                     }
                     softspace = 0;
-                    writer.append(c);
+                    out.append(c);
                     return this;
                 } catch (IOException e) {
                     throw new EdnIOException(e);
