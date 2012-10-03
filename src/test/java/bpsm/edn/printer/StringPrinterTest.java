@@ -18,5 +18,8 @@ public class StringPrinterTest {
     	sp.printValue(al);
     	assertEquals("[1 2]", sp.toString());	
     	sp.close();
+    	
+    	assertEquals("[1 2]", StringPrinter.printString(al));	
+
     }
 }
