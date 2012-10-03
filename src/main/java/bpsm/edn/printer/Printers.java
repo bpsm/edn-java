@@ -153,11 +153,11 @@ public class Printers {
             protected void eval(List<?> self, Printer writer)
                     throws IOException {
                 boolean vec = self instanceof RandomAccess;
-                writer.append(vec ? "[" : "(");
+                writer.append(vec ? '[' : '(');
                 for (Object o: self) {
                     writer.printValue(o);
                 }
-                writer.append(vec ? "]" : ")");
+                writer.append(vec ? ']' : ')');
             }
         };
     }
@@ -171,7 +171,7 @@ public class Printers {
                 for (Object o: self) {
                     writer.printValue(o);
                 }
-                writer.append("}");
+                writer.append('}');
             }            
         };
     }
@@ -181,12 +181,12 @@ public class Printers {
             @Override
             protected void eval(Map<?,?> self, Printer writer)
                     throws IOException {
-                writer.append("{");
+                writer.append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
                         .printValue(p.getValue());
                 }
-                writer.append("}");
+                writer.append('}');
             }            
         };
     }
