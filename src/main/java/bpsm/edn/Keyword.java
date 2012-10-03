@@ -12,7 +12,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
     public final String getName() {
         return sym.getName();
     }
-    
+
     public static Keyword newKeyword(Symbol sym) {
         return INTERNER.intern(sym, new Keyword(sym));
     }
@@ -29,13 +29,13 @@ public final class Keyword implements Named, Comparable<Keyword> {
     }
 
     public int compareTo(Keyword o) {
-    	if (this == o) {
+        if (this == o) {
             return 0;
         }
         return sym.compareTo(o.sym);
     }
 
     private static final Interner<Symbol, Keyword> INTERNER =
-            new Interner<Symbol, Keyword>();
+        new Interner<Symbol, Keyword>();
 
 }

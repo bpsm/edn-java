@@ -28,22 +28,22 @@ import bpsm.edn.protocols.Protocols;
 import bpsm.edn.util.CharClassify;
 
 public class Printers {
-	
-	public static Printer newPrinter(final Writer writer) {
-		return newPrinter(defaultPrinterConfig(),writer);
-	}
 
-    public static Printer newPrinter(final Printer.Config cfg, 
+    public static Printer newPrinter(final Writer writer) {
+        return newPrinter(defaultPrinterConfig(), writer);
+    }
+
+    public static Printer newPrinter(final Printer.Config cfg,
         final Appendable out) {
         return new Printer() {
             int softspace = 0;
-            
+
             public void close() {
                 if (out instanceof Writer) {
                     try {
                         ((Writer)out).close();
                     } catch (IOException e) {
-                       throw new EdnIOException(e);
+                        throw new EdnIOException(e);
                     }
                 }
             }
@@ -78,8 +78,8 @@ public class Printers {
                 Function printFn = cfg.getPrintFn(ednValue);
                 if (printFn == null) {
                     throw new EdnException(String.format(
-                            "Don't know how to write '%s' of type '%s'",
-                            ednValue, Util.getClassOrNull(ednValue)));
+                        "Don't know how to write '%s' of type '%s'",
+                        ednValue, Util.getClassOrNull(ednValue)));
                 }
                 printFn.eval(ednValue, this);
                 return this;
@@ -92,33 +92,31 @@ public class Printers {
 
         };
     }
-    
+
     private static Protocol.Builder defaultProtocolBuilder() {
-    	Protocol.Builder protocolBuilder = Protocols.builder("print")
-                .put(null, writeNullFn())
-                .put(List.class, writeListFn())
-                .put(Map.class, writeMapFn())
-                .put(Set.class, writeSetFn())
-                .put(Keyword.class, writeKeywordFn())
-                .put(Symbol.class, writeSymbolFn())
-                .put(CharSequence.class, writeCharSequenceFn())
-                .put(Character.class, writeCharacterFn())
-                .put(Boolean.class, writeBooleanFn())
-                .put(Byte.class, writeLongValueFn())
-                .put(Short.class, writeLongValueFn())
-                .put(Integer.class, writeLongValueFn())
-                .put(Long.class, writeLongValueFn())
-                .put(BigInteger.class, writeBigIntegerFn())
-                .put(Float.class, writeDoubleValueFn())
-                .put(Double.class, writeDoubleValueFn())
-                .put(BigDecimal.class, writeBigDecimalFn())
-                .put(UUID.class, writeUuidFn())
-                .put(Date.class, writeDateFn())
-                .put(Timestamp.class, writeTimestampFn())
-                .put(GregorianCalendar.class, writeCalendarFn())
-                .put(TaggedValue.class, writeTaggedValueFn())
-                .put(Tag.class, writeTagFn());
-    	return protocolBuilder;
+        Protocol.Builder protocolBuilder =
+            Protocols.builder("print").put(null, writeNullFn())
+            .put(List.class, writeListFn()).put(Map.class, writeMapFn())
+            .put(Set.class, writeSetFn())
+            .put(Keyword.class, writeKeywordFn())
+            .put(Symbol.class, writeSymbolFn())
+            .put(CharSequence.class, writeCharSequenceFn())
+            .put(Character.class, writeCharacterFn())
+            .put(Boolean.class, writeBooleanFn())
+            .put(Byte.class, writeLongValueFn())
+            .put(Short.class, writeLongValueFn())
+            .put(Integer.class, writeLongValueFn())
+            .put(Long.class, writeLongValueFn())
+            .put(BigInteger.class, writeBigIntegerFn())
+            .put(Float.class, writeDoubleValueFn())
+            .put(Double.class, writeDoubleValueFn())
+            .put(BigDecimal.class, writeBigDecimalFn())
+            .put(UUID.class, writeUuidFn()).put(Date.class, writeDateFn())
+            .put(Timestamp.class, writeTimestampFn())
+            .put(GregorianCalendar.class, writeCalendarFn())
+            .put(TaggedValue.class, writeTaggedValueFn())
+            .put(Tag.class, writeTagFn());
+        return protocolBuilder;
     }
 
     public static Printer.Config.Builder newPrinterConfigBuilder() {
@@ -126,7 +124,7 @@ public class Printers {
             Protocol.Builder protocolBuilder = defaultProtocolBuilder();
 
             public Printer.Config.Builder bind(Class ednValueClass,
-                    Function printFn) {
+                Function printFn) {
                 protocolBuilder.put(ednValueClass, printFn);
                 return this;
             }
@@ -143,21 +141,21 @@ public class Printers {
 
         };
     }
-    
+
     public static Printer.Config defaultPrinterConfig() {
         return newPrinterConfigBuilder().build();
     }
-    
+
     public static String printString(Printer.Config cfg, Object ednValue) {
         StringBuilder sb = new StringBuilder();
         newPrinter(cfg, sb).printValue(ednValue).close();
         return sb.toString();
     }
-    
+
     public static String printString(Object ednValue) {
         return printString(defaultPrinterConfig(), ednValue);
     }
-    
+
     static Function writeNullFn() {
         return new PrintFn<Void>() {
             @Override
@@ -166,7 +164,7 @@ public class Printers {
             }
         };
     }
-    
+
     static Function writeListFn() {
         return new PrintFn<List<?>>() {
             @Override
@@ -180,7 +178,7 @@ public class Printers {
             }
         };
     }
-    
+
     static Function writeSetFn() {
         return new PrintFn<Set<?>>() {
             @Override
@@ -190,10 +188,10 @@ public class Printers {
                     writer.printValue(o);
                 }
                 writer.append('}');
-            }            
+            }
         };
     }
-    
+
     static Function writeMapFn() {
         return new PrintFn<Map<?,?>>() {
             @Override
@@ -201,31 +199,31 @@ public class Printers {
                 writer.append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
-                        .printValue(p.getValue());
+                    .printValue(p.getValue());
                 }
                 writer.append('}');
-            }            
+            }
         };
     }
-    
+
     static Function writeKeywordFn() {
         return new PrintFn<Keyword>() {
             @Override
             protected void eval(Keyword self, Printer writer) {
-                writer.softspace().append(self.toString()).softspace(); 
+                writer.softspace().append(self.toString()).softspace();
             }
         };
     }
-    
+
     static Function writeSymbolFn() {
         return new PrintFn<Symbol>() {
             @Override
             protected void eval(Symbol self, Printer writer) {
-                writer.softspace().append(self.toString()).softspace(); 
+                writer.softspace().append(self.toString()).softspace();
             }
         };
     }
-    
+
     static Function writeTaggedValueFn() {
         return new PrintFn<TaggedValue>() {
             @Override
@@ -234,18 +232,18 @@ public class Printers {
             }
         };
     }
-    
+
     static Function writeBooleanFn() {
         return new PrintFn<Boolean>() {
             @Override
             protected void eval(Boolean self, Printer writer) {
                 writer.softspace()
-                    .append(self ? "true" : "false")
-                    .softspace();
+                .append(self ? "true" : "false")
+                .softspace();
             }
         };
     }
-    
+
     static Function writeCharSequenceFn() {
         return new PrintFn<CharSequence>() {
             @Override
@@ -286,7 +284,7 @@ public class Printers {
             }
         };
     }
-    
+
     static Function writeCharacterFn() {
         return new PrintFn<Character>() {
             @Override
@@ -322,91 +320,91 @@ public class Printers {
             }
         };
     }
-    
+
     static Function writeLongValueFn() {
         return new PrintFn<Number>() {
             @Override
             protected void eval(Number self, Printer writer) {
                 writer.softspace()
-                    .append(String.valueOf(self.longValue()))
-                    .softspace();
+                .append(String.valueOf(self.longValue()))
+                .softspace();
             }
         };
     }
-    
+
     static Function writeBigIntegerFn() {
         return new PrintFn<BigInteger>() {
             @Override
             protected void eval(BigInteger self, Printer writer) {
                 writer.softspace()
-                    .append(self.toString()).append('N')
-                    .softspace();
+                .append(self.toString()).append('N')
+                .softspace();
             }
         };
     }
-    
+
     static Function writeDoubleValueFn() {
         return new PrintFn<Number>() {
             @Override
             protected void eval(Number self, Printer writer) {
                 writer.softspace()
-                    .append(String.valueOf(self.doubleValue()))
-                    .softspace();
+                .append(String.valueOf(self.doubleValue()))
+                .softspace();
             }
         };
     }
-    
+
     static Function writeBigDecimalFn() {
         return new PrintFn<BigDecimal>() {
             @Override
             protected void eval(BigDecimal self, Printer writer) {
                 writer.softspace()
-                    .append(self.toString()).append('M')
-                    .softspace();
+                .append(self.toString()).append('M')
+                .softspace();
             }
         };
     }
-    
+
     static Function writeUuidFn() {
         return new PrintFn<UUID>() {
             @Override
             protected void eval(UUID self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_UUID)
-                    .printValue(self.toString());
+                .printValue(self.toString());
             }
         };
     }
-    
+
     static Function writeDateFn() {
         return new PrintFn<Date>() {
             @Override
             protected void eval(Date self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
-                    .printValue(InstantUtils.dateToString(self));
+                .printValue(InstantUtils.dateToString(self));
             }
         };
     }
-    
+
     static Function writeTimestampFn() {
         return new PrintFn<Timestamp>() {
             @Override
             protected void eval(Timestamp self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
-                    .printValue(InstantUtils.timestampToString(self));
+                .printValue(InstantUtils.timestampToString(self));
             }
         };
     }
-    
+
     static Function writeCalendarFn() {
         return new PrintFn<GregorianCalendar>() {
             @Override
             protected void eval(GregorianCalendar self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
-                    .printValue(InstantUtils.calendarToString(self));
+                .printValue(InstantUtils.calendarToString(self));
             }
         };
     }
-    
+
     static Function writeTagFn() {
         return new PrintFn<Tag>() {
             @Override
