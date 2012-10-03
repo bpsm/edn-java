@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
@@ -40,12 +41,20 @@ public class Parsers {
         }
     };
     
-    public static Parser newParser(Parser.Config cfg, Reader reader) throws IOException {
-        return newParser(cfg, new Scanner(cfg, reader));
+    public static Parser newParser(Parser.Config cfg, Reader reader) throws EdnIOException {
+        try {
+            return newParser(cfg, new Scanner(cfg, reader));
+        } catch (IOException e) {
+            throw new EdnIOException(e);
+        }
     }
     
-    public static Parser newParser(Parser.Config cfg, CharSequence input) throws IOException {
-        return newParser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
+    public static Parser newParser(Parser.Config cfg, CharSequence input) throws EdnIOException {
+        try {
+            return newParser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
+        } catch (IOException e) {
+            throw new EdnIOException(e);
+        }
     }
     
     static Parser newParser(final Parser.Config cfg, final Scanner scanner) throws IOException {

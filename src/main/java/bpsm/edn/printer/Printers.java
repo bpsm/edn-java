@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import bpsm.edn.EdnException;
+import bpsm.edn.EdnIOException;
 import bpsm.edn.Keyword;
 import bpsm.edn.Symbol;
 import bpsm.edn.Tag;
@@ -33,50 +34,48 @@ public class Printers {
         return new Printer() {
             int softspace = 0;
             
-            public void close() throws IOException {
-                writer.close();
-            }
-
-            public Printer append(CharSequence csq) throws IOException {
-                if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
-                    writer.append(' ');
+            public void close() throws EdnIOException {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                   throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(csq);
-                return this;
             }
 
-            public Printer append(char c) throws IOException {
-                if (softspace > 1 && !CharClassify.isWhitespace(c)) {
-                    writer.append(' ');
+            public Printer append(CharSequence csq) throws EdnIOException {
+                try {
+                    if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
+                        writer.append(' ');
+                    }
+                    softspace = 0;
+                    writer.append(csq);
+                    return this;
+                } catch (IOException e) {
+                    throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(c);
-                return this;
             }
 
-            public Printer append(CharSequence csq, int start, int end)
-                    throws IOException {
-                if (softspace > 1 && end - start > 0 && !CharClassify.isWhitespace(csq.charAt(start))) {
-                    writer.append(' ');
+            public Printer append(char c) throws EdnIOException {
+                try {
+                    if (softspace > 1 && !CharClassify.isWhitespace(c)) {
+                        writer.append(' ');
+                    }
+                    softspace = 0;
+                    writer.append(c);
+                    return this;
+                } catch (IOException e) {
+                    throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(csq, start, end);
-                return this;
             }
 
-            public Printer printValue(Object ednValue) throws IOException {
+            public Printer printValue(Object ednValue) throws EdnIOException {
                 Function printFn = cfg.getPrintFn(ednValue);
                 if (printFn == null) {
                     throw new EdnException(String.format(
                             "Don't know how to write '%s' of type '%s'",
                             ednValue, Util.getClassOrNull(ednValue)));
                 }
-                try {
-                    printFn.eval(ednValue, this);
-                } catch (PrintException e) {
-                    throw (IOException) e.getCause();
-                }
+                printFn.eval(ednValue, this);
                 return this;
             }
 
