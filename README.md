@@ -248,7 +248,7 @@ import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI =
+    private static final Tag BPSM_URI = 
         Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
     @Test
     public void test() throws IOException {
@@ -256,8 +256,7 @@ public class CustomTagPrinter {
         Printer.Config cfg = Printers.newPrinterConfigBuilder()
             .bind(URI.class, new PrintFn<URI>() {
                 @Override
-                protected void eval(URI self, Printer writer)
-                    throws IOException {
+                protected void eval(URI self, Printer writer) {
                     writer.printValue(BPSM_URI).printValue(self.toString());
                 }})
             .build();

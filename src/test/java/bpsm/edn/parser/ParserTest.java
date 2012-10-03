@@ -201,11 +201,7 @@ public class ParserTest {
     }
     
     static Object parse(Parser.Config cfg, String input) {
-        try {
-            return parser(cfg, input).nextValue();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return parser(cfg, input).nextValue();
     }
 
     static Parser parser(String input) {
@@ -213,11 +209,7 @@ public class ParserTest {
     }
     
     static Parser parser(Parser.Config cfg, String input) {
-        try {
-            return Parsers.newParser(cfg, input);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Parsers.newParser(cfg, input);
     }
 
     private Map<Object, Object> map(Object... kvs) {

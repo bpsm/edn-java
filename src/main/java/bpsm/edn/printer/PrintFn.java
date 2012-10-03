@@ -1,22 +1,24 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.printer;
 
-import java.io.IOException;
-
 import bpsm.edn.protocols.Function;
 
 public abstract class PrintFn<E> implements Function {
 
     @SuppressWarnings("unchecked")
     public final Object eval(Object self, Object argument) {
-        try {
-            eval((E)self, (Printer)argument);
-        } catch (IOException e) {
-            throw new PrintException(e);
-        }
+        eval((E)self, (Printer)argument);
         return null;
     }
     
-    protected abstract void eval(E self, Printer writer) throws IOException;
+    /**
+     * Implementations which may generate an {@code IOException} should
+     * throw it by first wrapping it in an {@code EdnIOException}.
+     * @param self some edn value to be written
+     * @param printer the printer that called us, giving us access to
+     *   its append methods which are required to actually append
+     *   characters to the output being generated.
+     */
+    protected abstract void eval(E self, Printer printer);
 
 }

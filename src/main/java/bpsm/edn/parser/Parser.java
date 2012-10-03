@@ -3,17 +3,14 @@ package bpsm.edn.parser;
 
 import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.Tag.newTag;
-
-import java.io.Closeable;
-import java.io.IOException;
-
 import bpsm.edn.Tag;
 
-public interface Parser extends Closeable {
+public interface Parser {
 
     public static final Object END_OF_INPUT = Token.END_OF_INPUT;
     
-    public Object nextValue() throws IOException;
+    public Object nextValue();
+    public void close();
 
     public interface Config {
         

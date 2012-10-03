@@ -1,18 +1,15 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package bpsm.edn.printer;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 import bpsm.edn.protocols.Function;
 
-public interface Printer extends Closeable, Appendable {
+public interface Printer {
 
-    Printer printValue(Object ednValue) throws IOException;
-    Printer append(CharSequence csq) throws IOException;
-    Printer append(char c) throws IOException;
-    Printer append(CharSequence csq, int start, int end) throws IOException;
+    Printer printValue(Object ednValue);
+    Printer append(CharSequence csq);
+    Printer append(char c);
     Printer softspace();
+    void close();
 
     public interface Config {
 

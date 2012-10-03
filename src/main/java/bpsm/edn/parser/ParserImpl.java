@@ -9,6 +9,7 @@ import static bpsm.edn.parser.Token.END_VECTOR;
 import java.io.IOException;
 
 import bpsm.edn.EdnException;
+import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 
 class ParserImpl implements Parser {
@@ -24,14 +25,32 @@ class ParserImpl implements Parser {
         this.discard = 0;
     }
     
-    public void close() throws IOException {
+    public void close() {
         if (scanner != null) {
-            scanner.close();
-            scanner = null;
+            try {
+                scanner.close();
+            } catch (IOException e) {
+                throw new EdnIOException(e);
+            } finally {
+                scanner = null;
+            }
         }
     }
 
-    public Object nextValue() throws IOException {
+    public Object nextValue() {
+        try {
+            return nextValue0();
+        } catch (IOException e) {
+            try {
+                close();
+            } catch (EdnIOException _) {
+                // suppress _ in favor of e
+            }
+            throw new EdnIOException(e);
+        }
+    }
+    
+    private Object nextValue0() throws IOException {
         assert discard >= 0;
         if (curr instanceof Token) {
             switch ((Token) curr) {

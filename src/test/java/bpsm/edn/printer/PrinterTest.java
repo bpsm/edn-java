@@ -4,7 +4,6 @@ package bpsm.edn.printer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -69,25 +68,22 @@ public class PrinterTest {
     }
     
     void assertRoundTrip(String ednText) {
-        try {
-            Parser parser;
-            parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(ednText));
-            Object originalParsedValue = parser.nextValue();
+        Parser parser;
+        parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(ednText));
+        Object originalParsedValue = parser.nextValue();
 
-            StringWriter sw = new StringWriter();
-            Printer ew = Printers.newPrinter(Printers.defaultPrinterConfig(), sw);
-            ew.printValue(originalParsedValue);
-            ew.close();
+        StringWriter sw = new StringWriter();
+        Printer ew = Printers.newPrinter(Printers.defaultPrinterConfig(), sw);
+        ew.printValue(originalParsedValue);
+        ew.close();
 
-            parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(sw.toString()));
-            Object secondGenerationParsedValue = parser.nextValue();
-            assertEquals("'" + ednText + "' => '" + sw.toString()
-                    + "' did not round-trip.", originalParsedValue,
-                    secondGenerationParsedValue);
-            assertEquals(Parser.END_OF_INPUT, parser.nextValue());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(sw.toString()));
+        Object secondGenerationParsedValue = parser.nextValue();
+        assertEquals("'" + ednText + "' => '" + sw.toString()
+                + "' did not round-trip.", originalParsedValue,
+                secondGenerationParsedValue);
+        assertEquals(Parser.END_OF_INPUT, parser.nextValue());
+        
     }
 
 }

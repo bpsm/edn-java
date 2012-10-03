@@ -20,8 +20,7 @@ public class CustomTagPrinter {
         Printer.Config cfg = Printers.newPrinterConfigBuilder()
             .bind(URI.class, new PrintFn<URI>() {
                 @Override
-                protected void eval(URI self, Printer writer)
-                    throws IOException {
+                protected void eval(URI self, Printer writer) {
                     writer.printValue(BPSM_URI).printValue(self.toString());
                 }})
             .build();

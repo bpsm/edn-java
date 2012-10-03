@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import bpsm.edn.EdnException;
+import bpsm.edn.EdnIOException;
 import bpsm.edn.Keyword;
 import bpsm.edn.Symbol;
 import bpsm.edn.Tag;
@@ -37,50 +38,48 @@ public class Printers {
         return new Printer() {
             int softspace = 0;
             
-            public void close() throws IOException {
-                writer.close();
-            }
-
-            public Printer append(CharSequence csq) throws IOException {
-                if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
-                    writer.append(' ');
+            public void close() {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                   throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(csq);
-                return this;
             }
 
-            public Printer append(char c) throws IOException {
-                if (softspace > 1 && !CharClassify.isWhitespace(c)) {
-                    writer.append(' ');
+            public Printer append(CharSequence csq) {
+                try {
+                    if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
+                        writer.append(' ');
+                    }
+                    softspace = 0;
+                    writer.append(csq);
+                    return this;
+                } catch (IOException e) {
+                    throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(c);
-                return this;
             }
 
-            public Printer append(CharSequence csq, int start, int end)
-                    throws IOException {
-                if (softspace > 1 && end - start > 0 && !CharClassify.isWhitespace(csq.charAt(start))) {
-                    writer.append(' ');
+            public Printer append(char c) {
+                try {
+                    if (softspace > 1 && !CharClassify.isWhitespace(c)) {
+                        writer.append(' ');
+                    }
+                    softspace = 0;
+                    writer.append(c);
+                    return this;
+                } catch (IOException e) {
+                    throw new EdnIOException(e);
                 }
-                softspace = 0;
-                writer.append(csq, start, end);
-                return this;
             }
 
-            public Printer printValue(Object ednValue) throws IOException {
+            public Printer printValue(Object ednValue) {
                 Function printFn = cfg.getPrintFn(ednValue);
                 if (printFn == null) {
                     throw new EdnException(String.format(
                             "Don't know how to write '%s' of type '%s'",
                             ednValue, Util.getClassOrNull(ednValue)));
                 }
-                try {
-                    printFn.eval(ednValue, this);
-                } catch (PrintException e) {
-                    throw (IOException) e.getCause();
-                }
+                printFn.eval(ednValue, this);
                 return this;
             }
 
@@ -150,7 +149,7 @@ public class Printers {
     static Function writeNullFn() {
         return new PrintFn<Void>() {
             @Override
-            protected void eval(Void self, Printer writer) throws IOException {
+            protected void eval(Void self, Printer writer) {
                 writer.softspace().append("nil").softspace();
             }
         };
@@ -159,8 +158,7 @@ public class Printers {
     static Function writeListFn() {
         return new PrintFn<List<?>>() {
             @Override
-            protected void eval(List<?> self, Printer writer)
-                    throws IOException {
+            protected void eval(List<?> self, Printer writer) {
                 boolean vec = self instanceof RandomAccess;
                 writer.append(vec ? '[' : '(');
                 for (Object o: self) {
@@ -174,8 +172,7 @@ public class Printers {
     static Function writeSetFn() {
         return new PrintFn<Set<?>>() {
             @Override
-            protected void eval(Set<?> self, Printer writer)
-                    throws IOException {
+            protected void eval(Set<?> self, Printer writer) {
                 writer.append("#{");
                 for (Object o: self) {
                     writer.printValue(o);
@@ -188,8 +185,7 @@ public class Printers {
     static Function writeMapFn() {
         return new PrintFn<Map<?,?>>() {
             @Override
-            protected void eval(Map<?,?> self, Printer writer)
-                    throws IOException {
+            protected void eval(Map<?,?> self, Printer writer) {
                 writer.append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
@@ -203,8 +199,7 @@ public class Printers {
     static Function writeKeywordFn() {
         return new PrintFn<Keyword>() {
             @Override
-            protected void eval(Keyword self, Printer writer)
-                    throws IOException {
+            protected void eval(Keyword self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace(); 
             }
         };
@@ -213,8 +208,7 @@ public class Printers {
     static Function writeSymbolFn() {
         return new PrintFn<Symbol>() {
             @Override
-            protected void eval(Symbol self, Printer writer)
-                    throws IOException {
+            protected void eval(Symbol self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace(); 
             }
         };
@@ -223,8 +217,7 @@ public class Printers {
     static Function writeTaggedValueFn() {
         return new PrintFn<TaggedValue>() {
             @Override
-            protected void eval(TaggedValue self, Printer writer)
-                    throws IOException {
+            protected void eval(TaggedValue self, Printer writer) {
                 writer.printValue(self.getTag()).printValue(self.getValue());
             }
         };
@@ -233,8 +226,7 @@ public class Printers {
     static Function writeBooleanFn() {
         return new PrintFn<Boolean>() {
             @Override
-            protected void eval(Boolean self, Printer writer)
-                    throws IOException {
+            protected void eval(Boolean self, Printer writer) {
                 writer.softspace()
                     .append(self ? "true" : "false")
                     .softspace();
@@ -245,8 +237,7 @@ public class Printers {
     static Function writeCharSequenceFn() {
         return new PrintFn<CharSequence>() {
             @Override
-            protected void eval(CharSequence self, Printer writer)
-                    throws IOException {
+            protected void eval(CharSequence self, Printer writer) {
                 writer.append('"');
                 for (int i = 0; i < self.length(); i++) {
                     final char c = self.charAt(i);
@@ -287,8 +278,7 @@ public class Printers {
     static Function writeCharacterFn() {
         return new PrintFn<Character>() {
             @Override
-            protected void eval(Character self, Printer writer)
-                    throws IOException {
+            protected void eval(Character self, Printer writer) {
                 final char c = self;
                 if (!CharClassify.isWhitespace(c)) {
                     writer.append('\\').append(c);
@@ -324,8 +314,7 @@ public class Printers {
     static Function writeLongValueFn() {
         return new PrintFn<Number>() {
             @Override
-            protected void eval(Number self, Printer writer)
-                    throws IOException {
+            protected void eval(Number self, Printer writer) {
                 writer.softspace()
                     .append(String.valueOf(self.longValue()))
                     .softspace();
@@ -336,8 +325,7 @@ public class Printers {
     static Function writeBigIntegerFn() {
         return new PrintFn<BigInteger>() {
             @Override
-            protected void eval(BigInteger self, Printer writer)
-                    throws IOException {
+            protected void eval(BigInteger self, Printer writer) {
                 writer.softspace()
                     .append(self.toString()).append('N')
                     .softspace();
@@ -348,8 +336,7 @@ public class Printers {
     static Function writeDoubleValueFn() {
         return new PrintFn<Number>() {
             @Override
-            protected void eval(Number self, Printer writer)
-                    throws IOException {
+            protected void eval(Number self, Printer writer) {
                 writer.softspace()
                     .append(String.valueOf(self.doubleValue()))
                     .softspace();
@@ -360,8 +347,7 @@ public class Printers {
     static Function writeBigDecimalFn() {
         return new PrintFn<BigDecimal>() {
             @Override
-            protected void eval(BigDecimal self, Printer writer)
-                    throws IOException {
+            protected void eval(BigDecimal self, Printer writer) {
                 writer.softspace()
                     .append(self.toString()).append('M')
                     .softspace();
@@ -372,7 +358,7 @@ public class Printers {
     static Function writeUuidFn() {
         return new PrintFn<UUID>() {
             @Override
-            protected void eval(UUID self, Printer writer) throws IOException {
+            protected void eval(UUID self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_UUID)
                     .printValue(self.toString());
             }
@@ -382,7 +368,7 @@ public class Printers {
     static Function writeDateFn() {
         return new PrintFn<Date>() {
             @Override
-            protected void eval(Date self, Printer writer) throws IOException {
+            protected void eval(Date self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.dateToString(self));
             }
@@ -392,7 +378,7 @@ public class Printers {
     static Function writeTimestampFn() {
         return new PrintFn<Timestamp>() {
             @Override
-            protected void eval(Timestamp self, Printer writer) throws IOException {
+            protected void eval(Timestamp self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.timestampToString(self));
             }
@@ -402,7 +388,7 @@ public class Printers {
     static Function writeCalendarFn() {
         return new PrintFn<GregorianCalendar>() {
             @Override
-            protected void eval(GregorianCalendar self, Printer writer) throws IOException {
+            protected void eval(GregorianCalendar self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                     .printValue(InstantUtils.calendarToString(self));
             }
@@ -412,7 +398,7 @@ public class Printers {
     static Function writeTagFn() {
         return new PrintFn<Tag>() {
             @Override
-            protected void eval(Tag self, Printer writer) throws IOException {
+            protected void eval(Tag self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace();
             }
         };
