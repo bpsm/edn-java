@@ -123,6 +123,7 @@ public class Printers {
         return new Printer.Config.Builder() {
             Protocol.Builder protocolBuilder = defaultProtocolBuilder();
 
+            @SuppressWarnings("rawtypes")
             public Printer.Config.Builder bind(Class ednValueClass,
                 Function printFn) {
                 protocolBuilder.put(ednValueClass, printFn);
