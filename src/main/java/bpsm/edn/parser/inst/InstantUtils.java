@@ -147,7 +147,7 @@ public class InstantUtils {
     }
 
     private static final int TZ_LIMIT = 23;
-    
+
     private static final TimeZone[] TZ_CACHE;
     static {
         TimeZone[] tzs = new TimeZone[TZ_LIMIT*2+1];
@@ -156,11 +156,11 @@ public class InstantUtils {
         }
         TZ_CACHE = tzs;
     }
-    
+
     private static TimeZone getTimeZone(int offsetSign, int offsetHours, int offsetMinutes) {
         if (offsetMinutes == 0 && offsetHours <= TZ_LIMIT) {
             int i = offsetHours * (offsetSign < 0 ? -1 : 1) + TZ_LIMIT;
-            return TZ_CACHE[i];   
+            return TZ_CACHE[i];
         }
         final String tzID = String.format("GMT%s%02d:%02d",
                 (offsetSign > 0 ? "+" : "-"),

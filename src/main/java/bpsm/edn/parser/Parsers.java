@@ -22,7 +22,7 @@ import bpsm.edn.parser.inst.InstantToDate;
 
 public class Parsers {
 
-    
+
     static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 
     static final CollectionBuilder.Factory DEFAULT_VECTOR_FACTORY = new DefaultVectorFactory();
@@ -40,7 +40,7 @@ public class Parsers {
             return value;
         }
     };
-    
+
     public static Parser newParser(Parser.Config cfg, Reader reader) {
         try {
             return newParser(cfg, new Scanner(cfg, reader));
@@ -48,7 +48,7 @@ public class Parsers {
             throw new EdnIOException(e);
         }
     }
-    
+
     public static Parser newParser(Parser.Config cfg, CharSequence input) {
         try {
             return newParser(cfg, new Scanner(cfg, CharSequenceReader.newCharSequenceReader(input)));
@@ -56,7 +56,7 @@ public class Parsers {
             throw new EdnIOException(e);
         }
     }
-    
+
     static Parser newParser(final Parser.Config cfg, final Scanner scanner) throws IOException {
         return new ParserImpl(cfg, scanner);
     }
@@ -69,7 +69,7 @@ public class Parsers {
             CollectionBuilder.Factory setFactory = DEFAULT_SET_FACTORY;
             CollectionBuilder.Factory mapFactory = DEFAULT_MAP_FACTORY;
             Map<Tag, TagHandler> tagHandlers = defaultTagHandlers();
-            
+
             public Builder setListFactory(CollectionBuilder.Factory listFactory) {
                 checkState();
                 this.listFactory = listFactory;
@@ -133,7 +133,7 @@ public class Parsers {
             }
         };
     }
-    
+
     static Map<Tag, TagHandler> defaultTagHandlers() {
         Map<Tag, TagHandler> m = new HashMap<Tag, TagHandler>();
         m.put(EDN_UUID, UUID_HANDLER);
@@ -144,11 +144,11 @@ public class Parsers {
         m.put(LONG_TAG, IDENTITY);
         return m;
     }
-    
+
     public static Config defaultConfiguration() {
         return DEFAULT_CONFIGURATION;
     }
-    
+
     static Config DEFAULT_CONFIGURATION = newParserConfigBuilder().build();
-    
+
 }

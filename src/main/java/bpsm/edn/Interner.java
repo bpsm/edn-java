@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class Interner<K,V> {
 
-    private final ConcurrentHashMap<K, Reference<V>> table = 
+    private final ConcurrentHashMap<K, Reference<V>> table =
             new ConcurrentHashMap<K, Reference<V>>();
     private final ReferenceQueue<V> refQueue = new ReferenceQueue<V>();
-    
+
     public V intern(K key, V value) {
         while (true) {
             clearDeadEntries();
@@ -21,14 +21,14 @@ class Interner<K,V> {
             if (existingRef == null) {
                 // newRef has been entered into the cache
                 return value;
-            } 
-            
+            }
+
             // existingRef was found in the cache; newRef is garbage
             V existingValue = existingRef.get();
             if (existingValue != null) {
                 return existingValue;
             }
-            
+
             // existingRef's referent has been collected out from under us
             table.remove(key, existingRef);
         }
@@ -49,5 +49,5 @@ class Interner<K,V> {
             }
         }
     }
-    
+
 }

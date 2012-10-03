@@ -24,7 +24,7 @@ class ParserImpl implements Parser {
         this.cfg = cfg;
         this.discard = 0;
     }
-    
+
     public void close() {
         if (scanner != null) {
             try {
@@ -49,7 +49,7 @@ class ParserImpl implements Parser {
             throw new EdnIOException(e);
         }
     }
-    
+
     private Object nextValue0() throws IOException {
         assert discard >= 0;
         if (curr instanceof Token) {

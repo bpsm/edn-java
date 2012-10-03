@@ -9,7 +9,7 @@ public final class TaggedValue {
         this.tag = tag;
         this.value = value;
     }
-    
+
     public static TaggedValue newTaggedValue(Tag tag, Object value) {
         if (tag == null) {
             throw new IllegalArgumentException("tag must not be null");

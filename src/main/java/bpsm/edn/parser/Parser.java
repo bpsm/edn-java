@@ -8,12 +8,12 @@ import bpsm.edn.Tag;
 public interface Parser {
 
     public static final Object END_OF_INPUT = Token.END_OF_INPUT;
-    
+
     public Object nextValue();
     public void close();
 
     public interface Config {
-        
+
         public static final Tag EDN_UUID = newTag(newSymbol(null, "uuid"));
 
         public static final Tag EDN_INSTANT = newTag(newSymbol(null, "inst"));

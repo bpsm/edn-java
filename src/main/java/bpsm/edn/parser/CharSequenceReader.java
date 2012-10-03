@@ -31,7 +31,7 @@ class CharSequenceReader extends Reader {
         }
         return cs.charAt(leftMostUnread++);
     }
-    
+
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         if (cs == null) {
@@ -50,5 +50,5 @@ class CharSequenceReader extends Reader {
     public void close() throws IOException {
         cs = null;
     }
-    
+
 }

@@ -74,12 +74,12 @@ public class ScannerTest {
     public void symbolStartsWithDotDigit() {
         scan(".4symbol");
     }
-    
+
     @Test(expected=EdnException.class)
     public void symbolStartsWithDashDigit() {
         scan("-4symbol");
     }
-    
+
     @Test(expected=EdnException.class)
     public void symbolStartsWithPlusDigit() {
         scan("+4symbol");
@@ -89,7 +89,7 @@ public class ScannerTest {
     public void keywordWithoutPrefix() {
         assertEquals(key("+"), scan(":+"));
     }
-    
+
     /** issue 5 */
     @Test(expected=EdnException.class)
     public void colonSlashIsNotAValidKeyword() {
@@ -235,17 +235,17 @@ public class ScannerTest {
         assertEquals(' ', scan("\\space"));
         assertEquals('\b', scan("\\backspace"));
     }
-    
+
     @Test
     public void keywordsAreInternedGlobally() {
         assertSame(scan(":foo/bar"), scan(":foo/bar"));
     }
-    
+
     @Test
     public void keywordsAreInternedGloballyWithoutPrefix() {
         assertSame(scan(":foo"), scan(":foo"));
     }
-    
+
     @Test
     public void keywordWithDifferentPrefixNotIdentical() {
         assertTrue(scan(":a/foo")!=scan(":b/foo"));
@@ -289,7 +289,7 @@ public class ScannerTest {
 
     static Scanner scanner(String input) {
         try {
-            return new Scanner(Parsers.defaultConfiguration(), 
+            return new Scanner(Parsers.defaultConfiguration(),
                     newCharSequenceReader(input));
         } catch (IOException e) {
             throw new RuntimeException(e);

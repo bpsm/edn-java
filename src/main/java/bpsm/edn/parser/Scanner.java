@@ -30,18 +30,18 @@ class Scanner implements Closeable {
     static final Symbol TRUE_SYMBOL = newSymbol(null, "true");
     static final Symbol FALSE_SYMBOL = newSymbol(null, "false");
     static final Symbol SLASH_SYMBOL = newSymbol(null, "/");
-    
+
     static final char END = 0;
 
     private final TagHandler longHandler;
     private final TagHandler bigDecimalHandler;
     private final TagHandler bigIntegerHandler;
     private final TagHandler doubleHandler;
-    
+
     private Reader reader;
     private char curr = 0;
     private char peek = 0;
-    
+
 
     /**
      * Scanner may throw an IOException during construction, in which case
@@ -56,12 +56,12 @@ class Scanner implements Closeable {
         if (reader == null) {
             throw new IllegalArgumentException("reader must not be null");
         }
-        
+
         this.longHandler = cfg.getTagHandler(LONG_TAG);
         this.bigIntegerHandler = cfg.getTagHandler(BIG_INTEGER_TAG);
         this.doubleHandler = cfg.getTagHandler(DOUBLE_TAG);
         this.bigDecimalHandler = cfg.getTagHandler(BIG_DECIMAL_TAG);
-        
+
         this.reader = reader;
         try {
             this.curr = (char) Math.max(0, reader.read());
@@ -243,7 +243,7 @@ class Scanner implements Closeable {
                     String.format("Unexpected character '%c', \\"+"u%04x", curr, (int)curr));
         }
     }
-    
+
     private void skipWhitespaceAndComments() throws IOException {
         skipWhitespace();
         while (curr == ';') {
@@ -380,7 +380,7 @@ class Scanner implements Closeable {
     private Object readNumber() throws IOException {
         assert CharClassify.startsNumber(curr);
         StringBuffer digits = new StringBuffer();
-        
+
         if (curr != '+') {
             digits.append(curr);
         }
@@ -433,7 +433,7 @@ class Scanner implements Closeable {
             return doubleHandler.transform(DOUBLE_TAG, d);
         }
     }
-    
+
     private Object parseInteger(CharSequence digits) throws IOException {
         final boolean bigint;
         if (curr == 'N') {

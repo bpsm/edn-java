@@ -16,7 +16,7 @@ public final class Tag implements Named, Comparable<Tag> {
     public static Tag newTag(Symbol sym) {
         return new Tag(sym);
     }
-    
+
     private Tag(Symbol sym) {
         if (sym == null) {
             throw new NullPointerException();

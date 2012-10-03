@@ -20,16 +20,16 @@ public class CharSequenceReaderTest {
         assertTrue(newCharSequenceReader(cs("")) instanceof CharSequenceReader);
         assertTrue(csr("") instanceof CharSequenceReader);
     }
-    
+
     @Test
     public void test() throws IOException {
         assertEquals(-1, csr("").read());
-        
+
         Reader r = csr("ab");
         assertEquals('a', r.read());
         assertEquals('b', r.read());
         assertEquals(-1, r.read());
-        
+
         r = csr("abcdefg");
         char[] buf = new char[3];
         assertEquals(3, r.read(buf));
@@ -49,12 +49,12 @@ public class CharSequenceReaderTest {
         assertEquals('g', buf[0]);
         assertEquals('e', buf[1]);
         assertEquals('f', buf[2]);
-        
+
         r = csr("");
         assertEquals(-1, r.read());
         assertEquals(-1, r.read());
     }
-    
+
     @Test
     public void bordercases() {
         Reader r = csr("");
@@ -70,11 +70,11 @@ public class CharSequenceReaderTest {
             //ok
         }
     }
-    
+
     static Reader csr(String s) {
         return newCharSequenceReader(cs(s));
     }
-    
+
     static CharSequence cs(final String x) {
         return new CharSequence() {
             public CharSequence subSequence(int start, int end) {

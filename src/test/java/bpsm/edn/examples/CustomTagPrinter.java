@@ -12,7 +12,7 @@ import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI = 
+    private static final Tag BPSM_URI =
         Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
     @Test
     public void test() throws IOException {

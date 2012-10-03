@@ -42,26 +42,25 @@ public class PrinterTest {
 
     @Test
     public void testComplexValue() {
-        assertRoundTrip("{:foo [1 2.0 19023847928034709821374012938749N 91821234112347634.128937467E-3M]\n" + 
-        		" :bar/baz #{true false nil}\n" + 
-        		" / (\"abc\\tdef\\n\" #uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\")\n" + 
-        		" \\formfeed [#inst \"2010\", #inst \"2010-11\", #inst \"2010-11-12T09:08:07.123+02:00\"]\n" + 
-        		" :omega [a b c d \\a\\b\\c#{}]}");
+        assertRoundTrip("{:foo [1 2.0 19023847928034709821374012938749N 91821234112347634.128937467E-3M]\n"
+            + " :bar/baz #{true false nil}\n"
+            + " / (\"abc\\tdef\\n\" #uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\")\n"
+            + " \\formfeed [#inst \"2010\", #inst \"2010-11\", #inst \"2010-11-12T09:08:07.123+02:00\"]\n"
+            + " :omega [a b c d \\a\\b\\c#{}]}");
     }
 
-    
     @Test
     public void testDefaultPrinter() {
         StringWriter sw = new StringWriter();
         Printer p = Printers.newPrinter(sw);
-        
+
         ArrayList<Object> al = new ArrayList<Object>();
         al.add(1);
         al.add(2);
         p.printValue(al);
         assertEquals("[1 2]", sw.toString());
     }
-    
+
     void assertRoundTrip(String ednText) {
         Parser parser;
         parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(ednText));
@@ -78,7 +77,7 @@ public class PrinterTest {
                 + "' did not round-trip.", originalParsedValue,
                 secondGenerationParsedValue);
         assertEquals(Parser.END_OF_INPUT, parser.nextValue());
-        
+
     }
 
 }

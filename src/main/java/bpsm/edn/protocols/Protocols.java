@@ -9,10 +9,10 @@ import bpsm.edn.EdnException;
 @SuppressWarnings("rawtypes")
 public class Protocols {
 
-    static final String SINGLE_USE_MSG = 
+    static final String SINGLE_USE_MSG =
             "This builder can only be used to build a single Protocol.";
-    
-    static final String NO_MODIFY_MSG = 
+
+    static final String NO_MODIFY_MSG =
             "This builder is single-use and may not be modified after the Protocol has been built.";
 
     public static Protocol.Builder builder(final String name) {
@@ -20,7 +20,7 @@ public class Protocols {
             Function nullFn = null;
             Map<Class, Function> m = new HashMap<Class, Function>();
             boolean usedUp = false;
-            
+
             public Protocol.Builder put(Class selfClass, Function fn) {
                 if (usedUp) {
                     throw new IllegalStateException(NO_MODIFY_MSG);
@@ -41,20 +41,20 @@ public class Protocols {
                 return new Protocol() {
                     // populate cache with user-specified bindings.
                     final Map<Class, Function> cache = new HashMap<Class, Function>(m);
-                    
+
                     @SuppressWarnings("unchecked")
                     public synchronized Function lookup(Class selfClass) {
                         if (selfClass == null) {
                             return nullFn;
                         } else {
                             Function fn;
-                            
+
                             // fast: derived binding found in cache
                             fn = cache.get(selfClass);
                             if (fn != null) {
                                 return fn;
                             }
-                            
+
                             // slow: search for derived binding, then cache it.
                             Class k = null;
                             for (Class c: m.keySet()) {
@@ -67,7 +67,7 @@ public class Protocols {
                                     }
                                 }
                             }
-                            
+
                             // This puns on the fact that m never has a null
                             // key, so m.get(null) will return null.
                             fn = m.get(k);
@@ -86,18 +86,18 @@ public class Protocols {
                     }
                 };
             }
-            
+
         };
     }
-    
+
     static String ambiguity(Protocol p, Class selfClass, Class k, Class c) {
-        return p + 
-                " can't decide on an implementation for " + 
-                selfClass + " both " + k + 
+        return p +
+                " can't decide on an implementation for " +
+                selfClass + " both " + k +
                 " and " + c + " seem to match. " +
                 "Bind an implementation to " +
                 selfClass + ", specifically, " +
                 " to resolve this ambiguity.";
     }
-    
+
 }

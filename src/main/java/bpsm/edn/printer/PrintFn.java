@@ -10,7 +10,7 @@ public abstract class PrintFn<E> implements Function {
         eval((E)self, (Printer)argument);
         return null;
     }
-    
+
     /**
      * Implementations which may generate an {@code IOException} should
      * throw it by first wrapping it in an {@code EdnIOException}.

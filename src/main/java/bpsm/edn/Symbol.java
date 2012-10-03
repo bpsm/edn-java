@@ -22,7 +22,7 @@ public final class Symbol implements Named, Comparable<Symbol> {
         this.prefix = prefix;
         this.name = name;
     }
-    
+
     public static Symbol newSymbol(String prefix, String name) {
         checkArguments(prefix, name);
         return new Symbol(prefix, name);
@@ -40,27 +40,34 @@ public final class Symbol implements Named, Comparable<Symbol> {
 
     @Override
     public final boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Symbol other = (Symbol) obj;
-        if (!name.equals(other.name))
+        if (!name.equals(other.name)) {
             return false;
+        }
         if (prefix == null) {
-            if (other.prefix != null)
+            if (other.prefix != null) {
                 return false;
-        } else if (!prefix.equals(other.prefix))
+            }
+        } else if (!prefix.equals(other.prefix)) {
             return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        if (prefix == null)
+        if (prefix == null) {
             return name;
+        }
         return prefix + "/" + name;
     }
 

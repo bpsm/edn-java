@@ -7,5 +7,5 @@ class Util {
     static Class getClassOrNull(Object o) {
         return o == null ? null : o.getClass();
     }
-    
+
 }

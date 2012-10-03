@@ -24,6 +24,6 @@ public class CustomTagHandler {
                         }
                     }).build();
         Parser p = Parsers.newParser(cfg, "#bpsm/uri \"http://example.com\"");
-        assertEquals(new URI("http://example.com"), (URI) p.nextValue());
+        assertEquals(new URI("http://example.com"), p.nextValue());
     }
 }
