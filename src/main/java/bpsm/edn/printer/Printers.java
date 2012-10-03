@@ -26,6 +26,10 @@ import bpsm.edn.protocols.Protocols;
 import bpsm.edn.util.CharClassify;
 
 public class Printers {
+	
+	public static Printer newPrinter(final Writer writer) {
+		return newPrinter(defaultPrinterConfig(),writer);
+	}
 
     public static Printer newPrinter(final Printer.Config cfg,
             final Writer writer) {
