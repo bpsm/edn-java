@@ -9,7 +9,6 @@ public interface Printer {
     Printer append(CharSequence csq);
     Printer append(char c);
     Printer softspace();
-    void close();
 
     public interface Config {
 

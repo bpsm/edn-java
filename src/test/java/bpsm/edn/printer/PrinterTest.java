@@ -69,7 +69,6 @@ public class PrinterTest {
         StringWriter sw = new StringWriter();
         Printer ew = Printers.newPrinter(Printers.defaultPrinterConfig(), sw);
         ew.printValue(originalParsedValue);
-        ew.close();
 
         parser = Parsers.newParser(Parsers.defaultConfiguration(), new StringReader(sw.toString()));
         Object secondGenerationParsedValue = parser.nextValue();

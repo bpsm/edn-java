@@ -149,7 +149,7 @@ public class Printers {
 
     public static String printString(Printer.Config cfg, Object ednValue) {
         StringBuilder sb = new StringBuilder();
-        newPrinter(cfg, sb).printValue(ednValue).close();
+        newPrinter(cfg, sb).printValue(ednValue);
         return sb.toString();
     }
 
