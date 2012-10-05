@@ -13,9 +13,9 @@ import static bpsm.edn.util.CharClassify.separatesTokens;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.CharBuffer;
 
 import bpsm.edn.EdnException;
 import bpsm.edn.Keyword;
@@ -39,76 +39,41 @@ class Scanner implements Closeable {
     private final TagHandler bigIntegerHandler;
     private final TagHandler doubleHandler;
 
-    private Readable readable;
-    private CharBuffer head = null;
-    private CharBuffer tail = null;
+    private PushbackReader pbr;
     private char curr = END;
-
-    private int readIntoBuffer(CharBuffer buff) throws IOException {
-        buff.clear();
-        int n = 0;
-        while (n == 0) {
-            n = readable.read(buff);
-        }
-        buff.flip();
-        assert buff.position() == 0;
-        assert buff.limit() == n || buff.limit() == 0 && n < 0;
-        return n;
-    }
-
-    private void initBuffers() throws IOException {
-        assert head == null && tail == null;
-        head = CharBuffer.allocate(BUFFER_CAPACITY);
-        tail = CharBuffer.allocate(BUFFER_CAPACITY);
-
-        if (readIntoBuffer(head) < 0) {
-            tail.position(0);
-            tail.limit(0);
-        } else {
-            readIntoBuffer(tail);
-        }
-    }
-
-    private void advanceBuffers() throws IOException {
-        if (head.limit() == 0) {
-            return;
-        }
-        if (tail.limit() == 0) {
-            head = tail;
-            return;
-        }
-
-        final CharBuffer temp = head;
-        head = tail;
-        tail = temp;
-        readIntoBuffer(tail);
-    }
+    private boolean last = false;
 
     private char nextChar() throws IOException {
-        if (head == null) {
-            initBuffers();
-        }
-        if (head.position() == head.limit()) {
-            advanceBuffers();
-        }
-        if (head.limit() == 0) {
+        if (last) {
             return curr = END;
+        } else {
+            int c = pbr.read();
+            if (c < 0) {
+                last = true;
+                return curr = END;
+            } else {
+                return curr = (char) c;
+            }
         }
-        return curr = head.get();
     }
 
     private char curr() throws IOException {
         return curr;
     }
 
-    private char peek() {
-        if (head.position() < head.limit()) {
-            return head.get(head.position());
+    private char peek() throws IOException {
+        if (last) {
+            return END;
+        } else {
+            int c = pbr.read();
+            if (c < 0) {
+                last = true;
+                return END;
+            } else {
+                pbr.unread((char) c);
+                return (char) c;
+            }
         }
-        if (tail.limit() > 0) {
-            return tail.get(0);
-        }
-        return END;
     }
 
     /**
@@ -130,16 +95,13 @@ class Scanner implements Closeable {
         this.doubleHandler = cfg.getTagHandler(DOUBLE_TAG);
         this.bigDecimalHandler = cfg.getTagHandler(BIG_DECIMAL_TAG);
 
-        this.readable = readable;
-        initBuffers();
+        this.pbr = Readers.pushbackReader(readable);
         nextChar();
     }
 
 
     public void close() throws IOException {
-        if (readable instanceof Closeable) {
-            ((Closeable)readable).close();
-        }
+        pbr.close();
     }
 
     public Object nextToken() throws IOException {

@@ -9,7 +9,6 @@ import static bpsm.edn.parser.Parser.Config.EDN_UUID;
 import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
