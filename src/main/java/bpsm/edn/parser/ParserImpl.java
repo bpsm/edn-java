@@ -13,16 +13,18 @@ import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 
 class ParserImpl implements Parser {
+    
+    private static final Object DISCARDED_VALUE = new Object() {
+        @Override
+        public String toString() { return "##discarded value##"; }
+    };
+    
     private Config cfg;
     private Scanner scanner;
-    private Object curr;
-    private int discard;
 
     ParserImpl(Config cfg, Scanner scanner) throws IOException {
         this.scanner = scanner;
-        this.curr = scanner.nextToken();
         this.cfg = cfg;
-        this.discard = 0;
     }
 
     public void close() {
@@ -38,128 +40,93 @@ class ParserImpl implements Parser {
     }
 
     public Object nextValue() {
+        return nextValue(nextToken(), false);
+    }
+
+    private Object nextToken() {
         try {
-            return nextValue0();
+            return scanner.nextToken();
         } catch (IOException e) {
             try {
-                close();
-            } catch (EdnIOException _) {
+                scanner.close();
+            } catch (IOException _) {
                 // suppress _ in favor of e
             }
             throw new EdnIOException(e);
         }
     }
 
-    private Object nextValue0() throws IOException {
-        assert discard >= 0;
+    private Object nextValue(Object curr, boolean discard) {
         if (curr instanceof Token) {
             switch ((Token) curr) {
             case BEGIN_LIST:
-                nextToken();
-                return parseIntoCollection(cfg.getListFactory(), END_LIST);
+                return parseIntoCollection(cfg.getListFactory(), END_LIST, nextToken(), discard);
             case BEGIN_VECTOR:
-                nextToken();
-                return parseIntoCollection(cfg.getVectorFactory(), END_VECTOR);
+                return parseIntoCollection(cfg.getVectorFactory(), END_VECTOR, nextToken(), discard);
             case BEGIN_SET:
-                nextToken();
-                return parseIntoCollection(cfg.getSetFactory(), END_MAP_OR_SET);
+                return parseIntoCollection(cfg.getSetFactory(), END_MAP_OR_SET, nextToken(), discard);
             case BEGIN_MAP:
-                nextToken();
-                return parseIntoMap(cfg.getMapFactory());
+                return parseIntoMap(cfg.getMapFactory(), nextToken(), discard);
             case DISCARD:
-                nextToken();
-                discardValue();
-                return nextValue();
+                nextValue(nextToken(), true);
+                return nextValue(nextToken(), discard);
+            case NIL:
+                return null;
+            case END_OF_INPUT:
+                return END_OF_INPUT;
             case END_LIST:
             case END_MAP_OR_SET:
             case END_VECTOR:
-                throw new EdnException();
-            case END_OF_INPUT:
-                return END_OF_INPUT;
-            case NIL:
-                nextToken();
-                return null;
+                throw new EdnException("Unexpected Token: " + curr);
             default:
-                throw new EdnException();
+                throw new EdnException("Unrecognized Token: " + curr);
             }
         } else if (curr instanceof Tag) {
-            Tag t = (Tag) curr;
-            nextToken();
-            return nextValue(t);
+            return nextValue((Tag)curr, nextToken(), discard);
         } else {
-            Object value = curr;
-            nextToken();
-            return value;
+            return curr;
         }
     }
 
-    private Object nextToken() throws IOException {
-        try {
-            return curr = scanner.nextToken();
-        } catch (IOException e) {
-            curr = Token.END_OF_INPUT;
-            try {
-                scanner.close();
-            } catch (IOException _) {
-                // suppress _ in favor of e
-            }
-            throw e;
+    private Object nextValue(Tag t, Object curr, boolean discard) {
+        Object v = nextValue(curr, discard);
+        if (discard) {
+            // It doesn't matter what we return here, as it will be discarded.
+            return DISCARDED_VALUE;
         }
+        TagHandler x = cfg.getTagHandler(t);
+        return x != null ? x.transform(t, v) : newTaggedValue(t, v);
     }
 
-    private Object nextValue(Tag t) throws IOException {
-        Object v = nextValue();
-        if (discard == 0) {
-            TagHandler x = cfg.getTagHandler(t);
-            if (x != null) {
-                return x.transform(t, v);
-            } else {
-                return newTaggedValue(t, v);
-            }
-        } else {
-            return null;
-        }
-    }
-
-    private void discardValue() throws IOException {
-        try {
-            discard ++;
-            nextValue();
-        } finally {
-            discard --;
-        }
-    }
-
-    private Object parseIntoMap(CollectionBuilder.Factory f) throws IOException {
-        CollectionBuilder b = (discard == 0) ? f.builder() : null;
+    private Object parseIntoMap(CollectionBuilder.Factory f, Object curr, boolean discard) {
+        CollectionBuilder b = !discard ? f.builder() : null;
         while (curr != END_MAP_OR_SET) {
-            Object o = nextValue();
+            Object o = nextValue(curr, discard);
             if (o == END_OF_INPUT) {
                 throw new EdnException("Expected '}', but found end of input.\n" +
                         String.valueOf(b.build()));
             }
-            if (discard == 0) {
+            if (!discard) {
                 b.add(o);
             }
+            curr = nextToken();
         }
-        nextToken();
-        return (discard == 0) ? b.build() : null;
+        return (!discard) ? b.build() : null;
     }
 
-    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end) throws IOException {
-        CollectionBuilder b = (discard == 0) ? f.builder() : null;
+    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end, Object curr, boolean discard) {
+        CollectionBuilder b = !discard ? f.builder() : null;
         while (curr != end) {
-            Object value = nextValue();
+            Object value = nextValue(curr, discard);
             if (value == END_OF_INPUT) {
                 throw new EdnException();
             }
-            if (discard == 0) {
+            if (!discard) {
                 b.add(value);
             }
+            curr = nextToken();
         }
-        nextToken();
-        return (discard == 0) ? b.build() : null;
+        return !discard ? b.build() : null;
     }
-
 
 }
