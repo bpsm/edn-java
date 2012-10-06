@@ -365,82 +365,69 @@ class Scanner {
             digits.append((char)curr);
             curr = pbr.read();
         }
-        unread(curr, pbr);
+
         if (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M') {
-            return parseFloat(pbr, digits);
-        } else {
-            return parseInteger(pbr, digits);
-        }
-    }
+            if (curr == '.') {
+                do {
+                    digits.append((char)curr);
+                    curr = pbr.read();
+                } while (curr != END && isDigit((char) curr));
+            }
 
-    private Object parseFloat(PushbackReader pbr, StringBuffer digits) throws IOException {
-        int curr = pbr.read();
-        assert (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M');
-        if (curr == '.') {
-            do {
+            if (curr == 'e' || curr == 'E') {
                 digits.append((char)curr);
                 curr = pbr.read();
-            } while (curr != END && isDigit((char) curr));
-        }
+                if (curr == END) {
+                    throw new EdnException(
+                            "Unexpected end of input in numeric literal");
+                }
+                if (!(curr == '-' || curr == '+' || isDigit((char)curr))) {
+                    throw new EdnException(
+                            "Not a number: '"+ digits + ((char)curr) +"'.");
+                }
+                do {
+                    digits.append((char)curr);
+                    curr = pbr.read();
+                } while (curr != END && isDigit((char)curr));
+            }
 
-        if (curr == 'e' || curr == 'E') {
-            digits.append((char)curr);
-            curr = pbr.read();
-            if (curr == END) {
-                throw new EdnException("Unexpected end of input in numeric literal");
-            }
-            if (!(curr == '-' || curr == '+' || isDigit((char)curr))) {
-                throw new EdnException("Not a number: '"+ digits + ((char)curr) +"'.");
-            }
-            do {
-                digits.append((char)curr);
+            final boolean decimal = (curr == 'M');
+            if (decimal) {
                 curr = pbr.read();
-            } while (curr != END && isDigit((char)curr));
-        }
+            }
 
-        final boolean decimal;
-        if (curr == 'M') {
-            decimal = true;
-            curr = pbr.read();
+            if (curr != END && !separatesTokens((char)curr)) {
+                throw new EdnException(
+                        "Not a number: '"+ digits + ((char)curr) +"'.");
+            }
+            unread(curr, pbr);
+
+            if (decimal) {
+                BigDecimal d = new BigDecimal(digits.toString());
+                return bigDecimalHandler.transform(BIG_DECIMAL_TAG, d);
+            } else {
+                double d = Double.parseDouble(digits.toString());
+                return doubleHandler.transform(DOUBLE_TAG, d);
+            }
         } else {
-            decimal = false;
-        }
+            final boolean bigint = (curr == 'N');
+            if (bigint) {
+                curr = pbr.read();
+            }
 
-        if (curr != END && !separatesTokens((char)curr)) {
-            throw new EdnException("Not a number: '"+ digits + ((char)curr) +"'.");
-        }
-        unread(curr, pbr);
+            if (curr != END && !separatesTokens((char)curr)) {
+                throw new EdnException(
+                        "Not a number: '"+ digits + ((char)curr) +"'.");
+            }
+            unread(curr, pbr);
 
-        if (decimal) {
-            BigDecimal d = new BigDecimal(digits.toString());
-            return bigDecimalHandler.transform(BIG_DECIMAL_TAG, d);
-        } else {
-            double d = Double.parseDouble(digits.toString());
-            return doubleHandler.transform(DOUBLE_TAG, d);
-        }
-    }
+            final BigInteger n = new BigInteger(digits.toString());
 
-    private Object parseInteger(PushbackReader pbr, CharSequence digits) throws IOException {
-        int curr = pbr.read();
-        final boolean bigint;
-        if (curr == 'N') {
-            bigint = true;
-            curr = pbr.read();
-        } else {
-            bigint = false;
-        }
-
-        if (curr != END && !separatesTokens((char)curr)) {
-            throw new EdnException("Not a number: '"+ digits + ((char)curr) +"'.");
-        }
-        unread(curr, pbr);
-
-        final BigInteger n = new BigInteger(digits.toString());
-
-        if (bigint || MIN_LONG.compareTo(n) > 0 || n.compareTo(MAX_LONG) > 0) {
-            return bigIntegerHandler.transform(BIG_INTEGER_TAG, n);
-        } else {
-            return longHandler.transform(LONG_TAG, n.longValue());
+            if (bigint || MIN_LONG.compareTo(n) > 0 || n.compareTo(MAX_LONG) > 0) {
+                return bigIntegerHandler.transform(BIG_INTEGER_TAG, n);
+            } else {
+                return longHandler.transform(LONG_TAG, n.longValue());
+            }
         }
     }
 
