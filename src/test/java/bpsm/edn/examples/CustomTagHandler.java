@@ -3,6 +3,7 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
@@ -23,7 +24,9 @@ public class CustomTagHandler {
                             return URI.create((String) value);
                         }
                     }).build();
-        Parser p = Parsers.newParser(cfg, "#bpsm/uri \"http://example.com\"");
-        assertEquals(new URI("http://example.com"), p.nextValue());
+        Parser p = Parsers.newParser(cfg);
+        PushbackReader pbr = Parsers.newPushbackReader(
+                "#bpsm/uri \"http://example.com\"");
+        assertEquals(new URI("http://example.com"), p.nextValue(pbr));
     }
 }

@@ -11,7 +11,6 @@ import static bpsm.edn.util.CharClassify.isDigit;
 import static bpsm.edn.util.CharClassify.isWhitespace;
 import static bpsm.edn.util.CharClassify.separatesTokens;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ import bpsm.edn.Tag;
 import bpsm.edn.util.CharClassify;
 
 
-class Scanner implements Closeable {
+class Scanner {
 
     static final Symbol NIL_SYMBOL = newSymbol(null, "nil");
     static final Symbol TRUE_SYMBOL = newSymbol(null, "true");
@@ -38,49 +37,29 @@ class Scanner implements Closeable {
     private final TagHandler bigIntegerHandler;
     private final TagHandler doubleHandler;
 
-    private PushbackReader pbr;
-
     /**
      * Scanner may throw an IOException during construction, in which case
      * an attempt will be made to close Reader cleanly.
      * @param reader
      * @throws IOException
      */
-    Scanner(Parser.Config cfg, Readable readable) throws IOException {
+    Scanner(Parser.Config cfg) {
         if (cfg == null) {
             throw new IllegalArgumentException("cfg must not be null");
-        }
-        if (readable == null) {
-            throw new IllegalArgumentException("readable must not be null");
         }
 
         this.longHandler = cfg.getTagHandler(LONG_TAG);
         this.bigIntegerHandler = cfg.getTagHandler(BIG_INTEGER_TAG);
         this.doubleHandler = cfg.getTagHandler(DOUBLE_TAG);
         this.bigDecimalHandler = cfg.getTagHandler(BIG_DECIMAL_TAG);
-
-        this.pbr = Readers.pushbackReader(readable);
     }
 
-    public void close() throws IOException {
-        pbr.close();
+    public Object nextToken(PushbackReader pbr) throws IOException {
+        return nextToken(pbr.read(), pbr);
     }
 
-    public Object nextToken() throws IOException {
-        try {
-            return nextToken(pbr.read());
-        } catch (IOException e) {
-            try {
-                close();
-            } catch (IOException _) {
-                // suppress _ in favor of e
-            }
-            throw e;
-        }
-    }
-
-    private Object nextToken(int curr) throws IOException {
-        curr = skipWhitespaceAndComments(curr);
+    private Object nextToken(int curr, PushbackReader pbr) throws IOException {
+        curr = skipWhitespaceAndComments(curr, pbr);
         switch(curr) {
         case END:
             return Token.END_OF_INPUT;
@@ -89,10 +68,10 @@ class Scanner implements Closeable {
         case 'c':
         case 'd':
         case 'e':
-            return readSymbol(curr);
+            return readSymbol(curr, pbr);
         case 'f':
         {
-            Symbol sym = readSymbol(curr);
+            Symbol sym = readSymbol(curr, pbr);
             return FALSE_SYMBOL.equals(sym) ? false : sym;
         }
         case 'g':
@@ -102,10 +81,10 @@ class Scanner implements Closeable {
         case 'k':
         case 'l':
         case 'm':
-            return readSymbol(curr);
+            return readSymbol(curr, pbr);
         case 'n':
         {
-            Symbol sym = readSymbol(curr);
+            Symbol sym = readSymbol(curr, pbr);
             return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
         }
         case 'o':
@@ -113,10 +92,10 @@ class Scanner implements Closeable {
         case 'q':
         case 'r':
         case 's':
-            return readSymbol(curr);
+            return readSymbol(curr, pbr);
         case 't':
         {
-            Symbol sym = readSymbol(curr);
+            Symbol sym = readSymbol(curr, pbr);
             return TRUE_SYMBOL.equals(sym) ? true : sym;
         }
         case 'u':
@@ -157,23 +136,23 @@ class Scanner implements Closeable {
         case '?':
         case '/':
         case '.':
-            return readSymbol(curr);
+            return readSymbol(curr, pbr);
         case '+':
         case '-': {
             int peek = pbr.read();
             if (peek == END) {
-                return readSymbol(curr);
+                return readSymbol(curr, pbr);
             } else {
                 char p = (char) peek;
                 pbr.unread(p);
                 if (isDigit(p)) {
-                    return readNumber(curr);
+                    return readNumber(curr, pbr);
                 } else {
-                    return readSymbol(curr);
+                    return readSymbol(curr, pbr);
                 }
             }}
         case ':':
-            return readKeyword(curr);
+            return readKeyword(curr, pbr);
         case '0':
         case '1':
         case '2':
@@ -184,7 +163,7 @@ class Scanner implements Closeable {
         case '7':
         case '8':
         case '9':
-            return readNumber(curr);
+            return readNumber(curr, pbr);
         case '{':
             return Token.BEGIN_MAP;
         case '}':
@@ -208,12 +187,12 @@ class Scanner implements Closeable {
                 return Token.DISCARD;
             default:
                 pbr.unread((char)peek);
-                return readTag(curr);
+                return readTag(curr, pbr);
             }}
         case '"':
-            return readStringLiteral(curr);
+            return readStringLiteral(curr, pbr);
         case '\\':
-            return readCharacterLiteral(curr);
+            return readCharacterLiteral(curr, pbr);
         default:
             throw new EdnException(
                 String.format("Unexpected character '%c', \\"+"u%04x",
@@ -221,23 +200,23 @@ class Scanner implements Closeable {
         }
     }
 
-    private int skipWhitespaceAndComments(int curr) throws IOException {
-        curr = skipWhitespace(curr);
+    private int skipWhitespaceAndComments(int curr, PushbackReader pbr) throws IOException {
+        curr = skipWhitespace(curr, pbr);
         while (curr == ';') {
-            curr = skipComment(curr);
-            curr = skipWhitespace(curr);
+            curr = skipComment(curr, pbr);
+            curr = skipWhitespace(curr, pbr);
         }
         return curr;
     }
 
-    private int skipWhitespace(int curr) throws IOException {
+    private int skipWhitespace(int curr, PushbackReader pbr) throws IOException {
         while (curr != END && isWhitespace((char)curr)) {
             curr = pbr.read();
         }
         return curr;
     }
 
-    private int skipComment(int curr) throws IOException {
+    private int skipComment(int curr, PushbackReader pbr) throws IOException {
         assert curr == ';';
         do {
             curr = pbr.read();
@@ -245,7 +224,7 @@ class Scanner implements Closeable {
         return curr;
     }
 
-    private char readCharacterLiteral(int curr) throws IOException {
+    private char readCharacterLiteral(int curr, PushbackReader pbr) throws IOException {
         assert curr == '\\';
         curr = pbr.read();
         if (curr == END) {
@@ -309,7 +288,7 @@ class Scanner implements Closeable {
         }
     }
 
-    private String readStringLiteral(int curr) throws IOException {
+    private String readStringLiteral(int curr, PushbackReader pbr) throws IOException {
         assert curr == '"';
         StringBuffer b = new StringBuffer();
         for (;;) {
@@ -361,7 +340,7 @@ class Scanner implements Closeable {
         }
     }
 
-    private Object readNumber(int curr) throws IOException {
+    private Object readNumber(int curr, PushbackReader pbr) throws IOException {
         assert curr != END && CharClassify.startsNumber((char)curr);
         StringBuffer digits = new StringBuffer();
 
@@ -375,13 +354,13 @@ class Scanner implements Closeable {
         }
 
         if (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M') {
-            return parseFloat(curr, digits);
+            return parseFloat(curr, pbr, digits);
         } else {
-            return parseInteger(curr, digits);
+            return parseInteger(curr, pbr, digits);
         }
     }
 
-    private Object parseFloat(int curr, StringBuffer digits) throws IOException {
+    private Object parseFloat(int curr, PushbackReader pbr, StringBuffer digits) throws IOException {
         assert (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M');
         if (curr == '.') {
             do {
@@ -429,7 +408,7 @@ class Scanner implements Closeable {
         }
     }
 
-    private Object parseInteger(int curr, CharSequence digits) throws IOException {
+    private Object parseInteger(int curr, PushbackReader pbr, CharSequence digits) throws IOException {
         final boolean bigint;
         if (curr == 'N') {
             bigint = true;
@@ -454,31 +433,31 @@ class Scanner implements Closeable {
         }
     }
 
-    private Keyword readKeyword(int curr) throws IOException {
+    private Keyword readKeyword(int curr, PushbackReader pbr) throws IOException {
         assert curr == ':';
         curr = pbr.read();
         if (curr == END) {
             throw new EdnException(
                     "Unexpected end of input while reading keyword");
         }
-        Symbol sym = readSymbol(curr);
+        Symbol sym = readSymbol(curr, pbr);
         if (SLASH_SYMBOL.equals(sym)) {
             throw new EdnException("':/' is not a valid keyword.");
         }
         return Keyword.newKeyword(sym);
     }
 
-    private Tag readTag(int curr) throws IOException {
+    private Tag readTag(int curr, PushbackReader pbr) throws IOException {
         assert curr == '#';
         curr = pbr.read();
         if (curr == END) {
             throw new EdnException("Unexpected end of input while reading tag");
         }
-        return newTag(readSymbol(curr));
+        return newTag(readSymbol(curr, pbr));
     }
 
 
-    private Symbol readSymbol(int curr) throws IOException {
+    private Symbol readSymbol(int curr, PushbackReader pbr) throws IOException {
         assert curr != END && CharClassify.symbolStart((char)curr);
         StringBuilder b = new StringBuilder();
         int n = 0;

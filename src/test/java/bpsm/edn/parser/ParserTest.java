@@ -13,6 +13,7 @@ import static bpsm.edn.parser.Parsers.newParserConfigBuilder;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -33,9 +34,8 @@ public class ParserTest {
 
     @Test
     public void parseEdnSample() throws IOException {
-
-        Parser parser = parser(Parsers.defaultConfiguration(),
-            IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
+        PushbackReader pbr = Parsers.newPushbackReader(IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
+        Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
 
         @SuppressWarnings("unchecked")
         List<Object> expected = Arrays.asList(
@@ -47,11 +47,9 @@ public class ParserTest {
 
         List<Object> results = new ArrayList<Object>();
         for (int i = 0; i < 4; i++) {
-            results.add(parser.nextValue());
+            results.add(parser.nextValue(pbr));
         }
-
         assertEquals(expected, results);
-
     }
 
     @Test
@@ -201,15 +199,7 @@ public class ParserTest {
     }
 
     static Object parse(Parser.Config cfg, String input) {
-        return parser(cfg, input).nextValue();
-    }
-
-    static Parser parser(String input) {
-        return parser(defaultConfiguration(), input);
-    }
-
-    static Parser parser(Parser.Config cfg, String input) {
-        return Parsers.newParser(cfg, input);
+        return Parsers.newParser(cfg).nextValue(Parsers.newPushbackReader(input));
     }
 
     private Map<Object, Object> map(Object... kvs) {

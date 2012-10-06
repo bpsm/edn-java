@@ -31,6 +31,7 @@ import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.util.Map;
 import org.junit.Test;
 import bpsm.edn.parser.Parser;
@@ -39,16 +40,12 @@ import bpsm.edn.parser.Parsers;
 public class ParseASingleMapTest {
     @Test
     public void simpleUsageExample() throws IOException {
-        Parser p = Parsers.newParser(defaultConfiguration(), "{:x 1, :y 2}");
-        try {
-            Map<?, ?> m = (Map<?, ?>) p.nextValue();
-            assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
-            assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
-
-            assertEquals(Parser.END_OF_INPUT, p.nextValue());
-        } finally {
-            p.close();
-        }
+        PushbackReader pbr = Parsers.newPushbackReader("{:x 1, :y 2}");
+        Parser p = Parsers.newParser(defaultConfiguration());
+        Map<?, ?> m = (Map<?, ?>) p.nextValue(pbr);
+        assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
+        assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
+        assertEquals(Parser.END_OF_INPUT, p.nextValue(pbr));
     }
 }
 ```
@@ -71,15 +68,17 @@ Maps map to `java.util.HashMap` and sets to `java.util.HashSet`.
 
 The parser is provided a a configuration when created:
 
-    Parsers.newParser(Parsers.defaultConfiguration(), input)
+    Parsers.newParser(Parsers.defaultConfiguration())
 
 The parser can be customized to use different collection classes by first building the appropriate `Parser.Config`:
 
 ```java
 package bpsm.edn.examples;
 
+import static bpsm.edn.parser.Parsers.newPushbackReader;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
@@ -93,7 +92,8 @@ public class SimpleParserConfigTest {
     @Test
     public void test() throws IOException {
         Parser.Config cfg =
-            Parsers.newParserConfigBuilder().setSetFactory(new CollectionBuilder.Factory() {
+            Parsers.newParserConfigBuilder().setSetFactory(
+                    new CollectionBuilder.Factory() {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
@@ -102,8 +102,9 @@ public class SimpleParserConfigTest {
                     };
                 }
             }).build();
-        Parser p = Parsers.newParser(cfg, "#{1 0 2 9 3 8 4 7 5 6}");
-        SortedSet<?> s = (SortedSet<?>) p.nextValue();
+        PushbackReader pbr = newPushbackReader("#{1 0 2 9 3 8 4 7 5 6}");
+        Parser p = Parsers.newParser(cfg);
+        SortedSet<?> s = (SortedSet<?>) p.nextValue(pbr);
         // The elements of s are sorted since our SetFactory
         // builds a SortedSet, not a (Hash)Set.
         assertEquals(Arrays.asList(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L),
@@ -135,6 +136,7 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
@@ -155,8 +157,10 @@ public class CustomTagHandler {
                             return URI.create((String) value);
                         }
                     }).build();
-        Parser p = Parsers.newParser(cfg, "#bpsm/uri \"http://example.com\"");
-        assertEquals(new URI("http://example.com"), (URI) p.nextValue());
+        Parser p = Parsers.newParser(cfg);
+        PushbackReader pbr = Parsers.newPushbackReader(
+                "#bpsm/uri \"http://example.com\"");
+        assertEquals(new URI("http://example.com"), p.nextValue(pbr));
     }
 }
 ```
@@ -170,6 +174,7 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigInteger;
 import org.junit.Test;
 import bpsm.edn.Tag;
@@ -192,9 +197,10 @@ public class CustomLongHandler {
                         }
                     }
                 }).build();
-        Parser p = Parsers.newParser(cfg, "1024, 2147483648");
-        assertEquals(1024, p.nextValue());
-        assertEquals(BigInteger.valueOf(2147483648L), p.nextValue());
+        Parser p = Parsers.newParser(cfg);
+        PushbackReader pbr = Parsers.newPushbackReader("1024, 2147483648");
+        assertEquals(1024, p.nextValue(pbr));
+        assertEquals(BigInteger.valueOf(2147483648L), p.nextValue(pbr));
     }
 }
 ```

@@ -8,12 +8,16 @@ import static bpsm.edn.parser.Parser.Config.EDN_INSTANT;
 import static bpsm.edn.parser.Parser.Config.EDN_UUID;
 import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 
+import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
@@ -21,7 +25,6 @@ import bpsm.edn.parser.Parser.Config.Builder;
 import bpsm.edn.parser.inst.InstantToDate;
 
 public class Parsers {
-
 
     static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 
@@ -41,24 +44,48 @@ public class Parsers {
         }
     };
 
-    public static Parser newParser(Parser.Config cfg, Readable readable) {
-        try {
-            return newParser(cfg, new Scanner(cfg, readable));
-        } catch (IOException e) {
-            throw new EdnIOException(e);
-        }
+    public static Parser newParser(Parser.Config cfg) {
+        return new ParserImpl(cfg, new Scanner(cfg));
     }
 
-    public static Parser newParser(Parser.Config cfg, CharSequence input) {
-        try {
-            return newParser(cfg, new Scanner(cfg, CharBuffer.wrap(input)));
-        } catch (IOException e) {
-            throw new EdnIOException(e);
+    /**
+     * Return a PushbackReader (size 1) for the given Readable.
+     * If r is in fact already a PushbackReader, just return r
+     * directly.
+     * @param r
+     * @return
+     */
+    public static PushbackReader newPushbackReader(final Readable r) {
+        if (r instanceof PushbackReader) {
+            return (PushbackReader) r;
         }
+        if (r instanceof BufferedReader) {
+            return new PushbackReader((Reader)r);
+        }
+        if (r instanceof Reader) {
+            return new PushbackReader(new BufferedReader((Reader)r));
+        }
+        Reader rdr = new Reader() {
+            @Override
+            public void close() throws IOException {
+                if (r instanceof Closeable) {
+                    ((Closeable)r).close();
+                }
+            }
+
+            @Override
+            public int read(char[] cbuf, int off, int len) throws IOException {
+                return r.read(CharBuffer.wrap(cbuf, off, len));
+            }
+        };
+        return new PushbackReader(new BufferedReader(rdr));
     }
 
-    static Parser newParser(final Parser.Config cfg, final Scanner scanner) throws IOException {
-        return new ParserImpl(cfg, scanner);
+    public static PushbackReader newPushbackReader(final CharSequence cs) {
+        if (cs instanceof String) {
+            return new PushbackReader(new StringReader((String)cs));
+        }
+        return newPushbackReader((Readable)CharBuffer.wrap(cs));
     }
 
     public static Builder newParserConfigBuilder() {
