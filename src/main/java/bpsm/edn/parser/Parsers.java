@@ -63,7 +63,7 @@ public class Parsers {
             return new PushbackReader((Reader)r);
         }
         if (r instanceof Reader) {
-            return new PushbackReader(new BufferedReader((Reader)r));
+            return new PushbackReader(new BufferedReader((Reader)r), 2);
         }
         Reader rdr = new Reader() {
             @Override
@@ -83,7 +83,7 @@ public class Parsers {
 
     public static PushbackReader newPushbackReader(final CharSequence cs) {
         if (cs instanceof String) {
-            return new PushbackReader(new StringReader((String)cs));
+            return new PushbackReader(new StringReader((String)cs), 2);
         }
         return newPushbackReader((Readable)CharBuffer.wrap(cs));
     }

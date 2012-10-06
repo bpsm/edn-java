@@ -55,11 +55,8 @@ class Scanner {
     }
 
     public Object nextToken(PushbackReader pbr) throws IOException {
-        return nextToken(pbr.read(), pbr);
-    }
-
-    private Object nextToken(int curr, PushbackReader pbr) throws IOException {
-        curr = skipWhitespaceAndComments(curr, pbr);
+        skipWhitespaceAndComments(pbr);
+        int curr = pbr.read();
         switch(curr) {
         case END:
             return Token.END_OF_INPUT;
@@ -68,10 +65,10 @@ class Scanner {
         case 'c':
         case 'd':
         case 'e':
-            return readSymbol(curr, pbr);
+            return readSymbol(unread(curr, pbr));
         case 'f':
         {
-            Symbol sym = readSymbol(curr, pbr);
+            Symbol sym = readSymbol(unread(curr, pbr));
             return FALSE_SYMBOL.equals(sym) ? false : sym;
         }
         case 'g':
@@ -81,10 +78,10 @@ class Scanner {
         case 'k':
         case 'l':
         case 'm':
-            return readSymbol(curr, pbr);
+            return readSymbol(unread(curr, pbr));
         case 'n':
         {
-            Symbol sym = readSymbol(curr, pbr);
+            Symbol sym = readSymbol(unread(curr, pbr));
             return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
         }
         case 'o':
@@ -92,10 +89,10 @@ class Scanner {
         case 'q':
         case 'r':
         case 's':
-            return readSymbol(curr, pbr);
+            return readSymbol(unread(curr, pbr));
         case 't':
         {
-            Symbol sym = readSymbol(curr, pbr);
+            Symbol sym = readSymbol(unread(curr, pbr));
             return TRUE_SYMBOL.equals(sym) ? true : sym;
         }
         case 'u':
@@ -136,23 +133,22 @@ class Scanner {
         case '?':
         case '/':
         case '.':
-            return readSymbol(curr, pbr);
+            return readSymbol(unread(curr, pbr));
         case '+':
         case '-': {
             int peek = pbr.read();
             if (peek == END) {
-                return readSymbol(curr, pbr);
+                return readSymbol(unread(curr, pbr));
             } else {
-                char p = (char) peek;
-                pbr.unread(p);
-                if (isDigit(p)) {
-                    return readNumber(curr, pbr);
+                unread(curr, peek, pbr);
+                if (isDigit((char)peek)) {
+                    return readNumber(pbr);
                 } else {
-                    return readSymbol(curr, pbr);
+                    return readSymbol(pbr);
                 }
             }}
         case ':':
-            return readKeyword(curr, pbr);
+            return readKeyword(pbr);
         case '0':
         case '1':
         case '2':
@@ -163,7 +159,7 @@ class Scanner {
         case '7':
         case '8':
         case '9':
-            return readNumber(curr, pbr);
+            return readNumber(unread(curr, pbr));
         case '{':
             return Token.BEGIN_MAP;
         case '}':
@@ -186,13 +182,12 @@ class Scanner {
             case '_':
                 return Token.DISCARD;
             default:
-                pbr.unread((char)peek);
-                return readTag(curr, pbr);
+                return readTag(unread(peek, pbr));
             }}
         case '"':
-            return readStringLiteral(curr, pbr);
+            return readStringLiteral(pbr);
         case '\\':
-            return readCharacterLiteral(curr, pbr);
+            return readCharacterLiteral(pbr);
         default:
             throw new EdnException(
                 String.format("Unexpected character '%c', \\"+"u%04x",
@@ -200,33 +195,53 @@ class Scanner {
         }
     }
 
-    private int skipWhitespaceAndComments(int curr, PushbackReader pbr) throws IOException {
-        curr = skipWhitespace(curr, pbr);
-        while (curr == ';') {
-            curr = skipComment(curr, pbr);
-            curr = skipWhitespace(curr, pbr);
+    private static PushbackReader unread(int curr, PushbackReader pbr) throws IOException {
+        if (curr != END) {
+            pbr.unread((char)curr);
         }
-        return curr;
+        return pbr;
     }
 
-    private int skipWhitespace(int curr, PushbackReader pbr) throws IOException {
-        while (curr != END && isWhitespace((char)curr)) {
+    private static PushbackReader unread(int curr, int peek, PushbackReader pbr) throws IOException {
+        if (peek != END) {
+            pbr.unread((char)peek);
+        }
+        if (curr != END) {
+            pbr.unread((char)curr);
+        }
+        return pbr;
+    }
+
+    private void skipWhitespaceAndComments(PushbackReader pbr) throws IOException {
+        for (;;) {
+            skipWhitespace(pbr);
+            int curr = pbr.read();
+            if (curr != ';') {
+                unread(curr, pbr);
+                break;
+            }
+            skipComment(pbr);
+        }
+    }
+
+    private void skipWhitespace(PushbackReader pbr) throws IOException {
+        int curr;
+        do {
             curr = pbr.read();
-        }
-        return curr;
+        } while (curr != END && isWhitespace((char)curr));
+        unread(curr, pbr);
     }
 
-    private int skipComment(int curr, PushbackReader pbr) throws IOException {
-        assert curr == ';';
+    private void skipComment(PushbackReader pbr) throws IOException {
+        int curr;
         do {
             curr = pbr.read();
         } while (curr != END && curr != '\n' && curr != '\r');
-        return curr;
+        unread(curr, pbr);
     }
 
-    private char readCharacterLiteral(int curr, PushbackReader pbr) throws IOException {
-        assert curr == '\\';
-        curr = pbr.read();
+    private char readCharacterLiteral(PushbackReader pbr) throws IOException {
+        int curr = pbr.read();
         if (curr == END) {
             throw new EdnException(
                     "Unexpected end of input following '\'");
@@ -240,9 +255,7 @@ class Scanner {
             b.append((char)curr);
             curr = pbr.read();
         } while (curr != END && !separatesTokens((char)curr));
-        if (curr != END) {
-            pbr.unread((char)curr);
-        }
+        unread(curr, pbr);
         if (b.length() == 1) {
             return b.charAt(0);
         } else {
@@ -288,11 +301,10 @@ class Scanner {
         }
     }
 
-    private String readStringLiteral(int curr, PushbackReader pbr) throws IOException {
-        assert curr == '"';
+    private String readStringLiteral(PushbackReader pbr) throws IOException {
         StringBuffer b = new StringBuffer();
         for (;;) {
-            curr = pbr.read();
+            int curr = pbr.read();
             switch (curr) {
             case END:
                 throw new EdnException(
@@ -340,7 +352,8 @@ class Scanner {
         }
     }
 
-    private Object readNumber(int curr, PushbackReader pbr) throws IOException {
+    private Object readNumber(PushbackReader pbr) throws IOException {
+        int curr = pbr.read();
         assert curr != END && CharClassify.startsNumber((char)curr);
         StringBuffer digits = new StringBuffer();
 
@@ -352,15 +365,16 @@ class Scanner {
             digits.append((char)curr);
             curr = pbr.read();
         }
-
+        unread(curr, pbr);
         if (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M') {
-            return parseFloat(curr, pbr, digits);
+            return parseFloat(pbr, digits);
         } else {
-            return parseInteger(curr, pbr, digits);
+            return parseInteger(pbr, digits);
         }
     }
 
-    private Object parseFloat(int curr, PushbackReader pbr, StringBuffer digits) throws IOException {
+    private Object parseFloat(PushbackReader pbr, StringBuffer digits) throws IOException {
+        int curr = pbr.read();
         assert (curr == '.' || curr == 'e' || curr == 'E' || curr == 'M');
         if (curr == '.') {
             do {
@@ -395,9 +409,7 @@ class Scanner {
         if (curr != END && !separatesTokens((char)curr)) {
             throw new EdnException("Not a number: '"+ digits + ((char)curr) +"'.");
         }
-        if (curr != END) {
-            pbr.unread((char)curr);
-        }
+        unread(curr, pbr);
 
         if (decimal) {
             BigDecimal d = new BigDecimal(digits.toString());
@@ -408,7 +420,8 @@ class Scanner {
         }
     }
 
-    private Object parseInteger(int curr, PushbackReader pbr, CharSequence digits) throws IOException {
+    private Object parseInteger(PushbackReader pbr, CharSequence digits) throws IOException {
+        int curr = pbr.read();
         final boolean bigint;
         if (curr == 'N') {
             bigint = true;
@@ -420,9 +433,7 @@ class Scanner {
         if (curr != END && !separatesTokens((char)curr)) {
             throw new EdnException("Not a number: '"+ digits + ((char)curr) +"'.");
         }
-        if (curr != END) {
-            pbr.unread((char)curr);
-        }
+        unread(curr, pbr);
 
         final BigInteger n = new BigInteger(digits.toString());
 
@@ -433,32 +444,25 @@ class Scanner {
         }
     }
 
-    private Keyword readKeyword(int curr, PushbackReader pbr) throws IOException {
-        assert curr == ':';
-        curr = pbr.read();
-        if (curr == END) {
-            throw new EdnException(
-                    "Unexpected end of input while reading keyword");
-        }
-        Symbol sym = readSymbol(curr, pbr);
+    private Keyword readKeyword(PushbackReader pbr) throws IOException {
+        Symbol sym = readSymbol(pbr);
         if (SLASH_SYMBOL.equals(sym)) {
             throw new EdnException("':/' is not a valid keyword.");
         }
         return Keyword.newKeyword(sym);
     }
 
-    private Tag readTag(int curr, PushbackReader pbr) throws IOException {
-        assert curr == '#';
-        curr = pbr.read();
-        if (curr == END) {
-            throw new EdnException("Unexpected end of input while reading tag");
-        }
-        return newTag(readSymbol(curr, pbr));
+    private Tag readTag(PushbackReader pbr) throws IOException {
+        return newTag(readSymbol(pbr));
     }
 
 
-    private Symbol readSymbol(int curr, PushbackReader pbr) throws IOException {
-        assert curr != END && CharClassify.symbolStart((char)curr);
+    private Symbol readSymbol(PushbackReader pbr) throws IOException {
+        int curr = pbr.read();
+        if (curr == END) {
+            throw new EdnException(
+                    "Unexpected end of input while reading an identifier");
+        }
         StringBuilder b = new StringBuilder();
         int n = 0;
         int p = Integer.MIN_VALUE;
@@ -470,9 +474,7 @@ class Scanner {
             b.append((char)curr);
             curr = pbr.read();
         } while (curr != END && !separatesTokens((char)curr));
-        if (curr != END) {
-            pbr.unread((char)curr);
-        }
+        unread(curr, pbr);
 
         validateUseOfSlash(b, n, p);
         return makeSymbol(b, n, p);
