@@ -140,11 +140,11 @@ class Scanner {
             if (peek == END) {
                 return readSymbol(unread(curr, pbr));
             } else {
-                unread(curr, peek, pbr);
+                unread(peek, pbr);
                 if (isDigit((char)peek)) {
-                    return readNumber(pbr);
+                    return readNumber(curr, pbr);
                 } else {
-                    return readSymbol(pbr);
+                    return readSymbol(curr, pbr);
                 }
             }}
         case ':':
@@ -196,16 +196,6 @@ class Scanner {
     }
 
     private static PushbackReader unread(int curr, PushbackReader pbr) throws IOException {
-        if (curr != END) {
-            pbr.unread((char)curr);
-        }
-        return pbr;
-    }
-
-    private static PushbackReader unread(int curr, int peek, PushbackReader pbr) throws IOException {
-        if (peek != END) {
-            pbr.unread((char)peek);
-        }
         if (curr != END) {
             pbr.unread((char)curr);
         }
@@ -353,7 +343,10 @@ class Scanner {
     }
 
     private Object readNumber(PushbackReader pbr) throws IOException {
-        int curr = pbr.read();
+        return readNumber(pbr.read(), pbr);
+    }
+
+    private Object readNumber(int curr, PushbackReader pbr) throws IOException {
         assert curr != END && CharClassify.startsNumber((char)curr);
         StringBuffer digits = new StringBuffer();
 
@@ -443,9 +436,11 @@ class Scanner {
         return newTag(readSymbol(pbr));
     }
 
-
     private Symbol readSymbol(PushbackReader pbr) throws IOException {
-        int curr = pbr.read();
+        return readSymbol(pbr.read(), pbr);
+    }
+
+    private Symbol readSymbol(int curr, PushbackReader pbr) throws IOException {
         if (curr == END) {
             throw new EdnException(
                     "Unexpected end of input while reading an identifier");
