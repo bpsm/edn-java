@@ -110,7 +110,7 @@ public class Parsers {
                     return curr;
                 }
                 if (end) {
-                    return -1;
+                    return curr = -1;
                 }
                 try {
                     return curr = buff.get();
@@ -119,14 +119,17 @@ public class Parsers {
                         return curr = buff.get();
                     } else {
                         end = true;
-                        return -1;
+                        return curr = -1;
                     }
                 }
             }
 
             public void unread() throws IOException {
                 if (unread) {
-                    throw new IOException("Can't unread more than once in a row.");
+                    throw new IOException("Can't unread after unread.");
+                }
+                if (curr == Integer.MIN_VALUE) {
+                    throw new IOException("Can't unread before read.");
                 }
                 unread = true;
             }
