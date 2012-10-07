@@ -65,12 +65,9 @@ class Scanner {
         case 'c':
         case 'd':
         case 'e':
-            return readSymbol(unread(curr, pbr));
+            return readSymbol(curr, pbr);
         case 'f':
-        {
-            Symbol sym = readSymbol(unread(curr, pbr));
-            return FALSE_SYMBOL.equals(sym) ? false : sym;
-        }
+            return readSymbolOrFalse(curr, pbr);
         case 'g':
         case 'h':
         case 'i':
@@ -78,23 +75,17 @@ class Scanner {
         case 'k':
         case 'l':
         case 'm':
-            return readSymbol(unread(curr, pbr));
+            return readSymbol(curr, pbr);
         case 'n':
-        {
-            Symbol sym = readSymbol(unread(curr, pbr));
-            return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
-        }
+            return readSymbolOrNil(curr, pbr);
         case 'o':
         case 'p':
         case 'q':
         case 'r':
         case 's':
-            return readSymbol(unread(curr, pbr));
+            return readSymbol(curr, pbr);
         case 't':
-        {
-            Symbol sym = readSymbol(unread(curr, pbr));
-            return TRUE_SYMBOL.equals(sym) ? true : sym;
-        }
+            return readSymbolOrTrue(curr, pbr);
         case 'u':
         case 'v':
         case 'w':
@@ -133,20 +124,10 @@ class Scanner {
         case '?':
         case '/':
         case '.':
-            return readSymbol(unread(curr, pbr));
+            return readSymbol(curr, pbr);
         case '+':
-        case '-': {
-            int peek = pbr.read();
-            if (peek == END) {
-                return readSymbol(unread(curr, pbr));
-            } else {
-                unread(peek, pbr);
-                if (isDigit((char)peek)) {
-                    return readNumber(curr, pbr);
-                } else {
-                    return readSymbol(curr, pbr);
-                }
-            }}
+        case '-':
+            return readSymbolOrNumber(curr, pbr);
         case ':':
             return readKeyword(pbr);
         case '0':
@@ -159,7 +140,7 @@ class Scanner {
         case '7':
         case '8':
         case '9':
-            return readNumber(unread(curr, pbr));
+            return readNumber(curr, pbr);
         case '{':
             return Token.BEGIN_MAP;
         case '}':
@@ -172,18 +153,8 @@ class Scanner {
             return Token.BEGIN_LIST;
         case ')':
             return Token.END_LIST;
-        case '#': {
-            int peek = pbr.read();
-            switch(peek) {
-            case END:
-                throw new EdnException("Unexpected end of input following '#'");
-            case '{':
-                return Token.BEGIN_SET;
-            case '_':
-                return Token.DISCARD;
-            default:
-                return readTag(unread(peek, pbr));
-            }}
+        case '#':
+            return readHashDispatched(pbr);
         case '"':
             return readStringLiteral(pbr);
         case '\\':
@@ -195,11 +166,58 @@ class Scanner {
         }
     }
 
+    private Object readHashDispatched(PushbackReader pbr) throws IOException {
+        int peek = pbr.read();
+        switch(peek) {
+        case END:
+            throw new EdnException("Unexpected end of input following '#'");
+        case '{':
+            return Token.BEGIN_SET;
+        case '_':
+            return Token.DISCARD;
+        default:
+            return newTag(readSymbol(peek, pbr));
+        }
+    }
+
+    private Object readSymbolOrNumber(int curr, PushbackReader pbr)
+            throws IOException {
+        int peek = pbr.read();
+        if (peek == END) {
+            return readSymbol(curr, pbr);
+        } else {
+            unread(peek, pbr);
+            if (isDigit((char)peek)) {
+                return readNumber(curr, pbr);
+            } else {
+                return readSymbol(curr, pbr);
+            }
+        }
+    }
+
     private static PushbackReader unread(int curr, PushbackReader pbr) throws IOException {
         if (curr != END) {
             pbr.unread((char)curr);
         }
         return pbr;
+    }
+
+    private Object readSymbolOrTrue(int curr, PushbackReader pbr)
+            throws IOException {
+        Symbol sym = readSymbol(curr, pbr);
+        return TRUE_SYMBOL.equals(sym) ? true : sym;
+    }
+
+    private Object readSymbolOrNil(int curr, PushbackReader pbr)
+            throws IOException {
+        Symbol sym = readSymbol(curr, pbr);
+        return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
+    }
+
+    private Object readSymbolOrFalse(int curr, PushbackReader pbr)
+            throws IOException {
+        Symbol sym = readSymbol(curr, pbr);
+        return FALSE_SYMBOL.equals(sym) ? false : sym;
     }
 
     private void skipWhitespaceAndComments(PushbackReader pbr) throws IOException {
@@ -342,10 +360,6 @@ class Scanner {
         }
     }
 
-    private Object readNumber(PushbackReader pbr) throws IOException {
-        return readNumber(pbr.read(), pbr);
-    }
-
     private Object readNumber(int curr, PushbackReader pbr) throws IOException {
         assert curr != END && CharClassify.startsNumber((char)curr);
         StringBuffer digits = new StringBuffer();
@@ -430,10 +444,6 @@ class Scanner {
             throw new EdnException("':/' is not a valid keyword.");
         }
         return Keyword.newKeyword(sym);
-    }
-
-    private Tag readTag(PushbackReader pbr) throws IOException {
-        return newTag(readSymbol(pbr));
     }
 
     private Symbol readSymbol(PushbackReader pbr) throws IOException {
