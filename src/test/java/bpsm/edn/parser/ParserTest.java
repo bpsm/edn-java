@@ -34,7 +34,7 @@ public class ParserTest {
 
     @Test
     public void parseEdnSample() throws IOException {
-        PushbackReader pbr = Parsers.newPushbackReader(IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
+        Parseable pbr = Parsers.newParseable(IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
         Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
 
         @SuppressWarnings("unchecked")
@@ -199,7 +199,7 @@ public class ParserTest {
     }
 
     static Object parse(Parser.Config cfg, String input) {
-        return Parsers.newParser(cfg).nextValue(Parsers.newPushbackReader(input));
+        return Parsers.newParser(cfg).nextValue(Parsers.newParseable(input));
     }
 
     private Map<Object, Object> map(Object... kvs) {

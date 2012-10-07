@@ -31,16 +31,16 @@ import static bpsm.edn.Symbol.newSymbol;
 import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.util.Map;
 import org.junit.Test;
+import bpsm.edn.parser.Parseable;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 
 public class ParseASingleMapTest {
     @Test
     public void simpleUsageExample() throws IOException {
-        PushbackReader pbr = Parsers.newPushbackReader("{:x 1, :y 2}");
+        Parseable pbr = Parsers.newParseable("{:x 1, :y 2}");
         Parser p = Parsers.newParser(defaultConfiguration());
         Map<?, ?> m = (Map<?, ?>) p.nextValue(pbr);
         assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
@@ -75,16 +75,16 @@ The parser can be customized to use different collection classes by first buildi
 ```java
 package bpsm.edn.examples;
 
-import static bpsm.edn.parser.Parsers.newPushbackReader;
+import static bpsm.edn.parser.Parsers.newParseable;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.junit.Test;
 import bpsm.edn.parser.CollectionBuilder;
+import bpsm.edn.parser.Parseable;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 
@@ -102,7 +102,7 @@ public class SimpleParserConfigTest {
                     };
                 }
             }).build();
-        PushbackReader pbr = newPushbackReader("#{1 0 2 9 3 8 4 7 5 6}");
+        Parseable pbr = newParseable("#{1 0 2 9 3 8 4 7 5 6}");
         Parser p = Parsers.newParser(cfg);
         SortedSet<?> s = (SortedSet<?>) p.nextValue(pbr);
         // The elements of s are sorted since our SetFactory
@@ -136,12 +136,12 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
 import bpsm.edn.Symbol;
 import bpsm.edn.Tag;
+import bpsm.edn.parser.Parseable;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
@@ -158,7 +158,7 @@ public class CustomTagHandler {
                         }
                     }).build();
         Parser p = Parsers.newParser(cfg);
-        PushbackReader pbr = Parsers.newPushbackReader(
+        Parseable pbr = Parsers.newParseable(
                 "#bpsm/uri \"http://example.com\"");
         assertEquals(new URI("http://example.com"), p.nextValue(pbr));
     }
@@ -174,10 +174,10 @@ package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.math.BigInteger;
 import org.junit.Test;
 import bpsm.edn.Tag;
+import bpsm.edn.parser.Parseable;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
@@ -198,7 +198,7 @@ public class CustomLongHandler {
                     }
                 }).build();
         Parser p = Parsers.newParser(cfg);
-        PushbackReader pbr = Parsers.newPushbackReader("1024, 2147483648");
+        Parseable pbr = Parsers.newParseable("1024, 2147483648");
         assertEquals(1024, p.nextValue(pbr));
         assertEquals(BigInteger.valueOf(2147483648L), p.nextValue(pbr));
     }
@@ -256,7 +256,7 @@ import bpsm.edn.printer.Printer;
 import bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI = 
+    private static final Tag BPSM_URI =
         Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
     @Test
     public void test() throws IOException {

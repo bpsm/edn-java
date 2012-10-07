@@ -2,11 +2,14 @@
 package bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.math.BigInteger;
+
 import org.junit.Test;
+
 import bpsm.edn.Tag;
+import bpsm.edn.parser.Parseable;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
 import bpsm.edn.parser.TagHandler;
@@ -27,7 +30,7 @@ public class CustomLongHandler {
                     }
                 }).build();
         Parser p = Parsers.newParser(cfg);
-        PushbackReader pbr = Parsers.newPushbackReader("1024, 2147483648");
+        Parseable pbr = Parsers.newParseable("1024, 2147483648");
         assertEquals(1024, p.nextValue(pbr));
         assertEquals(BigInteger.valueOf(2147483648L), p.nextValue(pbr));
     }

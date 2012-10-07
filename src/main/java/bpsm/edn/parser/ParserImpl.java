@@ -28,11 +28,11 @@ class ParserImpl implements Parser {
         this.cfg = cfg;
     }
 
-    public Object nextValue(PushbackReader pbr) {
+    public Object nextValue(Parseable pbr) {
         return nextValue(nextToken(pbr), pbr, false);
     }
 
-    private Object nextToken(PushbackReader pbr) {
+    private Object nextToken(Parseable pbr) {
         try {
             return scanner.nextToken(pbr);
         } catch (IOException e) {
@@ -40,7 +40,7 @@ class ParserImpl implements Parser {
         }
     }
 
-    private Object nextValue(Object curr, PushbackReader pbr, boolean discard) {
+    private Object nextValue(Object curr, Parseable pbr, boolean discard) {
         if (curr instanceof Token) {
             switch ((Token) curr) {
             case BEGIN_LIST:
@@ -72,7 +72,7 @@ class ParserImpl implements Parser {
         }
     }
 
-    private Object nextValue(Tag t, Object curr, PushbackReader pbr, boolean discard) {
+    private Object nextValue(Tag t, Object curr, Parseable pbr, boolean discard) {
         Object v = nextValue(curr, pbr, discard);
         if (discard) {
             // It doesn't matter what we return here, as it will be discarded.
@@ -82,7 +82,7 @@ class ParserImpl implements Parser {
         return x != null ? x.transform(t, v) : newTaggedValue(t, v);
     }
 
-    private Object parseIntoMap(CollectionBuilder.Factory f, Object curr, PushbackReader pbr, boolean discard) {
+    private Object parseIntoMap(CollectionBuilder.Factory f, Object curr, Parseable pbr, boolean discard) {
         CollectionBuilder b = !discard ? f.builder() : null;
         while (curr != END_MAP_OR_SET) {
             Object o = nextValue(curr, pbr, discard);
@@ -98,7 +98,7 @@ class ParserImpl implements Parser {
         return (!discard) ? b.build() : null;
     }
 
-    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end, Object curr, PushbackReader pbr, boolean discard) {
+    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end, Object curr, Parseable pbr, boolean discard) {
         CollectionBuilder b = !discard ? f.builder() : null;
         while (curr != end) {
             Object value = nextValue(curr, pbr, discard);

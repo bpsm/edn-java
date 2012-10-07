@@ -12,7 +12,7 @@ public interface Parser {
 
     public static final Object END_OF_INPUT = Token.END_OF_INPUT;
 
-    public Object nextValue(PushbackReader pbr);
+    public Object nextValue(Parseable pbr);
 
     public interface Config {
 

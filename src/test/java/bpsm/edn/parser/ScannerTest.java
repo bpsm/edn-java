@@ -264,7 +264,7 @@ public class ScannerTest {
             "true false nil \\#{:keyword  [1 2N 3.0 4.0M]}symbol\n" +
             "\\newline \"some text\"\\x ; another comment\n" +
             "() #{-42}";
-        PushbackReader pbr = Parsers.newPushbackReader(txt);
+        Parseable pbr = Parsers.newParseable(txt);
         Object[] expected = {
             true, false, Token.NIL, '#',
             Token.BEGIN_MAP, key("keyword"),
@@ -287,7 +287,7 @@ public class ScannerTest {
     }
 
     static Object scan(String input) {
-        PushbackReader pbr = Parsers.newPushbackReader(input);
+        Parseable pbr = Parsers.newParseable(input);
         try {
             return scanner().nextToken(pbr);
         } catch (IOException e) {
