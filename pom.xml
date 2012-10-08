@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.mikera</groupId>
 	<artifactId>edn-java</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>
     edn-java is an parser and printer for 'edn' written in Java, for Java and
