@@ -3,6 +3,7 @@ package bpsm.edn.performance;
 import bpsm.edn.parser.IOUtil;
 import bpsm.edn.parser.Parser;
 import bpsm.edn.parser.Parsers;
+import bpsm.edn.printer.Printers;
 
 
 /**
@@ -17,8 +18,11 @@ public class PerformanceTest {
 	private static final int REPEATS=5;
 	private static final int BURN_IN=100;
 	
+	private static final boolean PRINT_INDIVIDUAL_EXECUTIONS = true;
+	
 	public static void main(String[] args) {
 		runBenchmark(testA);
+		runBenchmark(testB);
 	}
 	
 	private static void runBenchmark(Benchmark b) {
@@ -30,9 +34,13 @@ public class PerformanceTest {
 		for (int i=0; i<REPEATS; i++) {
 			double d=b.benchmark();
 			total+=d;
-			System.out.println ("Time per iteration: " + (long)d + " ns");
+			if (PRINT_INDIVIDUAL_EXECUTIONS) {
+				System.out.println ("Time per iteration: " + (long)d + " ns");
+			}
 		}
 		System.out.println ("AVERAGE time per iteration: " + (long)(total/REPEATS) + " ns");
+		System.out.println ();
+
 	}
 	
 	private static abstract class Benchmark implements Runnable {
@@ -58,6 +66,7 @@ public class PerformanceTest {
 	}
 	
 	static final String ednString = IOUtil.stringFromResource("bpsm/edn/edn-sample.txt");
+	static final Object ednData = Parsers.newParser(Parsers.defaultConfiguration(), ednString).nextValue();
 	
 	public static Benchmark testA = new Benchmark() {
 		public String toString() {return "Parse edn from String";}
@@ -66,6 +75,17 @@ public class PerformanceTest {
 		@SuppressWarnings("unused")
 		public void runIteration() {
 			Parser p=Parsers.newParser(Parsers.defaultConfiguration(), ednString);
+			Object o=p.nextValue();
+		}
+	};
+	
+	public static Benchmark testB = new Benchmark() {
+		public String toString() {return "Print edn to String";}
+		public int getIterations() {return 100;}
+		
+		@SuppressWarnings("unused")
+		public void runIteration() {
+			String s=Printers.printString(ednData);
 		}
 	};
 	
