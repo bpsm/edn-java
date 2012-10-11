@@ -8,21 +8,21 @@ import bpsm.edn.printer.Printers;
 
 /**
  * This is not exactly a full benchmarking suite
- * 
  * But enough to test efficiency of various operations
  * 
+ * TODO: Consider switching to Google's Caliper if we don't mind an eternal dependency
+ * 
  * @author Mike
- *
  */
 public class PerformanceTest {
 	private static final int REPEATS=5;
 	private static final int BURN_IN=100;
 	
-	private static final boolean PRINT_INDIVIDUAL_EXECUTIONS = true;
+	private static final boolean PRINT_INDIVIDUAL_EXECUTIONS = false;
 	
 	public static void main(String[] args) {
-		runBenchmark(testA);
-		runBenchmark(testB);
+		runBenchmark(testStringParsing);
+		runBenchmark(testStringWriting);
 	}
 	
 	private static void runBenchmark(Benchmark b) {
@@ -68,7 +68,7 @@ public class PerformanceTest {
 	static final String ednString = IOUtil.stringFromResource("bpsm/edn/edn-sample.txt");
 	static final Object ednData = Parsers.newParser(Parsers.defaultConfiguration(), ednString).nextValue();
 	
-	public static Benchmark testA = new Benchmark() {
+	public static Benchmark testStringParsing = new Benchmark() {
 		public String toString() {return "Parse edn from String";}
 		public int getIterations() {return 100;}
 		
@@ -79,7 +79,7 @@ public class PerformanceTest {
 		}
 	};
 	
-	public static Benchmark testB = new Benchmark() {
+	public static Benchmark testStringWriting = new Benchmark() {
 		public String toString() {return "Print edn to String";}
 		public int getIterations() {return 100;}
 		
