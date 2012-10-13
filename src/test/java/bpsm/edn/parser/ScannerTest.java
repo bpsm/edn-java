@@ -237,6 +237,11 @@ public class ScannerTest {
     }
 
     @Test
+    public void commaCharacter() {
+        assertEquals(',', scan("\\,"));
+    }
+
+    @Test
     public void keywordsAreInternedGlobally() {
         assertSame(scan(":foo/bar"), scan(":foo/bar"));
     }
