@@ -323,7 +323,7 @@ class Scanner implements Closeable {
     private char readCharacterLiteral() throws IOException {
         assert curr() == '\\';
         nextChar();
-        if (isWhitespace(curr())) {
+        if (curr() != ',' && isWhitespace(curr())) {
             throw new EdnException(
                 "A backslash introducing character literal must not be "+
                 "immediately followed by whitespace.");
