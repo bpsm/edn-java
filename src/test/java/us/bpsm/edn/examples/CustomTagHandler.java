@@ -22,15 +22,15 @@ public class CustomTagHandler {
     public void test() throws IOException, URISyntaxException {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder()
-                .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
-                    new TagHandler() {
-                        public Object transform(Tag tag, Object value) {
-                            return URI.create((String) value);
-                        }
-                    }).build();
+            .putTagHandler(Tag.newTag(Symbol.newSymbol("us.bpsm", "uri")),
+                new TagHandler() {
+                public Object transform(Tag tag, Object value) {
+                    return URI.create((String) value);
+                }
+            }).build();
         Parser p = Parsers.newParser(cfg);
         Parseable pbr = Parsers.newParseable(
-                "#bpsm/uri \"http://example.com\"");
+            "#us.bpsm/uri \"http://example.com\"");
         assertEquals(new URI("http://example.com"), p.nextValue(pbr));
     }
 }

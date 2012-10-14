@@ -150,15 +150,15 @@ public class CustomTagHandler {
     public void test() throws IOException, URISyntaxException {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder()
-                .putTagHandler(Tag.newTag(Symbol.newSymbol("bpsm", "uri")),
-                    new TagHandler() {
-                        public Object transform(Tag tag, Object value) {
-                            return URI.create((String) value);
-                        }
-                    }).build();
+            .putTagHandler(Tag.newTag(Symbol.newSymbol("us.bpsm", "uri")),
+                new TagHandler() {
+                public Object transform(Tag tag, Object value) {
+                    return URI.create((String) value);
+                }
+            }).build();
         Parser p = Parsers.newParser(cfg);
         Parseable pbr = Parsers.newParseable(
-                "#bpsm/uri \"http://example.com\"");
+            "#us.bpsm/uri \"http://example.com\"");
         assertEquals(new URI("http://example.com"), p.nextValue(pbr));
     }
 }
@@ -256,7 +256,7 @@ import us.bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
     private static final Tag BPSM_URI =
-        Tag.newTag(Symbol.newSymbol("bpsm", "uri"));
+        Tag.newTag(Symbol.newSymbol("us.bpsm", "uri"));
     @Test
     public void test() throws IOException {
         StringWriter w = new StringWriter();
@@ -266,14 +266,13 @@ public class CustomTagPrinter {
                 protected void eval(URI self, Printer writer) {
                     writer.printValue(BPSM_URI).printValue(self.toString());
                 }})
-            .build();
+                .build();
         Printer p = Printers.newPrinter(cfg, w);
         p.printValue(URI.create("http://example.com"));
         p.close();
-        assertEquals("#bpsm/uri\"http://example.com\"", w.toString());
+        assertEquals("#us.bpsm/uri\"http://example.com\"", w.toString());
     }
 }
-
 ```
 
 ### Limitations

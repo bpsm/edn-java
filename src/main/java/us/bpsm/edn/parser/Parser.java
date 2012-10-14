@@ -28,7 +28,7 @@ public interface Parser {
          * this Tag, which will be called with the parsed BigDecimal.
          */
         public static final Tag BIG_DECIMAL_TAG = newTag(newSymbol(
-                "info.bsmithmannschott.edn-java", "BigDecimal"));
+            "us.bpsm.edn-java", "BigDecimal"));
 
         /**
          * Floating point literals not marked by a trailing M are initially
@@ -37,7 +37,7 @@ public interface Parser {
          * Tag, which will be called with the parsed Double.
          */
         public static final Tag DOUBLE_TAG = newTag(newSymbol(
-                "info.bsmithmannschott.edn-java", "Double"));
+            "us.bpsm.edn-java", "Double"));
 
         /**
          * Integer literals marked by a trailing N, and those which lie outside
@@ -47,7 +47,7 @@ public interface Parser {
          * called with the parsed BigInteger.
          */
         public static final Tag BIG_INTEGER_TAG = newTag(newSymbol(
-                "info.bsmithmannschott.edn-java", "BigInteger"));
+            "us.bpsm.edn-java", "BigInteger"));
 
         /**
          * Integer literals not marked by a trailing N which lie inside the
@@ -57,7 +57,7 @@ public interface Parser {
          * with the parsed BigInteger.
          */
         public static final Tag LONG_TAG = newTag(newSymbol(
-                "info.bsmithmannschott.edn-java", "Long"));
+            "us.bpsm.edn-java", "Long"));
 
         public CollectionBuilder.Factory getListFactory();
 
