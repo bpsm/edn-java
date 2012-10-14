@@ -42,6 +42,7 @@ class Scanner implements Closeable {
     private Readable readable;
     private CharBuffer head = null;
     private CharBuffer tail = null;
+    private char curr = END;
 
     private int readIntoBuffer(CharBuffer buff) throws IOException {
         buff.clear();
@@ -91,17 +92,13 @@ class Scanner implements Closeable {
             advanceBuffers();
         }
         if (head.limit() == 0) {
-            return END;
+            return curr = END;
         }
-        return head.get();
+        return curr = head.get();
     }
 
     private char curr() throws IOException {
-        assert head.limit() == 0 && head.position() == 0 || head.position() > 0;
-        if (head.position() > 0) {
-            return head.get(head.position() - 1);
-        }
-        return END;
+        return curr;
     }
 
     private char peek() {

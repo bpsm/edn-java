@@ -9,13 +9,13 @@ import java.net.URL;
 
 import bpsm.edn.EdnException;
 
-class IOUtil {
+public class IOUtil {
 
     static final String ENCODING = "UTF-8";
     private static final int BUFFER_SIZE = 8*1024;
     private static final int INITIAL_BUILDER_SIZE = 8*1024;
 
-    static String stringFromResource(String resourceName) {
+    public static String stringFromResource(String resourceName) {
         URL url = IOUtil.class.getClassLoader().getResource(resourceName);
         if (url == null) {
             throw new EdnException("resource '"+ resourceName +"' not found.");
