@@ -75,7 +75,7 @@ public class Parsers {
                 }
             }
 
-            public void unread() throws IOException {
+            public void unread(int ch) throws IOException {
                 i--;
             }
         };
@@ -84,8 +84,7 @@ public class Parsers {
     public static Parseable newParseable(final Readable r) {
         return new Parseable() {
             CharBuffer buff = emptyBuffer();
-            int curr = Integer.MIN_VALUE;
-            boolean unread = false;
+            int unread = Integer.MIN_VALUE;
             boolean end = false;
             boolean closed = false;
 
@@ -100,32 +99,30 @@ public class Parsers {
                 if (closed) {
                     throw new IOException("Can not read from closed Parseable");
                 }
-                if (unread) {
-                    unread = false;
-                    return curr;
+                if (unread != Integer.MIN_VALUE) {
+                    int ch = unread;
+                    unread = Integer.MIN_VALUE;
+                    return ch;
                 }
                 if (end) {
-                    return curr = -1;
+                    return -1;
                 }
                 if (buff.position() < buff.limit()) {
-                    return curr = buff.get();
+                    return buff.get();
                 }
                 if (readIntoBuffer(buff, r)) {
-                    return curr = buff.get();
+                    return buff.get();
                 } else {
                     end = true;
-                    return curr = -1;
+                    return -1;
                 }
             }
 
-            public void unread() throws IOException {
-                if (unread) {
+            public void unread(int ch) throws IOException {
+                if (unread != Integer.MIN_VALUE) {
                     throw new IOException("Can't unread after unread.");
                 }
-                if (curr == Integer.MIN_VALUE) {
-                    throw new IOException("Can't unread before read.");
-                }
-                unread = true;
+                unread = ch;
             }
         };
     }

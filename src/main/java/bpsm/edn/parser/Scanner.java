@@ -161,7 +161,7 @@ class Scanner {
         default:
             throw new EdnException(
                 String.format("Unexpected character '%c', \\"+"u%04x",
-                        (char)curr, curr));
+                    (char)curr, curr));
         }
     }
 
@@ -180,12 +180,12 @@ class Scanner {
     }
 
     private Object readSymbolOrNumber(int curr, Parseable pbr)
-            throws IOException {
+        throws IOException {
         int peek = pbr.read();
         if (peek == END) {
             return readSymbol(curr, pbr);
         } else {
-            unread(pbr);
+            unread(pbr, peek);
             if (isDigit((char)peek)) {
                 return readNumber(curr, pbr);
             } else {
@@ -194,25 +194,25 @@ class Scanner {
         }
     }
 
-    private static Parseable unread(Parseable pbr) throws IOException {
-        pbr.unread();
+    private static Parseable unread(Parseable pbr, int ch) throws IOException {
+        pbr.unread(ch);
         return pbr;
     }
 
     private Object readSymbolOrTrue(int curr, Parseable pbr)
-            throws IOException {
+        throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return TRUE_SYMBOL.equals(sym) ? true : sym;
     }
 
     private Object readSymbolOrNil(int curr, Parseable pbr)
-            throws IOException {
+        throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
     }
 
     private Object readSymbolOrFalse(int curr, Parseable pbr)
-            throws IOException {
+        throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return FALSE_SYMBOL.equals(sym) ? false : sym;
     }
@@ -222,7 +222,7 @@ class Scanner {
             skipWhitespace(pbr);
             int curr = pbr.read();
             if (curr != ';') {
-                unread(pbr);
+                unread(pbr, curr);
                 break;
             }
             skipComment(pbr);
@@ -234,7 +234,7 @@ class Scanner {
         do {
             curr = pbr.read();
         } while (curr != END && isWhitespace((char)curr));
-        unread(pbr);
+        unread(pbr, curr);
     }
 
     private void skipComment(Parseable pbr) throws IOException {
@@ -242,14 +242,14 @@ class Scanner {
         do {
             curr = pbr.read();
         } while (curr != END && curr != '\n' && curr != '\r');
-        unread(pbr);
+        unread(pbr, curr);
     }
 
     private char readCharacterLiteral(Parseable pbr) throws IOException {
         int curr = pbr.read();
         if (curr == END) {
             throw new EdnException(
-                    "Unexpected end of input following '\'");
+                "Unexpected end of input following '\'");
         } else if (isWhitespace((char)curr) && curr != ',') {
             throw new EdnException(
                 "A backslash introducing character literal must not be "+
@@ -260,7 +260,7 @@ class Scanner {
             b.append((char)curr);
             curr = pbr.read();
         } while (curr != END && !separatesTokens((char)curr));
-        unread(pbr);
+        unread(pbr, curr);
         if (b.length() == 1) {
             return b.charAt(0);
         } else {
@@ -313,7 +313,7 @@ class Scanner {
             switch (curr) {
             case END:
                 throw new EdnException(
-                        "Unexpected end of input in string literal");
+                    "Unexpected end of input in string literal");
             case '"':
                 return b.toString();
             case '\\':
@@ -321,7 +321,7 @@ class Scanner {
                 switch (curr) {
                 case END:
                     throw new EdnException(
-                            "Unexpected end of input in string literal");
+                        "Unexpected end of input in string literal");
                 case 'b':
                     b.append('\b');
                     break;
@@ -348,7 +348,7 @@ class Scanner {
                     break;
                 default:
                     throw new EdnException("Unsupported '"+ ((char)curr)
-                            +"' escape in string");
+                        +"' escape in string");
                 }
                 break;
             default:
@@ -383,11 +383,11 @@ class Scanner {
                 curr = pbr.read();
                 if (curr == END) {
                     throw new EdnException(
-                            "Unexpected end of input in numeric literal");
+                        "Unexpected end of input in numeric literal");
                 }
                 if (!(curr == '-' || curr == '+' || isDigit((char)curr))) {
                     throw new EdnException(
-                            "Not a number: '"+ digits + ((char)curr) +"'.");
+                        "Not a number: '"+ digits + ((char)curr) +"'.");
                 }
                 do {
                     digits.append((char)curr);
@@ -402,9 +402,9 @@ class Scanner {
 
             if (curr != END && !separatesTokens((char)curr)) {
                 throw new EdnException(
-                        "Not a number: '"+ digits + ((char)curr) +"'.");
+                    "Not a number: '"+ digits + ((char)curr) +"'.");
             }
-            unread(pbr);
+            unread(pbr, curr);
 
             if (decimal) {
                 BigDecimal d = new BigDecimal(digits.toString());
@@ -421,9 +421,9 @@ class Scanner {
 
             if (curr != END && !separatesTokens((char)curr)) {
                 throw new EdnException(
-                        "Not a number: '"+ digits + ((char)curr) +"'.");
+                    "Not a number: '"+ digits + ((char)curr) +"'.");
             }
-            unread(pbr);
+            unread(pbr, curr);
 
             final BigInteger n = new BigInteger(digits.toString());
 
@@ -450,7 +450,7 @@ class Scanner {
     private Symbol readSymbol(int curr, Parseable pbr) throws IOException {
         if (curr == END) {
             throw new EdnException(
-                    "Unexpected end of input while reading an identifier");
+                "Unexpected end of input while reading an identifier");
         }
         StringBuilder b = new StringBuilder();
         int n = 0;
@@ -463,7 +463,7 @@ class Scanner {
             b.append((char)curr);
             curr = pbr.read();
         } while (curr != END && !separatesTokens((char)curr));
-        unread(pbr);
+        unread(pbr, curr);
 
         validateUseOfSlash(b, n, p);
         return makeSymbol(b, n, p);
