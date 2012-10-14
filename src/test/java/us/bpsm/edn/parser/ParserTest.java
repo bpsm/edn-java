@@ -39,7 +39,7 @@ public class ParserTest {
 
     @Test
     public void parseEdnSample() throws IOException {
-        Parseable pbr = Parsers.newParseable(IOUtil.stringFromResource("bpsm/edn/edn-sample.txt"));
+        Parseable pbr = Parsers.newParseable(IOUtil.stringFromResource("us/bpsm/edn/edn-sample.txt"));
         Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
 
         @SuppressWarnings("unchecked")
