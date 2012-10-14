@@ -10,9 +10,9 @@ This is a Maven project with the following coordinates:
 
 ```xml
 <dependency>
-    <groupId>info.bsmithmannschott</groupId>
+    <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -24,18 +24,18 @@ You'll need to create a Parser and supply it with some input. Factory methods ar
 
 
 ```java
-package bpsm.edn.examples;
+package us.bpsm.edn.examples;
 
-import static bpsm.edn.Keyword.newKeyword;
-import static bpsm.edn.Symbol.newSymbol;
-import static bpsm.edn.parser.Parsers.defaultConfiguration;
 import static org.junit.Assert.assertEquals;
+import static us.bpsm.edn.Keyword.newKeyword;
+import static us.bpsm.edn.Symbol.newSymbol;
+import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
 import java.io.IOException;
 import java.util.Map;
 import org.junit.Test;
-import bpsm.edn.parser.Parseable;
-import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Parsers;
+import us.bpsm.edn.parser.Parseable;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
 
 public class ParseASingleMapTest {
     @Test
@@ -73,20 +73,19 @@ The parser is provided a a configuration when created:
 The parser can be customized to use different collection classes by first building the appropriate `Parser.Config`:
 
 ```java
-package bpsm.edn.examples;
 
-import static bpsm.edn.parser.Parsers.newParseable;
 import static org.junit.Assert.assertEquals;
+import static us.bpsm.edn.parser.Parsers.newParseable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.junit.Test;
-import bpsm.edn.parser.CollectionBuilder;
-import bpsm.edn.parser.Parseable;
-import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Parsers;
+import us.bpsm.edn.parser.CollectionBuilder;
+import us.bpsm.edn.parser.Parseable;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
 
 public class SimpleParserConfigTest {
     @Test
@@ -132,19 +131,19 @@ Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 Use custom handlers may by building an appropriate `Parser.Config`:
 
 ```java
-package bpsm.edn.examples;
+package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
-import bpsm.edn.Symbol;
-import bpsm.edn.Tag;
-import bpsm.edn.parser.Parseable;
-import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Parsers;
-import bpsm.edn.parser.TagHandler;
+import us.bpsm.edn.Symbol;
+import us.bpsm.edn.Tag;
+import us.bpsm.edn.parser.Parseable;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
+import us.bpsm.edn.parser.TagHandler;
 
 public class CustomTagHandler {
     @Test
@@ -170,17 +169,17 @@ public class CustomTagHandler {
 By default, integers not marked as arbitrary precision by the suffix "N" will parse as `java.lang.Long`. This can be influenced by installing handlers for the tag named by the constant `Parser.Config.LONG_TAG`.
 
 ```java
-package bpsm.edn.examples;
+package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.junit.Test;
-import bpsm.edn.Tag;
-import bpsm.edn.parser.Parseable;
-import bpsm.edn.parser.Parser;
-import bpsm.edn.parser.Parsers;
-import bpsm.edn.parser.TagHandler;
+import us.bpsm.edn.Tag;
+import us.bpsm.edn.parser.Parseable;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
+import us.bpsm.edn.parser.TagHandler;
 
 public class CustomLongHandler {
     @Test
@@ -242,18 +241,18 @@ To support additional types, you'll need to provide a `Printer.Config` to the `P
 As an example, we'll add printing support for URIs:
 
 ```java
-package bpsm.edn.examples;
+package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import org.junit.Test;
-import bpsm.edn.Symbol;
-import bpsm.edn.Tag;
-import bpsm.edn.printer.PrintFn;
-import bpsm.edn.printer.Printer;
-import bpsm.edn.printer.Printers;
+import us.bpsm.edn.Symbol;
+import us.bpsm.edn.Tag;
+import us.bpsm.edn.printer.PrintFn;
+import us.bpsm.edn.printer.Printer;
+import us.bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
     private static final Tag BPSM_URI =
@@ -274,6 +273,7 @@ public class CustomTagPrinter {
         assertEquals("#bpsm/uri\"http://example.com\"", w.toString());
     }
 }
+
 ```
 
 ### Limitations
