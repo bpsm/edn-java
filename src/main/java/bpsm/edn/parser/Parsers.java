@@ -8,13 +8,13 @@ import static bpsm.edn.parser.Parser.Config.EDN_INSTANT;
 import static bpsm.edn.parser.Parser.Config.EDN_UUID;
 import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.Reader;
+import java.nio.BufferUnderflowException;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.EdnIOException;
 import bpsm.edn.Tag;
 import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
@@ -22,7 +22,6 @@ import bpsm.edn.parser.Parser.Config.Builder;
 import bpsm.edn.parser.inst.InstantToDate;
 
 public class Parsers {
-
 
     static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY = new DefaultListFactory();
 
@@ -42,24 +41,90 @@ public class Parsers {
         }
     };
 
-    public static Parser newParser(Parser.Config cfg, Readable readable) {
-        try {
-            return newParser(cfg, new Scanner(cfg, readable));
-        } catch (IOException e) {
-            throw new EdnIOException(e);
-        }
+    public static Parser newParser(Parser.Config cfg) {
+        return new ParserImpl(cfg, new Scanner(cfg));
     }
 
-    public static Parser newParser(Parser.Config cfg, CharSequence input) {
-        try {
-            return newParser(cfg, new Scanner(cfg, CharBuffer.wrap(input)));
-        } catch (IOException e) {
-            throw new EdnIOException(e);
-        }
+    static final int BUFFER_SIZE = 4096;
+
+    static boolean readIntoBuffer(CharBuffer b, Readable r) throws IOException {
+        b.clear();
+        int n = r.read(b);
+        b.flip();
+        return n > 0;
     }
 
-    static Parser newParser(final Parser.Config cfg, final Scanner scanner) throws IOException {
-        return new ParserImpl(cfg, scanner);
+    static CharBuffer emptyBuffer() {
+        CharBuffer b = CharBuffer.allocate(BUFFER_SIZE);
+        b.limit(0);
+        return b;
+    }
+
+    public static Parseable newParseable(final CharSequence cs) {
+        return new Parseable() {
+            int i = 0;
+
+            public void close() throws IOException {
+            }
+
+            public int read() throws IOException {
+                try {
+                    return cs.charAt(i++);
+                } catch (IndexOutOfBoundsException _) {
+                    return -1;
+                }
+            }
+
+            public void unread(int ch) throws IOException {
+                i--;
+            }
+        };
+    }
+
+    public static Parseable newParseable(final Readable r) {
+        return new Parseable() {
+            CharBuffer buff = emptyBuffer();
+            int unread = Integer.MIN_VALUE;
+            boolean end = false;
+            boolean closed = false;
+
+            public void close() throws IOException {
+                closed = true;
+                if (r instanceof Closeable) {
+                    ((Closeable) r).close();
+                }
+            }
+
+            public int read() throws IOException {
+                if (closed) {
+                    throw new IOException("Can not read from closed Parseable");
+                }
+                if (unread != Integer.MIN_VALUE) {
+                    int ch = unread;
+                    unread = Integer.MIN_VALUE;
+                    return ch;
+                }
+                if (end) {
+                    return -1;
+                }
+                if (buff.position() < buff.limit()) {
+                    return buff.get();
+                }
+                if (readIntoBuffer(buff, r)) {
+                    return buff.get();
+                } else {
+                    end = true;
+                    return -1;
+                }
+            }
+
+            public void unread(int ch) throws IOException {
+                if (unread != Integer.MIN_VALUE) {
+                    throw new IOException("Can't unread after unread.");
+                }
+                unread = ch;
+            }
+        };
     }
 
     public static Builder newParserConfigBuilder() {

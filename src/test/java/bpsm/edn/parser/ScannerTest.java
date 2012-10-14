@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
@@ -263,6 +264,7 @@ public class ScannerTest {
             "true false nil \\#{:keyword  [1 2N 3.0 4.0M]}symbol\n" +
             "\\newline \"some text\"\\x ; another comment\n" +
             "() #{-42}";
+        Parseable pbr = Parsers.newParseable(txt);
         Object[] expected = {
             true, false, Token.NIL, '#',
             Token.BEGIN_MAP, key("keyword"),
@@ -273,9 +275,9 @@ public class ScannerTest {
             Token.BEGIN_SET, -42L, Token.END_MAP_OR_SET,
             Token.END_OF_INPUT
         };
-        Scanner s = scanner(txt);
+        Scanner s = scanner();
         for (Object o: expected) {
-            assertEquals(o, s.nextToken());
+            assertEquals(o, s.nextToken(pbr));
         }
     }
 
@@ -285,20 +287,16 @@ public class ScannerTest {
     }
 
     static Object scan(String input) {
+        Parseable pbr = Parsers.newParseable(input);
         try {
-            return scanner(input).nextToken();
+            return scanner().nextToken(pbr);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    static Scanner scanner(String input) {
-        try {
-            return new Scanner(Parsers.defaultConfiguration(),
-                CharBuffer.wrap(input));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    static Scanner scanner() {
+        return new Scanner(Parsers.defaultConfiguration());
     }
 
     static Symbol sym(String name) {
