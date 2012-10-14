@@ -8,18 +8,13 @@ import static bpsm.edn.parser.Parser.Config.EDN_INSTANT;
 import static bpsm.edn.parser.Parser.Config.EDN_UUID;
 import static bpsm.edn.parser.Parser.Config.LONG_TAG;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.BufferUnderflowException;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import bpsm.edn.EdnException;
 import bpsm.edn.Tag;
 import bpsm.edn.parser.CollectionBuilder.Factory;
 import bpsm.edn.parser.Parser.Config;
@@ -134,46 +129,6 @@ public class Parsers {
                 unread = true;
             }
         };
-    }
-
-    /**
-     * Return a PushbackReader (size 1) for the given Readable.
-     * If r is in fact already a PushbackReader, just return r
-     * directly.
-     * @param r
-     * @return
-     */
-    public static PushbackReader newPushbackReader(final Readable r) {
-        if (r instanceof PushbackReader) {
-            return (PushbackReader) r;
-        }
-        if (r instanceof BufferedReader) {
-            return new PushbackReader((Reader)r);
-        }
-        if (r instanceof Reader) {
-            return new PushbackReader(new BufferedReader((Reader)r));
-        }
-        Reader rdr = new Reader() {
-            @Override
-            public void close() throws IOException {
-                if (r instanceof Closeable) {
-                    ((Closeable)r).close();
-                }
-            }
-
-            @Override
-            public int read(char[] cbuf, int off, int len) throws IOException {
-                return r.read(CharBuffer.wrap(cbuf, off, len));
-            }
-        };
-        return new PushbackReader(new BufferedReader(rdr));
-    }
-
-    public static PushbackReader newPushbackReader(final CharSequence cs) {
-        if (cs instanceof String) {
-            return new PushbackReader(new StringReader((String)cs));
-        }
-        return newPushbackReader((Readable)CharBuffer.wrap(cs));
     }
 
     public static Builder newParserConfigBuilder() {
