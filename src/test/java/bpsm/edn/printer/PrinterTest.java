@@ -73,7 +73,6 @@ public class PrinterTest {
         StringWriter sw = new StringWriter();
         Printer ew = Printers.newPrinter(Printers.defaultPrinterConfig(), sw);
         ew.printValue(originalParsedValue);
-        ew.close();
 
         pbr = Parsers.newParseable(sw.toString());
         parser = Parsers.newParser(Parsers.defaultConfiguration());

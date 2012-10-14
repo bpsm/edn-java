@@ -26,7 +26,7 @@ public class CustomTagPrinter {
             .build();
         Printer p = Printers.newPrinter(cfg, w);
         p.printValue(URI.create("http://example.com"));
-        p.close();
+        w.close();
         assertEquals("#bpsm/uri\"http://example.com\"", w.toString());
     }
 }
