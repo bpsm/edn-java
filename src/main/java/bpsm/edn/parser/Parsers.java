@@ -107,15 +107,14 @@ public class Parsers {
                 if (end) {
                     return curr = -1;
                 }
-                try {
+                if (buff.position() < buff.limit()) {
                     return curr = buff.get();
-                } catch (BufferUnderflowException _) {
-                    if (readIntoBuffer(buff, r)) {
-                        return curr = buff.get();
-                    } else {
-                        end = true;
-                        return curr = -1;
-                    }
+                }
+                if (readIntoBuffer(buff, r)) {
+                    return curr = buff.get();
+                } else {
+                    end = true;
+                    return curr = -1;
                 }
             }
 
