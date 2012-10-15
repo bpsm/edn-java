@@ -18,7 +18,6 @@ import us.bpsm.edn.Tag;
 import us.bpsm.edn.parser.CollectionBuilder.Factory;
 import us.bpsm.edn.parser.Parser.Config;
 import us.bpsm.edn.parser.Parser.Config.Builder;
-import us.bpsm.edn.parser.inst.InstantToDate;
 
 
 public class Parsers {

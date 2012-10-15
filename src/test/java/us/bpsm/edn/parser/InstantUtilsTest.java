@@ -1,23 +1,23 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package us.bpsm.edn.parser.inst;
+package us.bpsm.edn.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static us.bpsm.edn.parser.inst.InstantUtils.calendarToString;
-import static us.bpsm.edn.parser.inst.InstantUtils.dateToString;
-import static us.bpsm.edn.parser.inst.InstantUtils.makeCalendar;
-import static us.bpsm.edn.parser.inst.InstantUtils.makeDate;
-import static us.bpsm.edn.parser.inst.InstantUtils.makeTimestamp;
-import static us.bpsm.edn.parser.inst.InstantUtils.parse;
-import static us.bpsm.edn.parser.inst.InstantUtils.parseNanoseconds;
-import static us.bpsm.edn.parser.inst.InstantUtils.timestampToString;
+import static us.bpsm.edn.parser.InstantUtils.calendarToString;
+import static us.bpsm.edn.parser.InstantUtils.dateToString;
+import static us.bpsm.edn.parser.InstantUtils.makeCalendar;
+import static us.bpsm.edn.parser.InstantUtils.makeDate;
+import static us.bpsm.edn.parser.InstantUtils.makeTimestamp;
+import static us.bpsm.edn.parser.InstantUtils.parse;
+import static us.bpsm.edn.parser.InstantUtils.parseNanoseconds;
+import static us.bpsm.edn.parser.InstantUtils.timestampToString;
 
 import java.util.Arrays;
 
 import org.junit.Test;
 
 import us.bpsm.edn.EdnException;
-import us.bpsm.edn.parser.inst.ParsedInstant;
+import us.bpsm.edn.parser.ParsedInstant;
 
 
 public class InstantUtilsTest {

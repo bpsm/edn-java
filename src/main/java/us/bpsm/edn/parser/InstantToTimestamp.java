@@ -1,12 +1,11 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package us.bpsm.edn.parser.inst;
+package us.bpsm.edn.parser;
 
-
-public final class InstantToDate extends AbstractInstantHandler {
+public class InstantToTimestamp extends AbstractInstantHandler {
 
     @Override
     protected Object transform(ParsedInstant pi) {
-        return InstantUtils.makeDate(pi);
+        return InstantUtils.makeTimestamp(pi);
     }
 
 }

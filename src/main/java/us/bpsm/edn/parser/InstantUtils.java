@@ -1,5 +1,5 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
-package us.bpsm.edn.parser.inst;
+package us.bpsm.edn.parser;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
