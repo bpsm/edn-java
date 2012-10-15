@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import us.bpsm.edn.EdnException;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
-import us.bpsm.edn.Tag;
 import us.bpsm.edn.util.CharClassify;
 
 

@@ -10,7 +10,6 @@ import static us.bpsm.edn.parser.Parser.Config.LONG_TAG;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.BufferUnderflowException;
 import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;

@@ -13,7 +13,6 @@ import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
 import static us.bpsm.edn.parser.Parsers.newParserConfigBuilder;
 
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;

@@ -8,11 +8,8 @@ import static us.bpsm.edn.Keyword.newKeyword;
 import static us.bpsm.edn.Symbol.newSymbol;
 
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.CharBuffer;
-
 import org.junit.Test;
 
 import us.bpsm.edn.EdnException;

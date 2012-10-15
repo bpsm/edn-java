@@ -3,8 +3,6 @@ package us.bpsm.edn.printer;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.PushbackReader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 

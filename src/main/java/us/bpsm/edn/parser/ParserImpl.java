@@ -7,8 +7,6 @@ import static us.bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static us.bpsm.edn.parser.Token.END_VECTOR;
 
 import java.io.IOException;
-import java.io.PushbackReader;
-
 import us.bpsm.edn.EdnException;
 import us.bpsm.edn.EdnIOException;
 import us.bpsm.edn.Tag;

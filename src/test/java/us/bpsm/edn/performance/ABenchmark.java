@@ -2,7 +2,6 @@ package us.bpsm.edn.performance;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import us.bpsm.edn.parser.Parseable;

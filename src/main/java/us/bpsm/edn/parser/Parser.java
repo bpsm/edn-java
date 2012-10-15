@@ -4,8 +4,6 @@ package us.bpsm.edn.parser;
 import static us.bpsm.edn.Symbol.newSymbol;
 import static us.bpsm.edn.Tag.newTag;
 
-import java.io.PushbackReader;
-
 import us.bpsm.edn.Tag;
 
 
