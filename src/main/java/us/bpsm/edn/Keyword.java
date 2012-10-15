@@ -1,6 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn;
 
+import static us.bpsm.edn.Symbol.newSymbol;
+
 
 public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;
@@ -15,6 +17,14 @@ public final class Keyword implements Named, Comparable<Keyword> {
 
     public static Keyword newKeyword(Symbol sym) {
         return INTERNER.intern(sym, new Keyword(sym));
+    }
+
+    public static Keyword newKeyword(String prefix, String name) {
+        return newKeyword(newSymbol(prefix, name));
+    }
+
+    public static Keyword newKeyword(String name) {
+        return newKeyword(newSymbol(null, name));
     }
 
     private Keyword(Symbol sym) {

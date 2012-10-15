@@ -302,7 +302,7 @@ public class ScannerTest {
     }
 
     static Symbol sym(String name) {
-        return newSymbol(null, name);
+        return newSymbol(name);
     }
 
     static Symbol sym(String prefix, String name) {
@@ -310,11 +310,11 @@ public class ScannerTest {
     }
 
     static Keyword key(String name) {
-        return newKeyword(sym(null, name));
+        return newKeyword(name);
     }
 
     static Keyword key(String prefix, String name) {
-        return newKeyword(sym(prefix, name));
+        return newKeyword(prefix, name);
     }
 
 

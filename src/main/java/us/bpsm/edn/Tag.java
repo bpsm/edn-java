@@ -1,6 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn;
 
+import static us.bpsm.edn.Symbol.newSymbol;
+
 
 public final class Tag implements Named, Comparable<Tag> {
     private final Symbol sym;
@@ -15,6 +17,14 @@ public final class Tag implements Named, Comparable<Tag> {
 
     public static Tag newTag(Symbol sym) {
         return new Tag(sym);
+    }
+
+    public static Tag newTag(String prefix, String name) {
+        return newTag(newSymbol(prefix, name));
+    }
+
+    public static Tag newTag(String name) {
+        return newTag(newSymbol(null, name));
     }
 
     private Tag(Symbol sym) {

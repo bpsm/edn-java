@@ -3,7 +3,6 @@ package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import static us.bpsm.edn.Keyword.newKeyword;
-import static us.bpsm.edn.Symbol.newSymbol;
 import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
 
 import java.io.IOException;
@@ -22,8 +21,8 @@ public class ParseASingleMapTest {
         Parseable pbr = Parsers.newParseable("{:x 1, :y 2}");
         Parser p = Parsers.newParser(defaultConfiguration());
         Map<?, ?> m = (Map<?, ?>) p.nextValue(pbr);
-        assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
-        assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
+        assertEquals(m.get(newKeyword("x")), 1L);
+        assertEquals(m.get(newKeyword("y")), 2L);
         assertEquals(Parser.END_OF_INPUT, p.nextValue(pbr));
     }
 }

@@ -28,7 +28,6 @@ package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import static us.bpsm.edn.Keyword.newKeyword;
-import static us.bpsm.edn.Symbol.newSymbol;
 import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
 import java.io.IOException;
 import java.util.Map;
@@ -43,8 +42,8 @@ public class ParseASingleMapTest {
         Parseable pbr = Parsers.newParseable("{:x 1, :y 2}");
         Parser p = Parsers.newParser(defaultConfiguration());
         Map<?, ?> m = (Map<?, ?>) p.nextValue(pbr);
-        assertEquals(m.get(newKeyword(newSymbol(null, "x"))), 1L);
-        assertEquals(m.get(newKeyword(newSymbol(null, "y"))), 2L);
+        assertEquals(m.get(newKeyword("x")), 1L);
+        assertEquals(m.get(newKeyword("y")), 2L);
         assertEquals(Parser.END_OF_INPUT, p.nextValue(pbr));
     }
 }
@@ -73,6 +72,7 @@ The parser is provided a a configuration when created:
 The parser can be customized to use different collection classes by first building the appropriate `Parser.Config`:
 
 ```java
+package us.bpsm.edn.examples;
 
 import static org.junit.Assert.assertEquals;
 import static us.bpsm.edn.parser.Parsers.newParseable;
@@ -138,7 +138,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.Test;
-import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parser;
@@ -150,7 +149,7 @@ public class CustomTagHandler {
     public void test() throws IOException, URISyntaxException {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder()
-            .putTagHandler(Tag.newTag(Symbol.newSymbol("us.bpsm", "uri")),
+            .putTagHandler(Tag.newTag("us.bpsm", "uri"),
                 new TagHandler() {
                 public Object transform(Tag tag, Object value) {
                     return URI.create((String) value);
@@ -248,15 +247,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import org.junit.Test;
-import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 import us.bpsm.edn.printer.PrintFn;
 import us.bpsm.edn.printer.Printer;
 import us.bpsm.edn.printer.Printers;
 
 public class CustomTagPrinter {
-    private static final Tag BPSM_URI =
-        Tag.newTag(Symbol.newSymbol("us.bpsm", "uri"));
+    private static final Tag BPSM_URI = Tag.newTag("us.bpsm", "uri");
     @Test
     public void test() throws IOException {
         StringWriter w = new StringWriter();

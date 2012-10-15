@@ -24,10 +24,10 @@ import us.bpsm.edn.util.CharClassify;
 
 class Scanner {
 
-    static final Symbol NIL_SYMBOL = newSymbol(null, "nil");
-    static final Symbol TRUE_SYMBOL = newSymbol(null, "true");
-    static final Symbol FALSE_SYMBOL = newSymbol(null, "false");
-    static final Symbol SLASH_SYMBOL = newSymbol(null, "/");
+    static final Symbol NIL_SYMBOL = newSymbol("nil");
+    static final Symbol TRUE_SYMBOL = newSymbol("true");
+    static final Symbol FALSE_SYMBOL = newSymbol("false");
+    static final Symbol SLASH_SYMBOL = newSymbol("/");
 
     static final int END = -1;
 
@@ -471,12 +471,12 @@ class Scanner {
 
     private Symbol makeSymbol(StringBuilder b, int slashCount, int slashPos) {
         if (slashCount == 0) {
-            return newSymbol(null, b.toString());
+            return newSymbol(b.toString());
         } else {
             assert slashCount == 1;
             if (slashPos == 0) {
                 assert b.length() == 1 && b.charAt(0) == '/';
-                return newSymbol(null, b.toString());
+                return newSymbol(b.toString());
             } else {
                 return newSymbol(b.substring(0, slashPos), b.substring(slashPos+1));
             }

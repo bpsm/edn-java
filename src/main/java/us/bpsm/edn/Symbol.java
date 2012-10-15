@@ -28,6 +28,15 @@ public final class Symbol implements Named, Comparable<Symbol> {
         return new Symbol(prefix, name);
     }
 
+    /**
+     * Equivalent to {@code newSymbol(null, name)}.
+     * @param name
+     * @return a Symbol with the given name and no prefix.
+     */
+    public static Symbol newSymbol(String name) {
+        return newSymbol(null, name);
+    }
+
     @Override
     public final int hashCode() {
         final int prime = 31;

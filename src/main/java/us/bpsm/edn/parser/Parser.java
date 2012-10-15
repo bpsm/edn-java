@@ -1,9 +1,7 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.parser;
 
-import static us.bpsm.edn.Symbol.newSymbol;
 import static us.bpsm.edn.Tag.newTag;
-
 import us.bpsm.edn.Tag;
 
 
@@ -15,9 +13,9 @@ public interface Parser {
 
     public interface Config {
 
-        public static final Tag EDN_UUID = newTag(newSymbol(null, "uuid"));
+        public static final Tag EDN_UUID = newTag("uuid");
 
-        public static final Tag EDN_INSTANT = newTag(newSymbol(null, "inst"));
+        public static final Tag EDN_INSTANT = newTag("inst");
 
         /**
          * Floating point literals which are marked by a trailing M are
@@ -25,8 +23,8 @@ public interface Parser {
          * the representation used for big decimals may install a TagHandler for
          * this Tag, which will be called with the parsed BigDecimal.
          */
-        public static final Tag BIG_DECIMAL_TAG = newTag(newSymbol(
-            "us.bpsm.edn-java", "BigDecimal"));
+        public static final Tag BIG_DECIMAL_TAG = newTag(
+            "us.bpsm.edn-java", "BigDecimal");
 
         /**
          * Floating point literals not marked by a trailing M are initially
@@ -34,8 +32,8 @@ public interface Parser {
          * representation used for doubles may install a TagHandler for this
          * Tag, which will be called with the parsed Double.
          */
-        public static final Tag DOUBLE_TAG = newTag(newSymbol(
-            "us.bpsm.edn-java", "Double"));
+        public static final Tag DOUBLE_TAG = newTag(
+            "us.bpsm.edn-java", "Double");
 
         /**
          * Integer literals marked by a trailing N, and those which lie outside
@@ -44,8 +42,8 @@ public interface Parser {
          * big integers may install a TagHandler for this Tag, which will be
          * called with the parsed BigInteger.
          */
-        public static final Tag BIG_INTEGER_TAG = newTag(newSymbol(
-            "us.bpsm.edn-java", "BigInteger"));
+        public static final Tag BIG_INTEGER_TAG = newTag(
+            "us.bpsm.edn-java", "BigInteger");
 
         /**
          * Integer literals not marked by a trailing N which lie inside the
@@ -54,8 +52,8 @@ public interface Parser {
          * integers may install a TagHandler for this Tag, which will be called
          * with the parsed BigInteger.
          */
-        public static final Tag LONG_TAG = newTag(newSymbol(
-            "us.bpsm.edn-java", "Long"));
+        public static final Tag LONG_TAG = newTag(
+            "us.bpsm.edn-java", "Long");
 
         public CollectionBuilder.Factory getListFactory();
 

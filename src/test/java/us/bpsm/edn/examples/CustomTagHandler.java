@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 
 import org.junit.Test;
 
-import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parser;
@@ -22,7 +21,7 @@ public class CustomTagHandler {
     public void test() throws IOException, URISyntaxException {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder()
-            .putTagHandler(Tag.newTag(Symbol.newSymbol("us.bpsm", "uri")),
+            .putTagHandler(Tag.newTag("us.bpsm", "uri"),
                 new TagHandler() {
                 public Object transform(Tag tag, Object value) {
                     return URI.create((String) value);
