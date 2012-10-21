@@ -5,11 +5,7 @@ import static us.bpsm.edn.TaggedValue.newTaggedValue;
 import static us.bpsm.edn.parser.Token.END_LIST;
 import static us.bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static us.bpsm.edn.parser.Token.END_VECTOR;
-
-import java.io.IOException;
-
 import us.bpsm.edn.EdnException;
-import us.bpsm.edn.EdnIOException;
 import us.bpsm.edn.Tag;
 
 
@@ -36,16 +32,8 @@ class ParserImpl implements Parser {
         return value;
     }
 
-    private Object nextToken(Parseable pbr) {
-        try {
-            return scanner.nextToken(pbr);
-        } catch (IOException e) {
-            throw new EdnIOException(e);
-        }
-    }
-
     private Object nextValue(Parseable pbr, boolean discard) {
-        Object curr = nextToken(pbr);
+        Object curr = scanner.nextToken(pbr);
         if (curr instanceof Token) {
             switch ((Token) curr) {
             case BEGIN_LIST:
