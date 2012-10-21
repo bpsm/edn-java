@@ -22,7 +22,6 @@ import us.bpsm.edn.Symbol;
 import us.bpsm.edn.util.CharClassify;
 
 
-
 class ScannerImpl implements Scanner {
 
     static final Symbol NIL_SYMBOL = newSymbol("nil");

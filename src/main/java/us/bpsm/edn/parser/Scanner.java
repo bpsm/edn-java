@@ -8,6 +8,10 @@ import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 
+/**
+ * A Scanner knows how to read syntactically correct edn tokens from any
+ * Parseable. Use {@link Scanners#newScanner()} to get an instance.
+ */
 public interface Scanner {
 
     /**
