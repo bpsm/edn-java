@@ -41,7 +41,7 @@ public class Parsers {
     };
 
     public static Parser newParser(Parser.Config cfg) {
-        return new ParserImpl(cfg, new Scanner(cfg));
+        return new ParserImpl(cfg, new ScannerImpl(cfg));
     }
 
     static final int BUFFER_SIZE = 4096;

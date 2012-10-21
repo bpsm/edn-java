@@ -17,7 +17,7 @@ import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parsers;
-import us.bpsm.edn.parser.Scanner;
+import us.bpsm.edn.parser.ScannerImpl;
 import us.bpsm.edn.parser.Token;
 
 
@@ -290,15 +290,11 @@ public class ScannerTest {
 
     static Object scan(String input) {
         Parseable pbr = Parsers.newParseable(input);
-        try {
-            return scanner().nextToken(pbr);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return scanner().nextToken(pbr);
     }
 
     static Scanner scanner() {
-        return new Scanner(Parsers.defaultConfiguration());
+        return new ScannerImpl(Parsers.defaultConfiguration());
     }
 
     static Symbol sym(String name) {
