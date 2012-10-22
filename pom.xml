@@ -15,6 +15,10 @@
   </description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- override these with -Dvarname=localpath to point to a local
+         clone of this repository in order to actually deploy -->
+    <release.repo.path>https://github.com/bpsm/edn-mvn-repo/raw/master/releases</release.repo.path>
+    <snapshot.repo.path>https://github.com/bpsm/edn-mvn-repo/raw/master/snapshots</snapshot.repo.path>
   </properties>
   <licenses>
     <license>
@@ -49,4 +53,14 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>release-repo</id>
+      <url>${release.repo.path}</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshot-repo</id>
+      <url>${snapshot.repo.path}</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
