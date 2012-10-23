@@ -1,6 +1,5 @@
 package us.bpsm.edn.parser;
 
-import java.util.Iterator;
 
 public class Scanners {
 
