@@ -28,6 +28,15 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <id>bpsm</id>
+      <name>Ben Smith-Mannschott</name>
+      <email>bsmith.occs@gmail.com</email>
+      <url>https://github.com/bpsm</url>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
