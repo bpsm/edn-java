@@ -13,6 +13,7 @@
     requiring no external dependencies. 
     See also https://github.com/edn-format/edn
   </description>
+  <url>https://github.com/bpsm/edn-java</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- override these with -Dvarname=localpath to point to a local
