@@ -28,6 +28,11 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <scm>
+    <url>https://github.com/bpsm/edn-java</url>
+    <connection>scm:git:git://github.com/bpsm/edn-java.git</connection>
+    <developerConnection>scm:git:git@github.com:bpsm/edn-java.git</developerConnection>
+  </scm>
   <developers>
     <developer>
       <id>bpsm</id>
