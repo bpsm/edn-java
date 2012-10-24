@@ -4,6 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
   <groupId>us.bpsm</groupId>
   <artifactId>edn-java</artifactId>
   <version>0.4.0-SNAPSHOT</version>
@@ -13,6 +18,7 @@
     requiring no external dependencies. 
     See also https://github.com/edn-format/edn
   </description>
+  <url>https://github.com/bpsm/edn-java</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- override these with -Dvarname=localpath to point to a local
@@ -27,6 +33,20 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <scm>
+    <url>https://github.com/bpsm/edn-java</url>
+    <connection>scm:git:git://github.com/bpsm/edn-java.git</connection>
+    <developerConnection>scm:git:git@github.com:bpsm/edn-java.git</developerConnection>
+  </scm>
+  <developers>
+    <developer>
+      <id>bpsm</id>
+      <name>Ben Smith-Mannschott</name>
+      <email>bsmith.occs@gmail.com</email>
+      <url>https://github.com/bpsm</url>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
