@@ -57,18 +57,6 @@ public class C3Test {
         interface A extends B, C {}
     }
 
-    /*
-        L[A] = A O
-        L[B] = B O
-        L[C] = C O
-        L[D] = D O
-        L[E] = E O
-        L[K1]= K1 A B C O
-        L[K2]= K2 D B E O
-        L[K3]= K3 D A O
-        L[Z] = Z K1 K2 K3 D A B C E O
-     */
-
     @Test
     public void testMroExample3() {
          assertEquals(
