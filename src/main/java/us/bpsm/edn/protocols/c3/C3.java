@@ -27,6 +27,10 @@ class C3 {
         return result;
     }
 
+    static List<Class<?>> methodResolutionOrder(Class<?> c) {
+        return Cons.toList(mro(c));
+    }
+
     static Cons<Class<?>> mro(Class<?> c) {
         Cons<Class<?>> supers = supers(c);
         List<Cons<Class<?>>> supermros = new ArrayList<Cons<Class<?>>>();
