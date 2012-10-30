@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import us.bpsm.edn.protocols.c3.C3Test.X1.E;
-
 class Cons<E> {
     final E first;
     final Cons<E> rest;

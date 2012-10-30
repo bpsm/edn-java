@@ -5,7 +5,6 @@ import static us.bpsm.edn.protocols.c3.Cons.first;
 import static us.bpsm.edn.protocols.c3.Cons.rest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
