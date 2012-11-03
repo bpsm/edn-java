@@ -6,11 +6,19 @@ import java.util.List;
 class C3 {
 
     static List<Class<?>> methodResolutionOrder(Class<?> c) {
+        List<Class<?>> result = mro(c);
+        if (c.getSuperclass() != null) {
+            result.add(Object.class);
+        }
+        return result;
+    }
+
+    private static List<Class<?>> mro(Class<?> c) {
         List<List<Class<?>>> seqsToMerge = new ArrayList<List<Class<?>>>();
         seqsToMerge.add(asList(c));
         List<Class<?>> supers = supers(c);
         for (Class<?> s: supers) {
-            seqsToMerge.add(methodResolutionOrder(s));
+            seqsToMerge.add(mro(s));
         }
         seqsToMerge.add(supers);
         return merge(seqsToMerge);
@@ -26,7 +34,7 @@ class C3 {
         Class<?> sc = c.getSuperclass();
         Class<?>[] interfaces = c.getInterfaces();
         List<Class<?>> result = new ArrayList<Class<?>>();
-        if (sc != null) {
+        if (sc != null && sc != Object.class) {
             result.add(sc);
         }
         for (Class<?> i: interfaces) {

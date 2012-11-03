@@ -2,7 +2,14 @@ package us.bpsm.edn.protocols.c3;
 
 import static org.junit.Assert.*;
 
+import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.RandomAccess;
 
 import org.junit.Test;
 
@@ -120,5 +127,40 @@ public class C3Test {
         interface A extends X, Y {}
         interface B extends Y, X {}
         interface Z extends A, B {}
+    }
+
+    /**
+     * Java is not really multiple inheritance, unless we consider interfaces
+     * to be classes, which we do for the purposes of C3. But, in this case,
+     * this means that classes and interfaces don't share a common ultimate
+     * super-type. (Object). That, in turn means that there can exist MROs
+     * where interfaces in the ancestry are considered later Object. This
+     * isn't very useful. Object should always be considered least specific.
+     */
+    @Test
+    public void objectIsFinalInOrder() {
+        assertEquals(Arrays.<Class<?>>asList(X5.K.class, X5.A.class, Object.class),
+                C3.methodResolutionOrder(X5.K.class));
+    }
+
+    interface X5 {
+        interface A {}
+        class K implements A {}
+    }
+
+    @Test
+    public void testArrayList() {
+        assertEquals(Arrays.asList(
+                ArrayList.class,
+                AbstractList.class,
+                AbstractCollection.class,
+                List.class,
+                Collection.class,
+                Iterable.class,
+                RandomAccess.class,
+                Cloneable.class,
+                Serializable.class,
+                Object.class),
+                C3.methodResolutionOrder(ArrayList.class));
     }
 }
