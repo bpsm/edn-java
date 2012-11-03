@@ -114,9 +114,26 @@ public class C3Test {
         interface Z extends K1, K2, K3 {}
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test
     public void testMroExample4OrderDisagreement() {
-        C3.methodResolutionOrder(X4.Z.class);
+        try {
+            C3.methodResolutionOrder(X4.Z.class);
+            fail("Expected an exception");
+        } catch (RuntimeException e) {
+            assertEquals("Unable to compute a consistent method resolution" +
+                    " order for us.bpsm.edn.protocols.c3.C3Test$X4$Z.",
+                    e.getMessage());
+        }
+        try {
+            C3.methodResolutionOrder(X4.Z2.class);
+            fail("Expected an exception");
+        } catch (RuntimeException e) {
+            assertEquals("Unable to compute a consistent method resolution " +
+                    "order for us.bpsm.edn.protocols.c3.C3Test$X4$Z2 because " +
+                    "us.bpsm.edn.protocols.c3.C3Test$X4$Z has no consistent " +
+                    "method resolution order.",
+                    e.getMessage());
+        }
     }
 
     /** order disagreement */
@@ -127,6 +144,7 @@ public class C3Test {
         interface A extends X, Y {}
         interface B extends Y, X {}
         interface Z extends A, B {}
+        interface Z2 extends Z {}
     }
 
     /**

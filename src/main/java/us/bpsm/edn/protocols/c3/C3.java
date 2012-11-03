@@ -3,17 +3,34 @@ package us.bpsm.edn.protocols.c3;
 import java.util.ArrayList;
 import java.util.List;
 
+import us.bpsm.edn.EdnException;
+
 class C3 {
 
     static List<Class<?>> methodResolutionOrder(Class<?> c) {
-        List<Class<?>> result = mro(c);
-        if (c.getSuperclass() != null) {
-            result.add(Object.class);
+        try {
+            List<Class<?>> result = mro(c);
+            if (c.getSuperclass() != null) {
+                result.add(Object.class);
+            }
+            return result;
+        } catch (InconsistentHierarchy e) {
+            StringBuilder b = new StringBuilder()
+                 .append("Unable to compute a consistent method resolution order for ")
+                 .append(c.getName());
+
+            if (c.equals(e.problematicClass)) {
+                 b.append(".");
+            } else {
+                b.append(" because ")
+                 .append(e.problematicClass.getName())
+                 .append(" has no consistent method resolution order.");
+            }
+            throw new EdnException(b.toString());
         }
-        return result;
     }
 
-    private static List<Class<?>> mro(Class<?> c) {
+    private static List<Class<?>> mro(Class<?> c) throws InconsistentHierarchy {
         List<List<Class<?>>> seqsToMerge = new ArrayList<List<Class<?>>>();
         seqsToMerge.add(asList(c));
         List<Class<?>> supers = supers(c);
@@ -21,7 +38,11 @@ class C3 {
             seqsToMerge.add(mro(s));
         }
         seqsToMerge.add(supers);
-        return merge(seqsToMerge);
+        try {
+            return merge(seqsToMerge);
+        } catch (InconsistentHierarchy e) {
+            throw new InconsistentHierarchy(c);
+        }
     }
 
     private static List<Class<?>> asList(Class<?> c) {
@@ -43,12 +64,13 @@ class C3 {
         return result;
     }
 
-    private static List<Class<?>> merge(List<List<Class<?>>> seqsToMerge) {
+    private static List<Class<?>> merge(List<List<Class<?>>> seqsToMerge)
+    throws InconsistentHierarchy {
         List<Class<?>> result = new ArrayList<Class<?>>();
         while (!allAreEmpty(seqsToMerge)) {
             Class<?> candidate = findCandidate(seqsToMerge);
             if (candidate == null) {
-                throw new RuntimeException("Inconsistent hierarchy");
+                throw new InconsistentHierarchy();
             }
             result.add(candidate);
             removeCandidate(seqsToMerge, candidate);
@@ -92,6 +114,18 @@ class C3 {
             if (!seq.isEmpty() && candidate.equals(seq.get(0))) {
                 seq.remove(0);
             }
+        }
+    }
+
+    static class InconsistentHierarchy extends Exception {
+        private static final long serialVersionUID = 1L;
+        Class<?> problematicClass;
+        InconsistentHierarchy(Class<?> problematicClass) {
+            super();
+            this.problematicClass = problematicClass;
+        }
+        InconsistentHierarchy() {
+            super();
         }
     }
 
