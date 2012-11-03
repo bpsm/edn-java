@@ -23,8 +23,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- override these with -Dvarname=localpath to point to a local
          clone of this repository in order to actually deploy -->
-    <release.repo.path>https://github.com/bpsm/edn-mvn-repo/raw/master/releases</release.repo.path>
-    <snapshot.repo.path>https://github.com/bpsm/edn-mvn-repo/raw/master/snapshots</snapshot.repo.path>
+    <release.repo.path>https://oss.sonatype.org/service/local/staging/deploy/maven2</release.repo.path>
+    <snapshot.repo.path>https://oss.sonatype.org/content/repositories/snapshots</snapshot.repo.path>
   </properties>
   <licenses>
     <license>
@@ -108,11 +108,11 @@
   </build>
   <distributionManagement>
     <repository>
-      <id>release-repo</id>
+      <id>sonatype-nexus-staging</id>
       <url>${release.repo.path}</url>
     </repository>
     <snapshotRepository>
-      <id>snapshot-repo</id>
+      <id>sonatype-nexus-snapshots</id>
       <url>${snapshot.repo.path}</url>
     </snapshotRepository>
   </distributionManagement>
