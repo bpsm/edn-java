@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import us.bpsm.edn.EdnException;
 import us.bpsm.edn.protocols.Function;
 import us.bpsm.edn.protocols.Protocol;
 import us.bpsm.edn.protocols.Protocols;
@@ -16,14 +15,14 @@ public class ProtocolsTest {
     @Test
     public void testSupers() {
         final Function fnObject = newFn();
-            final Function fnA0 = newFn();
-            final Function fnB0a = newFn();
-            final Function fnB0b = newFn();
-            final Function fnB0 = newFn();
+        final Function fnA0 = newFn();
+        final Function fnB0a = newFn();
+        final Function fnB0b = newFn();
+        final Function fnB0 = newFn();
 
         Protocol p = Protocols.builder("p")
-        .put(Object.class, fnObject)
-        .build();
+                .put(Object.class, fnObject)
+                .build();
 
         assertEquals(fnObject, p.lookup(Object.class));
         assertEquals(fnObject, p.lookup(A.class));
@@ -41,12 +40,7 @@ public class ProtocolsTest {
                 .put(B0a.class, fnB0a)
                 .put(B0b.class, fnB0b)
                 .build();
-        try {
-            p.lookup(B.class);
-            fail();
-        } catch (EdnException _) {
-            ; // pass
-        }
+        assertEquals(fnB0a, p.lookup(B.class));
 
         p = Protocols.builder("p")
                 .put(B0a.class, fnB0a)
