@@ -16,15 +16,13 @@ class C3 {
             return result;
         } catch (InconsistentHierarchy e) {
             StringBuilder b = new StringBuilder()
-                 .append("Unable to compute a consistent method resolution order for ")
-                 .append(c.getName());
-
+            .append("Unable to compute a consistent method resolution order for ")
+            .append(c.getName());
             if (c.equals(e.problematicClass)) {
-                 b.append(".");
+                b.append(".");
             } else {
-                b.append(" because ")
-                 .append(e.problematicClass.getName())
-                 .append(" has no consistent method resolution order.");
+                b.append(" because ").append(e.problematicClass.getName())
+                .append(" has no consistent method resolution order.");
             }
             throw new EdnException(b.toString());
         }
@@ -34,7 +32,7 @@ class C3 {
         List<List<Class<?>>> seqsToMerge = new ArrayList<List<Class<?>>>();
         seqsToMerge.add(asList(c));
         List<Class<?>> supers = supers(c);
-        for (Class<?> s: supers) {
+        for (Class<?> s : supers) {
             seqsToMerge.add(mro(s));
         }
         seqsToMerge.add(supers);
@@ -58,14 +56,14 @@ class C3 {
         if (sc != null && sc != Object.class) {
             result.add(sc);
         }
-        for (Class<?> i: interfaces) {
+        for (Class<?> i : interfaces) {
             result.add(i);
         }
         return result;
     }
 
     private static List<Class<?>> merge(List<List<Class<?>>> seqsToMerge)
-    throws InconsistentHierarchy {
+            throws InconsistentHierarchy {
         List<Class<?>> result = new ArrayList<Class<?>>();
         while (!allAreEmpty(seqsToMerge)) {
             Class<?> candidate = findCandidate(seqsToMerge);
@@ -79,7 +77,7 @@ class C3 {
     }
 
     private static boolean allAreEmpty(List<List<Class<?>>> lists) {
-        for (List<?> l: lists) {
+        for (List<?> l : lists) {
             if (!l.isEmpty()) {
                 return false;
             }
@@ -88,7 +86,7 @@ class C3 {
     }
 
     private static Class<?> findCandidate(List<List<Class<?>>> seqsToMerge) {
-        for (List<Class<?>> seq: seqsToMerge) {
+        for (List<Class<?>> seq : seqsToMerge) {
             if (!seq.isEmpty() && !occursInSomeTail(seqsToMerge, seq.get(0))) {
                 return seq.get(0);
             }
@@ -97,8 +95,8 @@ class C3 {
     }
 
     private static boolean occursInSomeTail(List<List<Class<?>>> seqsToMerge,
-        Object c) {
-        for (List<?> seq: seqsToMerge) {
+            Object c) {
+        for (List<?> seq : seqsToMerge) {
             for (int i = 1; i < seq.size(); i++) {
                 if (c.equals(seq.get(i))) {
                     return true;
@@ -109,8 +107,8 @@ class C3 {
     }
 
     private static void removeCandidate(List<List<Class<?>>> seqsToMerge,
-        Class<?> candidate) {
-        for (List<Class<?>> seq: seqsToMerge) {
+            Class<?> candidate) {
+        for (List<Class<?>> seq : seqsToMerge) {
             if (!seq.isEmpty() && candidate.equals(seq.get(0))) {
                 seq.remove(0);
             }
@@ -120,10 +118,12 @@ class C3 {
     static class InconsistentHierarchy extends Exception {
         private static final long serialVersionUID = 1L;
         Class<?> problematicClass;
+
         InconsistentHierarchy(Class<?> problematicClass) {
             super();
             this.problematicClass = problematicClass;
         }
+
         InconsistentHierarchy() {
             super();
         }
