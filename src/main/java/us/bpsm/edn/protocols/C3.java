@@ -1,4 +1,4 @@
-package us.bpsm.edn.protocols.c3;
+package us.bpsm.edn.protocols;
 
 import java.util.ArrayList;
 import java.util.List;

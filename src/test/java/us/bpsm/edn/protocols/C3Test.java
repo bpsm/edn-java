@@ -1,4 +1,4 @@
-package us.bpsm.edn.protocols.c3;
+package us.bpsm.edn.protocols;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.RandomAccess;
 
 import org.junit.Test;
+
+import us.bpsm.edn.protocols.C3;
 
 public class C3Test {
 
@@ -140,7 +142,7 @@ public class C3Test {
             fail("Expected an exception");
         } catch (RuntimeException e) {
             assertEquals("Unable to compute a consistent method resolution"
-                    + " order for us.bpsm.edn.protocols.c3.C3Test$X4$Z.",
+                    + " order for us.bpsm.edn.protocols.C3Test$X4$Z.",
                     e.getMessage());
         }
         try {
@@ -149,8 +151,8 @@ public class C3Test {
         } catch (RuntimeException e) {
             assertEquals(
                     "Unable to compute a consistent method resolution "
-                            + "order for us.bpsm.edn.protocols.c3.C3Test$X4$Z2 because "
-                            + "us.bpsm.edn.protocols.c3.C3Test$X4$Z has no consistent "
+                            + "order for us.bpsm.edn.protocols.C3Test$X4$Z2 because "
+                            + "us.bpsm.edn.protocols.C3Test$X4$Z has no consistent "
                             + "method resolution order.", e.getMessage());
         }
     }
