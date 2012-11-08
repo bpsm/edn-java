@@ -17,19 +17,19 @@ public class Protocols {
     static final String NO_MODIFY_MSG =
             "This builder is single-use and may not be modified after the Protocol has been built.";
 
-    public static Protocol.Builder builder(final String name) {
-        return new ProtocolImpl(name);
+    public static <F> Protocol.Builder<F> builder(final String name) {
+        return new ProtocolImpl<F>(name);
     }
 
-    static class ProtocolImpl implements Protocol.Builder, Protocol {
+    static class ProtocolImpl<F> implements Protocol.Builder<F>, Protocol<F> {
         final String name;
-        Function nullFn = null;
-        final Map<Class, Function> m = new HashMap<Class, Function>();
+        F nullFn = null;
+        final Map<Class<?>, F> m = new HashMap<Class<?>, F>();
         boolean built = false;
 
         ProtocolImpl(String name) { this.name = name; }
 
-        public Protocol.Builder put(Class selfClass, Function fn) {
+        public Protocol.Builder<F> put(Class selfClass, F fn) {
             if (built) {
                 throw new IllegalStateException(NO_MODIFY_MSG);
             }
@@ -41,7 +41,7 @@ public class Protocols {
             return this;
         }
 
-        public Protocol build() {
+        public Protocol<F> build() {
             if (built) {
                 throw new IllegalStateException(SINGLE_USE_MSG);
             }
@@ -55,12 +55,12 @@ public class Protocols {
         }
 
         @Override
-        public Function lookup(Class selfClass) {
+        public F lookup(Class selfClass) {
             if (selfClass == null) {
                 return nullFn;
             }
             synchronized (m) {
-                Function fn;
+                F fn;
                 fn = m.get(selfClass);
                 if (fn != null) {
                     return fn;

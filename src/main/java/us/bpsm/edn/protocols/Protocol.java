@@ -1,16 +1,16 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.protocols;
 
-public interface Protocol {
+public interface Protocol<F> {
     String name();
 
     @SuppressWarnings("rawtypes")
-    Function lookup(Class selfClass);
+    F lookup(Class selfClass);
 
-    public interface Builder {
+    public interface Builder<F> {
         @SuppressWarnings("rawtypes")
-        Builder put(Class selfClass, Function fn);
+        Builder<F> put(Class selfClass, F fn);
 
-        Protocol build();
+        Protocol<F> build();
     }
 }
