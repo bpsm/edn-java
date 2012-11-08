@@ -46,10 +46,10 @@ public class PrinterTest {
     @Test
     public void testComplexValue() {
         assertRoundTrip("{:foo [1 2.0 19023847928034709821374012938749N 91821234112347634.128937467E-3M]\n"
-            + " :bar/baz #{true false nil}\n"
-            + " / (\"abc\\tdef\\n\" #uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\")\n"
-            + " \\formfeed [#inst \"2010\", #inst \"2010-11\", #inst \"2010-11-12T09:08:07.123+02:00\"]\n"
-            + " :omega [a b c d \\a\\b\\c#{}]}");
+                + " :bar/baz #{true false nil}\n"
+                + " / (\"abc\\tdef\\n\" #uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\")\n"
+                + " \\formfeed [#inst \"2010\", #inst \"2010-11\", #inst \"2010-11-12T09:08:07.123+02:00\"]\n"
+                + " :omega [a b c d \\a\\b\\c#{}]}");
     }
 
     @Test
@@ -72,7 +72,7 @@ public class PrinterTest {
         Object originalParsedValue = parser.nextValue(pbr);
 
         StringWriter sw = new StringWriter();
-        Printer ew = Printers.newPrinter(Printers.defaultPrinterConfig(), sw);
+        Printer ew = Printers.newPrinter(Printers.defaultPrinterProtocol(), sw);
         ew.printValue(originalParsedValue);
         ew.close();
 

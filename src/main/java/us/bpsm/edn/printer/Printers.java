@@ -22,7 +22,6 @@ import us.bpsm.edn.Tag;
 import us.bpsm.edn.TaggedValue;
 import us.bpsm.edn.parser.InstantUtils;
 import us.bpsm.edn.parser.Parser;
-import us.bpsm.edn.protocols.Function;
 import us.bpsm.edn.protocols.Protocol;
 import us.bpsm.edn.protocols.Protocols;
 import us.bpsm.edn.util.CharClassify;
@@ -31,11 +30,20 @@ import us.bpsm.edn.util.CharClassify;
 public class Printers {
 
     public static Printer newPrinter(final Writer writer) {
-        return newPrinter(defaultPrinterConfig(), writer);
+        return newPrinter(defaultPrinterProtocol(), writer);
     }
 
-    public static Printer newPrinter(final Printer.Config cfg,
-        final Appendable out) {
+    public static String printString(final Protocol<Printer.Fn<?>> fns, Object ednValue) {
+        StringBuilder sb = new StringBuilder();
+        newPrinter(fns, sb).printValue(ednValue);
+        return sb.toString();
+    }
+
+    public static String printString(Object ednValue) {
+        return printString(defaultPrinterProtocol(), ednValue);
+    }
+
+    public static Printer newPrinter(final Protocol<Printer.Fn<?>> fns, final Appendable out) {
         return new Printer() {
             int softspace = 0;
 
@@ -76,11 +84,12 @@ public class Printers {
             }
 
             public Printer printValue(Object ednValue) {
-                Function printFn = cfg.getPrintFn(ednValue);
+                @SuppressWarnings("unchecked")
+                Printer.Fn<Object> printFn = (Printer.Fn<Object>) fns.lookup(getClassOrNull(ednValue));
                 if (printFn == null) {
                     throw new EdnException(String.format(
-                        "Don't know how to write '%s' of type '%s'",
-                        ednValue, Util.getClassOrNull(ednValue)));
+                            "Don't know how to write '%s' of type '%s'",
+                            ednValue, getClassOrNull(ednValue)));
                 }
                 printFn.eval(ednValue, this);
                 return this;
@@ -94,83 +103,58 @@ public class Printers {
         };
     }
 
-    private static Protocol.Builder defaultProtocolBuilder() {
-        Protocol.Builder protocolBuilder =
-            Protocols.builder("print").put(null, writeNullFn())
-            .put(List.class, writeListFn()).put(Map.class, writeMapFn())
-            .put(Set.class, writeSetFn())
-            .put(Keyword.class, writeKeywordFn())
-            .put(Symbol.class, writeSymbolFn())
-            .put(CharSequence.class, writeCharSequenceFn())
-            .put(Character.class, writeCharacterFn())
-            .put(Boolean.class, writeBooleanFn())
-            .put(Byte.class, writeLongValueFn())
-            .put(Short.class, writeLongValueFn())
-            .put(Integer.class, writeLongValueFn())
-            .put(Long.class, writeLongValueFn())
-            .put(BigInteger.class, writeBigIntegerFn())
-            .put(Float.class, writeDoubleValueFn())
-            .put(Double.class, writeDoubleValueFn())
-            .put(BigDecimal.class, writeBigDecimalFn())
-            .put(UUID.class, writeUuidFn()).put(Date.class, writeDateFn())
-            .put(Timestamp.class, writeTimestampFn())
-            .put(GregorianCalendar.class, writeCalendarFn())
-            .put(TaggedValue.class, writeTaggedValueFn())
-            .put(Tag.class, writeTagFn());
+    static Class<?> getClassOrNull(Object o) {
+        return o == null ? null : o.getClass();
+    }
+
+    public static Protocol.Builder<Printer.Fn<?>> defaultProtocolBuilder() {
+        Protocol.Builder<Printer.Fn<?>> protocolBuilder =
+                Protocols.<Printer.Fn<?>>builder("print")
+                .put(null, writeNullFn())
+                .put(List.class, writeListFn())
+                .put(Map.class, writeMapFn())
+                .put(Set.class, writeSetFn())
+                .put(Keyword.class, writeKeywordFn())
+                .put(Symbol.class, writeSymbolFn())
+                .put(CharSequence.class, writeCharSequenceFn())
+                .put(Character.class, writeCharacterFn())
+                .put(Boolean.class, writeBooleanFn())
+                .put(Byte.class, writeLongValueFn())
+                .put(Short.class, writeLongValueFn())
+                .put(Integer.class, writeLongValueFn())
+                .put(Long.class, writeLongValueFn())
+                .put(BigInteger.class, writeBigIntegerFn())
+                .put(Float.class, writeDoubleValueFn())
+                .put(Double.class, writeDoubleValueFn())
+                .put(BigDecimal.class, writeBigDecimalFn())
+                .put(UUID.class, writeUuidFn()).put(Date.class, writeDateFn())
+                .put(Timestamp.class, writeTimestampFn())
+                .put(GregorianCalendar.class, writeCalendarFn())
+                .put(TaggedValue.class, writeTaggedValueFn())
+                .put(Tag.class, writeTagFn());
         return protocolBuilder;
     }
 
-    public static Printer.Config.Builder newPrinterConfigBuilder() {
-        return new Printer.Config.Builder() {
-            Protocol.Builder protocolBuilder = defaultProtocolBuilder();
 
-            @SuppressWarnings("rawtypes")
-            public Printer.Config.Builder bind(Class ednValueClass,
-                Function printFn) {
-                protocolBuilder.put(ednValueClass, printFn);
-                return this;
-            }
-
-            public Printer.Config build() {
-                return new Printer.Config() {
-                    Protocol protocol = protocolBuilder.build();
-
-                    public Function getPrintFn(Object ednValue) {
-                        return protocol.lookup(Util.getClassOrNull(ednValue));
-                    }
-                };
-            }
-
-        };
+    public static Protocol<Printer.Fn<?>> defaultPrinterProtocol() {
+        return defaultProtocolBuilder().build();
     }
 
-    public static Printer.Config defaultPrinterConfig() {
-        return newPrinterConfigBuilder().build();
-    }
 
-    public static String printString(Printer.Config cfg, Object ednValue) {
-        StringBuilder sb = new StringBuilder();
-        newPrinter(cfg, sb).printValue(ednValue).close();
-        return sb.toString();
-    }
 
-    public static String printString(Object ednValue) {
-        return printString(defaultPrinterConfig(), ednValue);
-    }
-
-    static Function writeNullFn() {
-        return new PrintFn<Void>() {
+    static Printer.Fn<Void> writeNullFn() {
+        return new Printer.Fn<Void>() {
             @Override
-            protected void eval(Void self, Printer writer) {
+            public void eval(Void self, Printer writer) {
                 writer.softspace().append("nil").softspace();
             }
         };
     }
 
-    static Function writeListFn() {
-        return new PrintFn<List<?>>() {
+    static Printer.Fn<List<?>> writeListFn() {
+        return new Printer.Fn<List<?>>() {
             @Override
-            protected void eval(List<?> self, Printer writer) {
+            public void eval(List<?> self, Printer writer) {
                 boolean vec = self instanceof RandomAccess;
                 writer.append(vec ? '[' : '(');
                 for (Object o: self) {
@@ -181,10 +165,10 @@ public class Printers {
         };
     }
 
-    static Function writeSetFn() {
-        return new PrintFn<Set<?>>() {
+    static Printer.Fn<Set<?>> writeSetFn() {
+        return new Printer.Fn<Set<?>>() {
             @Override
-            protected void eval(Set<?> self, Printer writer) {
+            public void eval(Set<?> self, Printer writer) {
                 writer.append("#{");
                 for (Object o: self) {
                     writer.printValue(o);
@@ -194,10 +178,10 @@ public class Printers {
         };
     }
 
-    static Function writeMapFn() {
-        return new PrintFn<Map<?,?>>() {
+    static Printer.Fn<Map<?, ?>> writeMapFn() {
+        return new Printer.Fn<Map<?,?>>() {
             @Override
-            protected void eval(Map<?,?> self, Printer writer) {
+            public void eval(Map<?,?> self, Printer writer) {
                 writer.append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
@@ -208,37 +192,37 @@ public class Printers {
         };
     }
 
-    static Function writeKeywordFn() {
-        return new PrintFn<Keyword>() {
+    static Printer.Fn<Keyword> writeKeywordFn() {
+        return new Printer.Fn<Keyword>() {
             @Override
-            protected void eval(Keyword self, Printer writer) {
+            public void eval(Keyword self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace();
             }
         };
     }
 
-    static Function writeSymbolFn() {
-        return new PrintFn<Symbol>() {
+    static Printer.Fn<Symbol> writeSymbolFn() {
+        return new Printer.Fn<Symbol>() {
             @Override
-            protected void eval(Symbol self, Printer writer) {
+            public void eval(Symbol self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace();
             }
         };
     }
 
-    static Function writeTaggedValueFn() {
-        return new PrintFn<TaggedValue>() {
+    static Printer.Fn<TaggedValue> writeTaggedValueFn() {
+        return new Printer.Fn<TaggedValue>() {
             @Override
-            protected void eval(TaggedValue self, Printer writer) {
+            public void eval(TaggedValue self, Printer writer) {
                 writer.printValue(self.getTag()).printValue(self.getValue());
             }
         };
     }
 
-    static Function writeBooleanFn() {
-        return new PrintFn<Boolean>() {
+    static Printer.Fn<Boolean> writeBooleanFn() {
+        return new Printer.Fn<Boolean>() {
             @Override
-            protected void eval(Boolean self, Printer writer) {
+            public void eval(Boolean self, Printer writer) {
                 writer.softspace()
                 .append(self ? "true" : "false")
                 .softspace();
@@ -246,10 +230,10 @@ public class Printers {
         };
     }
 
-    static Function writeCharSequenceFn() {
-        return new PrintFn<CharSequence>() {
+    static Printer.Fn<CharSequence> writeCharSequenceFn() {
+        return new Printer.Fn<CharSequence>() {
             @Override
-            protected void eval(CharSequence self, Printer writer) {
+            public void eval(CharSequence self, Printer writer) {
                 writer.append('"');
                 for (int i = 0; i < self.length(); i++) {
                     final char c = self.charAt(i);
@@ -287,10 +271,10 @@ public class Printers {
         };
     }
 
-    static Function writeCharacterFn() {
-        return new PrintFn<Character>() {
+    static Printer.Fn<Character> writeCharacterFn() {
+        return new Printer.Fn<Character>() {
             @Override
-            protected void eval(Character self, Printer writer) {
+            public void eval(Character self, Printer writer) {
                 final char c = self;
                 if (!CharClassify.isWhitespace(c)) {
                     writer.append('\\').append(c);
@@ -323,10 +307,10 @@ public class Printers {
         };
     }
 
-    static Function writeLongValueFn() {
-        return new PrintFn<Number>() {
+    static Printer.Fn<Number> writeLongValueFn() {
+        return new Printer.Fn<Number>() {
             @Override
-            protected void eval(Number self, Printer writer) {
+            public void eval(Number self, Printer writer) {
                 writer.softspace()
                 .append(String.valueOf(self.longValue()))
                 .softspace();
@@ -334,10 +318,10 @@ public class Printers {
         };
     }
 
-    static Function writeBigIntegerFn() {
-        return new PrintFn<BigInteger>() {
+    static Printer.Fn<BigInteger> writeBigIntegerFn() {
+        return new Printer.Fn<BigInteger>() {
             @Override
-            protected void eval(BigInteger self, Printer writer) {
+            public void eval(BigInteger self, Printer writer) {
                 writer.softspace()
                 .append(self.toString()).append('N')
                 .softspace();
@@ -345,10 +329,10 @@ public class Printers {
         };
     }
 
-    static Function writeDoubleValueFn() {
-        return new PrintFn<Number>() {
+    static Printer.Fn<Number> writeDoubleValueFn() {
+        return new Printer.Fn<Number>() {
             @Override
-            protected void eval(Number self, Printer writer) {
+            public void eval(Number self, Printer writer) {
                 writer.softspace()
                 .append(String.valueOf(self.doubleValue()))
                 .softspace();
@@ -356,10 +340,10 @@ public class Printers {
         };
     }
 
-    static Function writeBigDecimalFn() {
-        return new PrintFn<BigDecimal>() {
+    static Printer.Fn<BigDecimal> writeBigDecimalFn() {
+        return new Printer.Fn<BigDecimal>() {
             @Override
-            protected void eval(BigDecimal self, Printer writer) {
+            public void eval(BigDecimal self, Printer writer) {
                 writer.softspace()
                 .append(self.toString()).append('M')
                 .softspace();
@@ -367,50 +351,50 @@ public class Printers {
         };
     }
 
-    static Function writeUuidFn() {
-        return new PrintFn<UUID>() {
+    static Printer.Fn<UUID> writeUuidFn() {
+        return new Printer.Fn<UUID>() {
             @Override
-            protected void eval(UUID self, Printer writer) {
+            public void eval(UUID self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_UUID)
                 .printValue(self.toString());
             }
         };
     }
 
-    static Function writeDateFn() {
-        return new PrintFn<Date>() {
+    static Printer.Fn<Date> writeDateFn() {
+        return new Printer.Fn<Date>() {
             @Override
-            protected void eval(Date self, Printer writer) {
+            public void eval(Date self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                 .printValue(InstantUtils.dateToString(self));
             }
         };
     }
 
-    static Function writeTimestampFn() {
-        return new PrintFn<Timestamp>() {
+    static Printer.Fn<Timestamp> writeTimestampFn() {
+        return new Printer.Fn<Timestamp>() {
             @Override
-            protected void eval(Timestamp self, Printer writer) {
+            public void eval(Timestamp self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                 .printValue(InstantUtils.timestampToString(self));
             }
         };
     }
 
-    static Function writeCalendarFn() {
-        return new PrintFn<GregorianCalendar>() {
+    static Printer.Fn<GregorianCalendar> writeCalendarFn() {
+        return new Printer.Fn<GregorianCalendar>() {
             @Override
-            protected void eval(GregorianCalendar self, Printer writer) {
+            public void eval(GregorianCalendar self, Printer writer) {
                 writer.printValue(Parser.Config.EDN_INSTANT)
                 .printValue(InstantUtils.calendarToString(self));
             }
         };
     }
 
-    static Function writeTagFn() {
-        return new PrintFn<Tag>() {
+    static Printer.Fn<Tag> writeTagFn() {
+        return new Printer.Fn<Tag>() {
             @Override
-            protected void eval(Tag self, Printer writer) {
+            public void eval(Tag self, Printer writer) {
                 writer.softspace().append(self.toString()).softspace();
             }
         };
