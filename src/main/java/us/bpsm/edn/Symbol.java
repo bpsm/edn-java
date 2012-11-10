@@ -5,36 +5,61 @@ import static us.bpsm.edn.util.CharClassify.isDigit;
 import static us.bpsm.edn.util.CharClassify.symbolStart;
 import us.bpsm.edn.util.CharClassify;
 
+/**
+ * A Symbol is {@linkplain Named}. Additionally it obeys the syntactic
+ * restrictions defined for
+ * <a href="https://github.com/edn-format/edn#symbols">edn Symbols</a>.
+ */
 public final class Symbol implements Named, Comparable<Symbol> {
 
-    final String prefix;
-    final String name;
+    private final String prefix;
+    private final String name;
 
+    /**
+     * {@inheritDoc}
+     */
     public final String getPrefix() {
         return prefix;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public final String getName() {
         return name;
     }
 
     private Symbol(String prefix, String name) {
-        this.prefix = prefix;
+        this.prefix = prefix.length() > 0 ? prefix : EMPTY;
         this.name = name;
     }
 
+    /**
+     * Provide a Symbol with the given prefix and name.
+     * 
+     * @param prefix
+     *            An empty String or a non-empty String obeying the
+     *            restrictions specified by edn. Never null.
+     * @param name
+     *            A non-empty string obeying the restrictions specified by edn.
+     *            Never null.
+     * @return a Symbol, never null.
+     */
     public static Symbol newSymbol(String prefix, String name) {
         checkArguments(prefix, name);
         return new Symbol(prefix, name);
     }
 
     /**
-     * Equivalent to {@code newSymbol(null, name)}.
+     * Equivalent to {@code newSymbol("", name)}.
+     * 
      * @param name
+     *            A non-empty string obeying the restrictions specified by edn.
+     *            Never null.
      * @return a Symbol with the given name and no prefix.
      */
     public static Symbol newSymbol(String name) {
-        return newSymbol(null, name);
+        return newSymbol(EMPTY, name);
     }
 
     @Override
@@ -74,54 +99,58 @@ public final class Symbol implements Named, Comparable<Symbol> {
 
     @Override
     public String toString() {
-        if (prefix == null) {
+        if (prefix.length() == 0) {
             return name;
         }
         return prefix + "/" + name;
     }
 
     private static void checkArguments(String prefix, String name) {
+        if (prefix == null) {
+            throw new EdnException("prefix must not be null.");
+        }
         if (name == null) {
             throw new EdnException("name must not be null.");
         }
         checkName("name", name);
-        if (prefix != null) {
+        if (prefix.length() != 0) {
             checkName("prefix", prefix);
         }
     }
 
     private static void checkName(String label, String ident) {
         if (ident.length() == 0) {
-            throw new EdnException("The "+ label +" '"+ ident +"' must not be empty.");
+            throw new EdnException("The " + label + " '" + ident
+                    + "' must not be empty.");
         }
         char first = ident.charAt(0);
         if (isDigit(first)) {
-            throw new EdnException("The "+ label +" '"+ ident +"' must not begin with a digit.");
+            throw new EdnException("The " + label + " '" + ident
+                    + "' must not begin with a digit.");
         }
         if (!symbolStart(first)) {
-            throw new EdnException("The "+ label +" '"+ ident +"' begins with a forbidden character.");
+            throw new EdnException("The " + label + " '" + ident
+                    + "' begins with a forbidden character.");
         }
-        if ((first == '.' || first == '-') && ident.length() > 1 && isDigit(ident.charAt(1))) {
-            throw new EdnException("The "+ label +" '"+ ident +"' begins with a '-' or '.' followed by digit, which is forbidden.");
+        if ((first == '.' || first == '-')
+                && ident.length() > 1 && isDigit(ident.charAt(1))) {
+            throw new EdnException("The " + label + " '" + ident
+                    + "' begins with a '-' or '.' followed by digit, "
+                    + "which is forbidden.");
         }
         int n = ident.length();
         for (int i = 1; i < n; i++) {
             if (!CharClassify.symbolConstituent(ident.charAt(i))) {
-                throw new EdnException("The "+ label +" '"+ ident +"' contains the illegal character '"+ ident.charAt(i) +"' at offset "+ i +".");
+                throw new EdnException("The " + label + " '" + ident
+                        + "' contains the illegal character '"
+                        + ident.charAt(i) + "' at offset " + i + ".");
             }
         }
     }
 
     public int compareTo(Symbol right) {
-        int cmp = nullToEmpty(this.prefix).compareTo(nullToEmpty(right.prefix));
-        if (cmp != 0) {
-            return cmp;
-        }
-        return this.name.compareTo(right.name);
-    }
-
-    private static String nullToEmpty(String s) {
-        return s == null ? "" : s;
+        int cmp = prefix.compareTo(right.prefix);
+        return cmp != 0 ? cmp : name.compareTo(right.name);
     }
 
 }
