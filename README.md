@@ -235,7 +235,7 @@ The `Printer` writes *characters* to the underlying `Writer`. To serialize this 
 
 ### Supporting additional types
 
-To support additional types, you'll need to provide a `Printer.Config` to the `Printer` which binds your custom `PrintFn` to the class (or interface) it is responsible for.
+To support additional types, you'll need to provide a `Protocol<Printer.Fn<?>>` to the `Printer` which binds your custom `Printer.Fn` implementations to the class (or interface) it is responsible for.
 
 As an example, we'll add printing support for URIs:
 
@@ -248,23 +248,24 @@ import java.io.StringWriter;
 import java.net.URI;
 import org.junit.Test;
 import us.bpsm.edn.Tag;
-import us.bpsm.edn.printer.PrintFn;
 import us.bpsm.edn.printer.Printer;
+import us.bpsm.edn.printer.Printer.Fn;
 import us.bpsm.edn.printer.Printers;
+import us.bpsm.edn.protocols.Protocol;
 
 public class CustomTagPrinter {
     private static final Tag BPSM_URI = Tag.newTag("us.bpsm", "uri");
     @Test
     public void test() throws IOException {
+        Protocol<Fn<?>> fns = Printers.defaultProtocolBuilder()
+                .put(URI.class, new Printer.Fn<URI>() {
+                    @Override
+                    public void eval(URI self, Printer writer) {
+                        writer.printValue(BPSM_URI).printValue(self.toString());
+                    }})
+                    .build();
         StringWriter w = new StringWriter();
-        Printer.Config cfg = Printers.newPrinterConfigBuilder()
-            .bind(URI.class, new PrintFn<URI>() {
-                @Override
-                protected void eval(URI self, Printer writer) {
-                    writer.printValue(BPSM_URI).printValue(self.toString());
-                }})
-                .build();
-        Printer p = Printers.newPrinter(cfg, w);
+        Printer p = Printers.newPrinter(fns, w);
         p.printValue(URI.create("http://example.com"));
         p.close();
         assertEquals("#us.bpsm/uri\"http://example.com\"", w.toString());
