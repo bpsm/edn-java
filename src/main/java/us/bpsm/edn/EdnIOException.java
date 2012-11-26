@@ -2,6 +2,10 @@ package us.bpsm.edn;
 
 import java.io.IOException;
 
+/**
+ * Indicates that an I/O error occurred. The cause will be an
+ * {@link IOException}.
+ */
 public class EdnIOException extends EdnException {
     private static final long serialVersionUID = 1L;
 

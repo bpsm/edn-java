@@ -120,28 +120,28 @@ public final class Symbol implements Named, Comparable<Symbol> {
 
     private static void checkName(String label, String ident) {
         if (ident.length() == 0) {
-            throw new EdnException("The " + label + " '" + ident
-                    + "' must not be empty.");
+            throw new EdnSyntaxException("The " + label +
+                                         " must not be empty.");
         }
         char first = ident.charAt(0);
         if (isDigit(first)) {
-            throw new EdnException("The " + label + " '" + ident
+            throw new EdnSyntaxException("The " + label + " '" + ident
                     + "' must not begin with a digit.");
         }
         if (!symbolStart(first)) {
-            throw new EdnException("The " + label + " '" + ident
+            throw new EdnSyntaxException("The " + label + " '" + ident
                     + "' begins with a forbidden character.");
         }
         if ((first == '.' || first == '-')
                 && ident.length() > 1 && isDigit(ident.charAt(1))) {
-            throw new EdnException("The " + label + " '" + ident
+            throw new EdnSyntaxException("The " + label + " '" + ident
                     + "' begins with a '-' or '.' followed by digit, "
                     + "which is forbidden.");
         }
         int n = ident.length();
         for (int i = 1; i < n; i++) {
             if (!CharClassify.symbolConstituent(ident.charAt(i))) {
-                throw new EdnException("The " + label + " '" + ident
+                throw new EdnSyntaxException("The " + label + " '" + ident
                         + "' contains the illegal character '"
                         + ident.charAt(i) + "' at offset " + i + ".");
             }

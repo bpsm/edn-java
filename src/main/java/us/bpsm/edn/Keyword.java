@@ -61,7 +61,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
      *            A non-empty string obeying the restrictions specified by edn.
      *            Never null.
      * @return a Keyword without a prefix, never null.
-     * @see {@link #newKeyword(String, String)}
+     * @see #newKeyword(String, String)
      */
     public static Keyword newKeyword(String name) {
         return newKeyword(newSymbol(EMPTY, name));

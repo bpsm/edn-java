@@ -9,7 +9,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import us.bpsm.edn.EdnException;
+import us.bpsm.edn.EdnSyntaxException;
 
 
 public class InstantUtils {
@@ -22,7 +22,7 @@ public class InstantUtils {
     static ParsedInstant parse(String value) {
         Matcher m = INSTANT.matcher(value);
         if (!m.matches()) {
-            throw new EdnException("Can't parse " + "\"" + value + "\"");
+            throw new EdnSyntaxException("Can't parse " + "\"" + value + "\"");
         }
 
         final int years = Integer.parseInt(m.group(1));
@@ -39,27 +39,27 @@ public class InstantUtils {
         // extra-grammatical restrictions from RFC3339
 
         if (months < 1 || 12 < months) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid month in '%s'",
                             months, value));
         }
         if (days < 1 || daysInMonth(months, isLeapYear(years)) < days) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid day in '%s'",
                             days, value));
         }
         if (hours < 0 || 23 < hours) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid hour in '%s'",
                             hours, value));
         }
         if (minutes < 0 || 59 < minutes) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid minute in '%s'",
                             minutes, value));
         }
         if (seconds < 0 || (minutes == 59 ? 60 : 59) < seconds) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid second in '%s'",
                             seconds, value));
         }
@@ -68,12 +68,12 @@ public class InstantUtils {
         assert -1 <= offsetSign && offsetSign <= 1:
             "parser assuers offsetSign is -1, 0 or 1.";
         if (offsetHours < 0 || 23 < offsetHours) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid offset hour in '%s'",
                             offsetHours, value));
         }
         if (offsetMinutes < 0 || 59 < offsetMinutes) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid offset minute in '%s'",
                             offsetMinutes, value));
         }
@@ -172,7 +172,11 @@ public class InstantUtils {
 
     private static final int NANOSECS_PER_MILLISEC = 1000000;
 
-
+    /**
+     * Return a String suitable for use as an edn {@code #inst}, given
+     * a {@link GregorianCalendar}.
+     * @return an RFC3339 compatible string.
+     */
     public static String calendarToString(GregorianCalendar cal) {
         String s = String.format("%1$tFT%1$tT.%1$tL%1$tz", cal);
         /* s is almost right, but is missing the colon in the offset */
@@ -181,6 +185,11 @@ public class InstantUtils {
         return s.substring(0, n-2) + ":" + s.substring(n-2);
     }
 
+    /**
+     * Return a String suitable for use as an edn {@code #inst}, given
+     * a {@link Date}.
+     * @return an RFC3339 compatible string.
+     */
     public static String dateToString(Date date) {
         GregorianCalendar c = new GregorianCalendar(GMT);
         c.setTime(date);
@@ -192,6 +201,11 @@ public class InstantUtils {
     private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
 
+    /**
+     * Return a String suitable for use as an edn {@code #inst}, given
+     * a {@link Timestamp}.
+     * @return an RFC3339 compatible string.
+     */
     public static String timestampToString(Timestamp ts) {
         return TIMESTAMP_FORMAT.get().format(ts)
              + String.format(".%09d-00:00", ts.getNanos());

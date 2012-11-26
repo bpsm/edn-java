@@ -2,8 +2,8 @@
 package us.bpsm.edn.parser;
 
 /**
- * This enum represents a subset of the elements that can occur in a
- * {@link TokenSeq}.
+ * The members of this enum are a subset of the values that may be
+ * returned by {@link Scanner#nextToken(Parseable)}.
  */
 public enum Token {
 
@@ -35,8 +35,8 @@ public enum Token {
     NIL,
 
     /**
-     * A '#_', which instructs the parser to ignore the next value parsed from
-     * the input.
+     * A '#_', which instructs the parser to ignore the next value
+     * parsed from the input.
      */
     DISCARD;
 }

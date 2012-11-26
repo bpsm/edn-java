@@ -1,16 +1,75 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.parser;
 
+/**
+ * ParsedInstant contains the pared contents of a <a
+ * href="http://www.ietf.org/rfc/rfc3339.txt">RFC3339</a> style time
+ * stamp.
+ *
+ * @see AbstractInstantHandler
+ */
 public class ParsedInstant {
+
+    /**
+     * The year: -9999-9999.
+     */
     public final int years;
+
+    /**
+     * Month of the year: 01-12. Defaults to 1 of missing.
+     */
     public final int months;
+
+    /**
+     * Day of the month: 01-28, 01-29, 01-30, 01-31 based on
+     * month/year. Defaults to 0 of missing.
+     */
     public final int days;
+
+    /**
+     * Hours of the day: 00-23. Defaults to 0 of missing.
+     */
     public final int hours;
+
+    /**
+     * Minutes of the hour: 00-59. Defaults to 0 of missing.
+     */
     public final int minutes;
+
+    /**
+     * Seconds of the minute: 00-58, 00-59, 00-60 based on leap second
+     * rules. Defaults to 0 of missing.
+     */
     public final int seconds;
+
+    /**
+     * Nanoseconds of the second: 0-999999999. Defaults to 0 if missing.
+     */
     public final int nanoseconds;
+
+    /**
+     * The sign of the timezone offset as follows:
+     * <pre>{@code
+     * -1 for the sign "-"
+     * +1 for the sign "+"
+     *  0 when non-numeric offset "Z" is given
+     * }</pre>
+     * Defaults to 0 if missing.
+     */
     public final int offsetSign;
+
+    /**
+     * The whole hour component of the time zone offset: [0-23]. If
+     * the offset is given as "Z", this will be 0. Defaults to 0 if
+     * missing.
+     */
     public final int offsetHours;
+
+    /**
+     * The minute component of the time zone offset: [0-59]. If the
+     * offset is given as "Z", this will be 0. Defaults to 0 if
+     * missing.
+     */
     public final int offsetMinutes;
 
     public ParsedInstant(int years, int months, int days, int hours,
@@ -96,7 +155,5 @@ public class ParsedInstant {
         }
         return true;
     }
-
-
 
 }

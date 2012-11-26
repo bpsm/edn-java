@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import us.bpsm.edn.EdnIOException;
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
@@ -48,7 +49,7 @@ public interface Scanner {
      * 
      * @throws EdnIOException
      *             if the underlying Parseable throws an IOException.
-     * @throws EdnException
+     * @throws EdnSyntaxException
      *             if the contents of the underlying Parseable violates the
      *             syntax of edn.
      * 

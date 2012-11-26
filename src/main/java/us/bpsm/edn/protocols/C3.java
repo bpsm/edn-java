@@ -5,8 +5,28 @@ import java.util.List;
 
 import us.bpsm.edn.EdnException;
 
+/**
+ * Implements the <a
+ * href="http://en.wikipedia.org/wiki/C3_linearization">C3 superclass
+ * linearization</a> algorithm.
+ */
 class C3 {
 
+    /**
+     * Return a linearization for the inheritance hierarchy of the
+     * {@code class} {@code c}. The linearization will includes
+     * interfaces as well as classes and considers {@link Object} to
+     * be the ultimate superclass.
+     *
+     * @param c represents an actual <em>class</em>, not an
+     *        interface. Never null.
+     *
+     * @return The linearization of c: never null and never empty.
+     *
+     * @throws EdnException if the inheritance hiearchy of {@code c}
+     *         makes it impossible to compuate a consistent hierarchy
+     *         for {@code c}.
+     */
     static List<Class<?>> methodResolutionOrder(Class<?> c) {
         try {
             List<Class<?>> result = mro(c);
@@ -16,8 +36,9 @@ class C3 {
             return result;
         } catch (InconsistentHierarchy e) {
             StringBuilder b = new StringBuilder()
-            .append("Unable to compute a consistent method resolution order for ")
-            .append(c.getName());
+                .append("Unable to compute a consistent ")
+                .append("method resolution order for ")
+                .append(c.getName());
             if (c.equals(e.problematicClass)) {
                 b.append(".");
             } else {

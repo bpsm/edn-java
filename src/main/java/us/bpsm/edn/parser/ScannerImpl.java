@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import us.bpsm.edn.EdnException;
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.EdnIOException;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
@@ -170,7 +170,7 @@ class ScannerImpl implements Scanner {
         case '\\':
             return readCharacterLiteral(pbr);
         default:
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 String.format("Unexpected character '%c', \\"+"u%04x",
                     (char)curr, curr));
         }
@@ -180,7 +180,7 @@ class ScannerImpl implements Scanner {
         int peek = pbr.read();
         switch(peek) {
         case END:
-            throw new EdnException("Unexpected end of input following '#'");
+            throw new EdnSyntaxException("Unexpected end of input following '#'");
         case '{':
             return Token.BEGIN_SET;
         case '_':
@@ -259,10 +259,10 @@ class ScannerImpl implements Scanner {
     private char readCharacterLiteral(Parseable pbr) throws IOException {
         int curr = pbr.read();
         if (curr == END) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "Unexpected end of input following '\'");
         } else if (isWhitespace((char)curr) && curr != ',') {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "A backslash introducing character literal must not be "+
                 "immediately followed by whitespace.");
         }
@@ -312,7 +312,7 @@ class ScannerImpl implements Scanner {
             }
             // fall through
         default:
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "The character \\"+ name +" was not recognized.");
         }
     }
@@ -323,7 +323,7 @@ class ScannerImpl implements Scanner {
             int curr = pbr.read();
             switch (curr) {
             case END:
-                throw new EdnException(
+                throw new EdnSyntaxException(
                     "Unexpected end of input in string literal");
             case '"':
                 return b.toString();
@@ -331,7 +331,7 @@ class ScannerImpl implements Scanner {
                 curr = pbr.read();
                 switch (curr) {
                 case END:
-                    throw new EdnException(
+                    throw new EdnSyntaxException(
                         "Unexpected end of input in string literal");
                 case 'b':
                     b.append('\b');
@@ -358,7 +358,7 @@ class ScannerImpl implements Scanner {
                     b.append('\\');
                     break;
                 default:
-                    throw new EdnException("Unsupported '"+ ((char)curr)
+                    throw new EdnSyntaxException("Unsupported '"+ ((char)curr)
                         +"' escape in string");
                 }
                 break;
@@ -393,11 +393,11 @@ class ScannerImpl implements Scanner {
                 digits.append((char)curr);
                 curr = pbr.read();
                 if (curr == END) {
-                    throw new EdnException(
+                    throw new EdnSyntaxException(
                         "Unexpected end of input in numeric literal");
                 }
                 if (!(curr == '-' || curr == '+' || isDigit((char)curr))) {
-                    throw new EdnException(
+                    throw new EdnSyntaxException(
                         "Not a number: '"+ digits + ((char)curr) +"'.");
                 }
                 do {
@@ -412,7 +412,7 @@ class ScannerImpl implements Scanner {
             }
 
             if (curr != END && !separatesTokens((char)curr)) {
-                throw new EdnException(
+                throw new EdnSyntaxException(
                     "Not a number: '"+ digits + ((char)curr) +"'.");
             }
             unread(pbr, curr);
@@ -431,7 +431,7 @@ class ScannerImpl implements Scanner {
             }
 
             if (curr != END && !separatesTokens((char)curr)) {
-                throw new EdnException(
+                throw new EdnSyntaxException(
                     "Not a number: '"+ digits + ((char)curr) +"'.");
             }
             unread(pbr, curr);
@@ -449,7 +449,7 @@ class ScannerImpl implements Scanner {
     private Keyword readKeyword(Parseable pbr) throws IOException {
         Symbol sym = readSymbol(pbr);
         if (SLASH_SYMBOL.equals(sym)) {
-            throw new EdnException("':/' is not a valid keyword.");
+            throw new EdnSyntaxException("':/' is not a valid keyword.");
         }
         return Keyword.newKeyword(sym);
     }
@@ -460,7 +460,7 @@ class ScannerImpl implements Scanner {
 
     private Symbol readSymbol(int curr, Parseable pbr) throws IOException {
         if (curr == END) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "Unexpected end of input while reading an identifier");
         }
         StringBuilder b = new StringBuilder();
@@ -496,16 +496,16 @@ class ScannerImpl implements Scanner {
 
     private void validateUseOfSlash(CharSequence s, int slashCount, int lastSlashPos) {
         if (slashCount > 1) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "The name '"+ s +"' must not contain more than one '/'.");
         }
         if (lastSlashPos == 0 && s.length() > 1) {
-            throw new EdnException(
+            throw new EdnSyntaxException(
                 "The name '"+ s +"' must not start with '/'.");
         }
         if (s.length() > 1) {
             if (lastSlashPos == s.length() - 1) {
-                throw new EdnException(
+                throw new EdnSyntaxException(
                     "The name '"+ s +"' must not end with '/'.");
             }
         }

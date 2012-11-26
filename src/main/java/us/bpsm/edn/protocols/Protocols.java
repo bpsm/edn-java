@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * Factories for {@link Protocol}s
+ */
 @SuppressWarnings("rawtypes")
 public class Protocols {
 
@@ -15,8 +18,23 @@ public class Protocols {
             "This builder can only be used to build a single Protocol.";
 
     static final String NO_MODIFY_MSG =
-            "This builder is single-use and may not be modified after the Protocol has been built.";
+            "This builder is single-use and may not be modified after " +
+            "the Protocol has been built.";
 
+    static final String MUST_HAVE_NAME =
+            "Each Protocol must have a name";
+
+    static final String FN_MUST_NOT_BE_NULL =
+            "The value ('fn') associated with a class must not be null.";
+
+    /**
+     * Return a new, empty single-use {@code Protocol.Builder} with
+     * the given name.
+     *
+     * @param name not null.
+     *
+     * @return an empty {@code Protocol.Builder}, never null.
+     */
     public static <F> Protocol.Builder<F> builder(final String name) {
         return new ProtocolImpl<F>(name);
     }
@@ -27,11 +45,27 @@ public class Protocols {
         final Map<Class<?>, F> m = new HashMap<Class<?>, F>();
         boolean built = false;
 
-        ProtocolImpl(String name) { this.name = name; }
+        public String toString() {
+            if (built) {
+                return "Protocol '" + name + "'";
+            } else {
+                return "Protocol.Builder '" + name + "'";
+            }
+        }
+
+        ProtocolImpl(String name) {
+            if (name == null) {
+                throw new NullPointerException(MUST_HAVE_NAME);
+            }
+            this.name = name;
+        }
 
         public Protocol.Builder<F> put(Class selfClass, F fn) {
             if (built) {
                 throw new IllegalStateException(NO_MODIFY_MSG);
+            }
+            if (fn == null) {
+                throw new NullPointerException(FN_MUST_NOT_BE_NULL);
             }
             if (selfClass == null) {
                 nullFn = fn;

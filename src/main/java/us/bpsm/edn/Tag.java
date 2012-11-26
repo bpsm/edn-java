@@ -67,7 +67,7 @@ public final class Tag implements Named, Comparable<Tag> {
      *            A non-empty string obeying the restrictions specified by edn.
      *            Never null.
      * @return a Tag without a prefix, never null.
-     * @see {@link #newTag(String, String)}
+     * @see #newTag(String, String)
      */
     public static Tag newTag(String name) {
         return newTag(newSymbol(EMPTY, name));

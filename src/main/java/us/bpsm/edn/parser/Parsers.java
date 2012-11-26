@@ -20,15 +20,47 @@ import us.bpsm.edn.parser.Parser.Config;
 import us.bpsm.edn.parser.Parser.Config.Builder;
 
 
+/**
+ * Factory methods for all things related to {@link Parser}.
+ *
+ * Typical usage is as follows:
+ *
+ * <ol>
+ *
+ * <li>Ask
+ *     {@link #newParserConfigBuilder()} for a new
+ *     {@link Parser.Config.Builder}.</li>
+ *
+ * <li>Make any desired customizations. Primarily, this will mean using
+ *     {@link Parser.Config.Builder#putTagHandler(Tag, TagHandler)}
+ *     to register {@link TagHandler}s for any custom
+ *     {@link us.bpsm.edn.Tag}s used by your expected input documents.</li>
+ *
+ * <li>Pass the resulting {@link Parser.Config} to
+ *     {@link #newParser(Parser.Config)} to create a {@link Parser}.</li>
+ *
+ * <li>Create one or more {@link Parseable}s using
+ *     {@link #newParseable(CharSequence)} or
+ *     {@link #newParseable(Readable)}.</li>
+ *
+ * <li>Use {@link Parser#nextValue(Parseable)} to get
+ *     the edn values contained in your Parseables</li>
+ *
+ * </ol>
+ */
 public class Parsers {
 
-    static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY = new DefaultListFactory();
+    static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY =
+        new DefaultListFactory();
 
-    static final CollectionBuilder.Factory DEFAULT_VECTOR_FACTORY = new DefaultVectorFactory();
+    static final CollectionBuilder.Factory DEFAULT_VECTOR_FACTORY =
+        new DefaultVectorFactory();
 
-    static final CollectionBuilder.Factory DEFAULT_SET_FACTORY = new DefaultSetFactory();
+    static final CollectionBuilder.Factory DEFAULT_SET_FACTORY =
+        new DefaultSetFactory();
 
-    static final CollectionBuilder.Factory DEFAULT_MAP_FACTORY = new DefaultMapFactory();
+    static final CollectionBuilder.Factory DEFAULT_MAP_FACTORY =
+        new DefaultMapFactory();
 
     static final TagHandler INSTANT_TO_DATE = new InstantToDate();
 
@@ -40,6 +72,12 @@ public class Parsers {
         }
     };
 
+    /**
+     * Return a Parser configured by the given {@link Parser.Config}.
+     *
+     * @param cfg The configuration of the Parser. Must not be null.
+     * @return a Parser, never null.
+     */
     public static Parser newParser(Parser.Config cfg) {
         return new ParserImpl(cfg, new ScannerImpl(cfg));
     }
@@ -59,6 +97,15 @@ public class Parsers {
         return b;
     }
 
+    /**
+     * Create a new {@link Parseable} wrapping the given {@link
+     * CharSequence}.
+
+     * <p>The {@link java.io.Closeable#close()} method of the resulting
+     * Parseable is a no-op.
+     *
+     * @return a Parseable, never null.
+     */
     public static Parseable newParseable(final CharSequence cs) {
         return new Parseable() {
             int i = 0;
@@ -70,7 +117,7 @@ public class Parsers {
                 try {
                     return cs.charAt(i++);
                 } catch (IndexOutOfBoundsException _) {
-                    return -1;
+                    return Parseable.END_OF_INPUT;
                 }
             }
 
@@ -80,6 +127,13 @@ public class Parsers {
         };
     }
 
+    /**
+     * Create a new {@link Parseable} wrapping the given {@link Readable}.
+     *
+     * <p>The {@link java.io.Closeable#close()} method of the
+     * resulting Parseable closes the {@code r} if {@code r} is itself
+     * Closeable.
+     */
     public static Parseable newParseable(final Readable r) {
         return new Parseable() {
             CharBuffer buff = emptyBuffer();
@@ -104,7 +158,7 @@ public class Parsers {
                     return ch;
                 }
                 if (end) {
-                    return -1;
+                    return Parseable.END_OF_INPUT;
                 }
                 if (buff.position() < buff.limit()) {
                     return buff.get();
@@ -113,7 +167,7 @@ public class Parsers {
                     return buff.get();
                 } else {
                     end = true;
-                    return -1;
+                    return Parseable.END_OF_INPUT;
                 }
             }
 
@@ -126,6 +180,11 @@ public class Parsers {
         };
     }
 
+    /**
+     * Return a new {@link Parser.Config.Builder}.
+     *
+     * @return a new {@link Parser.Config.Builder}, never null.
+     */
     public static Builder newParserConfigBuilder() {
         return new Builder() {
             boolean used = false;
@@ -193,7 +252,8 @@ public class Parsers {
 
             private void checkState() {
                 if (used) {
-                    throw new IllegalStateException("Builder is single-use. Not usable after build()");
+                    throw new IllegalStateException(
+                        "Builder is single-use. Not usable after build()");
                 }
             }
         };
@@ -210,6 +270,12 @@ public class Parsers {
         return m;
     }
 
+    /**
+     * Return the default configuration. This is equivalent to {@code
+     * newParserConfigBuilder().build()}.
+     *
+     * @return a new {@link Parser.Config}, never null.
+     */
     public static Config defaultConfiguration() {
         return DEFAULT_CONFIGURATION;
     }

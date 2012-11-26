@@ -3,6 +3,7 @@ package us.bpsm.edn.printer;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.io.Closeable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -27,30 +28,78 @@ import us.bpsm.edn.protocols.Protocols;
 import us.bpsm.edn.util.CharClassify;
 
 
+/**
+ * Factory for creating {@link Printer}s and related Objects.
+ */
 public class Printers {
 
-    public static Printer newPrinter(final Writer writer) {
-        return newPrinter(defaultPrinterProtocol(), writer);
+    /**
+     * Return a new Printer with the default printing
+     * protocol. Everything the printer prints will be appended to
+     * {@code out}. {@link Printer#close()} will close {@code
+     * out}, provided {@code out} implements {@link Closeable}.
+     *
+     * @param out to which values will be printed. Never null.
+     *
+     * @return a Printer with default configuration, never null.
+     */
+    public static Printer newPrinter(final Appendable out) {
+        return newPrinter(defaultPrinterProtocol(), out);
     }
 
-    public static String printString(final Protocol<Printer.Fn<?>> fns, Object ednValue) {
+    /**
+     * Print {@code ednValue} to a new String using the default
+     * printing protocol.
+     *
+     * @param ednValue the value to be returned as a String in edn syntax.
+     *
+     * @return A string in edn syntax. Not null, not empty.
+     */
+    public static String printString(Object ednValue) {
+        return printString(defaultPrinterProtocol(), ednValue);
+    }
+
+    /**
+     * Print {@code ednValue} to a new String using the printing
+     * protocol given as {@code fns}.
+     *
+     * @param fns a Protocol which knows how to print all the classes
+     *        of objects that we'll be asking our Printer to print.
+     *        Never null. Never null.
+     *
+     * @param ednValue the value to be returned as a String in edn syntax.
+     *
+     * @return A string in edn syntax. Not null, not empty.
+     */
+    public static String printString(final Protocol<Printer.Fn<?>> fns,
+                                     Object ednValue) {
         StringBuilder sb = new StringBuilder();
         newPrinter(fns, sb).printValue(ednValue);
         return sb.toString();
     }
 
-    public static String printString(Object ednValue) {
-        return printString(defaultPrinterProtocol(), ednValue);
-    }
-
-    public static Printer newPrinter(final Protocol<Printer.Fn<?>> fns, final Appendable out) {
+    /**
+     * Return a new Printer with the printing protocol given as {@code
+     * fns}. Everything the printer prints will be appended to {@code
+     * writer}. {@link Printer#close()} will close {@code out}, if
+     * {@code out} implements {@link Closeable}.
+     *
+     * @param fns a Protocol which knows how to print all the classes
+     *        of objects that we'll be asking our Printer to print.
+     *        Never null. Never null.
+     * @param out to which values will be printed. Never null.
+     *
+     * @return a Printer, never null.
+     */
+    public static Printer newPrinter(final Protocol<Printer.Fn<?>> fns,
+                                     final Appendable out) {
         return new Printer() {
             int softspace = 0;
 
             public void close() {
-                if (out instanceof Writer) {
+                if (out instanceof Closeable) {
                     try {
-                        ((Writer)out).close();
+                        ((Closeable)out).close();
                     } catch (IOException e) {
                         throw new EdnIOException(e);
                     }
@@ -59,7 +108,8 @@ public class Printers {
 
             public Printer append(CharSequence csq) {
                 try {
-                    if (softspace > 1 && csq.length() > 0 && !CharClassify.isWhitespace(csq.charAt(0))) {
+                    if (softspace > 1 && csq.length() > 0 &&
+                            !CharClassify.isWhitespace(csq.charAt(0))) {
                         out.append(' ');
                     }
                     softspace = 0;
@@ -85,7 +135,8 @@ public class Printers {
 
             public Printer printValue(Object ednValue) {
                 @SuppressWarnings("unchecked")
-                Printer.Fn<Object> printFn = (Printer.Fn<Object>) fns.lookup(getClassOrNull(ednValue));
+                Printer.Fn<Object> printFn = (Printer.Fn<Object>)
+                    fns.lookup(getClassOrNull(ednValue));
                 if (printFn == null) {
                     throw new EdnException(String.format(
                             "Don't know how to write '%s' of type '%s'",
@@ -107,39 +158,73 @@ public class Printers {
         return o == null ? null : o.getClass();
     }
 
+    /**
+     * Returns a {@link us.bpsm.edn.protocols.Protocol.Builder}
+     * preconfigured knowing how to print classes known to end-java:
+     *
+     * <ul>
+     * <li>{@link BigDecimal}</li>
+     * <li>{@link BigInteger}</li>
+     * <li>{@link Boolean}</li>
+     * <li>{@link Byte} (as an integer)</li>
+     * <li>{@link CharSequence} (as a string literal)</li>
+     * <li>{@link Character} (as a character literal)</li>
+     * <li>{@link Date} (as {@code #inst})</li>
+     * <li>{@link Double}</li>
+     * <li>{@link Float}</li>
+     * <li>{@link GregorianCalendar} (as {@code #inst})</li>
+     * <li>{@link Integer}</li>
+     * <li>{@link Keyword}</li>
+     * <li>{@link List}</li>
+     * <li>{@link Long}</li>
+     * <li>{@link Map}</li>
+     * <li>{@link Set}</li>
+     * <li>{@link Short} (as an integer)</li>
+     * <li>{@link Symbol}</li>
+     * <li>{@link Tag}</li>
+     * <li>{@link TaggedValue}</li>
+     * <li>{@link Timestamp} (as {@code #inst})</li>
+     * <li>{@link UUID} (as {@code #uuid})</li>
+     * </ul>
+     */
     public static Protocol.Builder<Printer.Fn<?>> defaultProtocolBuilder() {
         Protocol.Builder<Printer.Fn<?>> protocolBuilder =
                 Protocols.<Printer.Fn<?>>builder("print")
                 .put(null, writeNullFn())
-                .put(List.class, writeListFn())
-                .put(Map.class, writeMapFn())
-                .put(Set.class, writeSetFn())
-                .put(Keyword.class, writeKeywordFn())
-                .put(Symbol.class, writeSymbolFn())
-                .put(CharSequence.class, writeCharSequenceFn())
-                .put(Character.class, writeCharacterFn())
+                .put(BigDecimal.class, writeBigDecimalFn())
+                .put(BigInteger.class, writeBigIntegerFn())
                 .put(Boolean.class, writeBooleanFn())
                 .put(Byte.class, writeLongValueFn())
-                .put(Short.class, writeLongValueFn())
-                .put(Integer.class, writeLongValueFn())
-                .put(Long.class, writeLongValueFn())
-                .put(BigInteger.class, writeBigIntegerFn())
-                .put(Float.class, writeDoubleValueFn())
+                .put(CharSequence.class, writeCharSequenceFn())
+                .put(Character.class, writeCharacterFn())
+                .put(Date.class, writeDateFn())
                 .put(Double.class, writeDoubleValueFn())
-                .put(BigDecimal.class, writeBigDecimalFn())
-                .put(UUID.class, writeUuidFn()).put(Date.class, writeDateFn())
-                .put(Timestamp.class, writeTimestampFn())
+                .put(Float.class, writeDoubleValueFn())
                 .put(GregorianCalendar.class, writeCalendarFn())
+                .put(Integer.class, writeLongValueFn())
+                .put(Keyword.class, writeKeywordFn())
+                .put(List.class, writeListFn())
+                .put(Long.class, writeLongValueFn())
+                .put(Map.class, writeMapFn())
+                .put(Set.class, writeSetFn())
+                .put(Short.class, writeLongValueFn())
+                .put(Symbol.class, writeSymbolFn())
+                .put(Tag.class, writeTagFn())
                 .put(TaggedValue.class, writeTaggedValueFn())
-                .put(Tag.class, writeTagFn());
+                .put(Timestamp.class, writeTimestampFn())
+                .put(UUID.class, writeUuidFn());
         return protocolBuilder;
     }
 
-
+    /**
+     * Return the default printer {@link Protocol}. This is equivalent
+     * to {@code defaultProtocolBuilder().build()}.
+     *
+     * @return the default printing {@link Protocol}, never null.
+     */
     public static Protocol<Printer.Fn<?>> defaultPrinterProtocol() {
         return defaultProtocolBuilder().build();
     }
-
 
 
     static Printer.Fn<Void> writeNullFn() {

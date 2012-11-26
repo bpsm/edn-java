@@ -5,7 +5,7 @@ import static us.bpsm.edn.TaggedValue.newTaggedValue;
 import static us.bpsm.edn.parser.Token.END_LIST;
 import static us.bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static us.bpsm.edn.parser.Token.END_VECTOR;
-import us.bpsm.edn.EdnException;
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Tag;
 
 
@@ -27,7 +27,7 @@ class ParserImpl implements Parser {
     public Object nextValue(Parseable pbr) {
         Object value = nextValue(pbr, false);
         if (value instanceof Token && value != END_OF_INPUT) {
-            throw new EdnException("Unexpected "+ value);
+            throw new EdnSyntaxException("Unexpected "+ value);
         }
         return value;
     }
@@ -37,13 +37,17 @@ class ParserImpl implements Parser {
         if (curr instanceof Token) {
             switch ((Token) curr) {
             case BEGIN_LIST:
-                return parseIntoCollection(cfg.getListFactory(), END_LIST, pbr, discard);
+                return parseIntoCollection(cfg.getListFactory(),
+                                           END_LIST, pbr, discard);
             case BEGIN_VECTOR:
-                return parseIntoCollection(cfg.getVectorFactory(), END_VECTOR, pbr, discard);
+                return parseIntoCollection(cfg.getVectorFactory(),
+                                           END_VECTOR, pbr, discard);
             case BEGIN_SET:
-                return parseIntoCollection(cfg.getSetFactory(), END_MAP_OR_SET, pbr, discard);
+                return parseIntoCollection(cfg.getSetFactory(),
+                                           END_MAP_OR_SET, pbr, discard);
             case BEGIN_MAP:
-                return parseIntoCollection(cfg.getMapFactory(), END_MAP_OR_SET, pbr, discard);
+                return parseIntoCollection(cfg.getMapFactory(),
+                                           END_MAP_OR_SET, pbr, discard);
             case DISCARD:
                 nextValue(pbr, true);
                 return nextValue(pbr, discard);
@@ -55,7 +59,7 @@ class ParserImpl implements Parser {
             case END_VECTOR:
                 return curr;
             default:
-                throw new EdnException("Unrecognized Token: " + curr);
+                throw new EdnSyntaxException("Unrecognized Token: " + curr);
             }
         } else if (curr instanceof Tag) {
             return nextValue((Tag)curr, pbr, discard);
@@ -74,11 +78,15 @@ class ParserImpl implements Parser {
         return x != null ? x.transform(t, v) : newTaggedValue(t, v);
     }
 
-    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end, Parseable pbr, boolean discard) {
+    private Object parseIntoCollection(CollectionBuilder.Factory f, Token end,
+                                       Parseable pbr, boolean discard) {
         CollectionBuilder b = !discard ? f.builder() : null;
-        for (Object o = nextValue(pbr, discard); o != end; o = nextValue(pbr, discard)) {
+        for (Object o = nextValue(pbr, discard); 
+             o != end; 
+             o = nextValue(pbr, discard)) {
             if (o instanceof Token) {
-                throw new EdnException("Expected " + end + ", but found " + o);
+                throw new EdnSyntaxException("Expected " + end +
+                                             ", but found " + o);
             }
             if (!discard) {
                 b.add(o);
