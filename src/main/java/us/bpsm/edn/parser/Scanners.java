@@ -17,4 +17,8 @@ public class Scanners {
         return DEFAULT_SCANNER;
     }
 
+    private Scanners() {
+        throw new UnsupportedOperationException();
+    }
+
 }

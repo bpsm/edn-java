@@ -72,6 +72,10 @@ public class Parsers {
         }
     };
 
+    private Parsers() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Return a Parser configured by the given {@link Parser.Config}.
      *

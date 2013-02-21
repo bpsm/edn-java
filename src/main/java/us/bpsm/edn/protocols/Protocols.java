@@ -27,6 +27,10 @@ public class Protocols {
     static final String FN_MUST_NOT_BE_NULL =
             "The value ('fn') associated with a class must not be null.";
 
+    private Protocols() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Return a new, empty single-use {@code Protocol.Builder} with
      * the given name.

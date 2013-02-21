@@ -5,6 +5,10 @@ import java.util.BitSet;
 
 public class CharClassify {
 
+    private CharClassify() {
+        throw new UnsupportedOperationException();
+    }
+
     public static boolean symbolConstituent(char c) {
         return SYMBOL_CONSTITUENTS.get(c);
     }

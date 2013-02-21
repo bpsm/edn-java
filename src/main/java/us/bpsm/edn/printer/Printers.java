@@ -33,6 +33,10 @@ import us.bpsm.edn.util.CharClassify;
  */
 public class Printers {
 
+    private Printers() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Return a new Printer with the default printing
      * protocol. Everything the printer prints will be appended to
