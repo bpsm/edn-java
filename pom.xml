@@ -16,8 +16,7 @@
   <name>EDN Java</name>
   <description>
     edn-java is an parser and printer for 'edn' written in Java, for Java and
-    requiring no external dependencies. 
-    See also https://github.com/edn-format/edn
+    requiring no external dependencies.
   </description>
   <url>http://edn-java.bpsm.us</url>
   <properties>
