@@ -65,7 +65,7 @@ Lists "(...)" and vectors "[...]" are both mapped to implementations of `java.ut
 
 Maps map to `java.util.HashMap` and sets to `java.util.HashSet`.
 
-The parser is provided a a configuration when created:
+The parser is provided a configuration when created:
 
     Parsers.newParser(Parsers.defaultConfiguration())
 
@@ -276,5 +276,8 @@ public class CustomTagPrinter {
 ### Limitations
 
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
+ - The current Printing support stikes me a as a bit of a hack.
  - Currently, the printer doesn't pretty-print. This is fine when using edn for communication, but less than helpful for debugging or storage in version control.
+ - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient.
+
 
