@@ -12,11 +12,9 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
 </dependency>
 ```
-
-You'll have to build it form source yourself using Maven.  This library is not currently available in any public repository.
 
 ## Parsing
 
