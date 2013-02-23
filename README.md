@@ -12,9 +12,13 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.4.0</version>
 </dependency>
 ```
+
+It is available through the OSS Sonatype Releases repository:
+
+    https://oss.sonatype.org/content/repositories/releases
 
 ## Parsing
 
