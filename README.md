@@ -22,7 +22,7 @@ It is available through the OSS Sonatype Releases repository:
 
 ## Parsing
 
-You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `java.lang.CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
+You'll need to create a Parser and supply it with some input. Factory methods to create Parseable input are provided which accept either a `java.lang.CharSequence` or a `java.lang.Readable`. You can then call `nextValue()` on the Parser to get values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
 
 
 ```java
