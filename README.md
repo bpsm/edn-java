@@ -120,7 +120,7 @@ By default, handlers are provided automatically for `#inst` and `#uuid`, which r
 
 #### Customizing the parsing of instants
 
-The package `bpsm.edn.parser.inst` makes three handlers for `#inst` available:
+The package `us.bpsm.edn.parser` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
  - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
