@@ -53,7 +53,7 @@ public class ParseASingleMapTest {
 
 ### Mapping from EDN to Java
 
-Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `us.bpsm.edn`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
@@ -116,7 +116,7 @@ public class SimpleParserConfigTest {
 
 ### Tagged Values
 
-By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.TaggedValue`.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `us.bpsm.edn.TaggedValue`.
 
 #### Customizing the parsing of instants
 
@@ -209,11 +209,11 @@ public class CustomLongHandler {
 
 ## Printing
 
-The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
+The package `us.bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
 
- - `bpsm.edn.Keyword`
- - `bpsm.edn.Symbol`
- - `bpsm.edn.TaggedValue`
+ - `us.bpsm.edn.Keyword`
+ - `us.bpsm.edn.Symbol`
+ - `us.bpsm.edn.TaggedValue`
  - `java.lang.Boolean`
  - `java.lang.Byte`
  - `java.lang.CharSequence`, which includes `java.lang.String`.
