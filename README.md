@@ -22,7 +22,7 @@ It is available through the OSS Sonatype Releases repository:
 
 ## Parsing
 
-You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `java.lang.CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
+You'll need to create a Parser and supply it with some input. Factory methods to create Parseable input are provided which accept either a `java.lang.CharSequence` or a `java.lang.Readable`. You can then call `nextValue()` on the Parser to get values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
 
 
 ```java
@@ -53,7 +53,7 @@ public class ParseASingleMapTest {
 
 ### Mapping from EDN to Java
 
-Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `us.bpsm.edn`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
@@ -116,11 +116,11 @@ public class SimpleParserConfigTest {
 
 ### Tagged Values
 
-By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.TaggedValue`.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `us.bpsm.edn.TaggedValue`.
 
 #### Customizing the parsing of instants
 
-The package `bpsm.edn.parser.inst` makes three handlers for `#inst` available:
+The package `us.bpsm.edn.parser` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
  - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
@@ -209,11 +209,11 @@ public class CustomLongHandler {
 
 ## Printing
 
-The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
+The package `us.bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
 
- - `bpsm.edn.Keyword`
- - `bpsm.edn.Symbol`
- - `bpsm.edn.TaggedValue`
+ - `us.bpsm.edn.Keyword`
+ - `us.bpsm.edn.Symbol`
+ - `us.bpsm.edn.TaggedValue`
  - `java.lang.Boolean`
  - `java.lang.Byte`
  - `java.lang.CharSequence`, which includes `java.lang.String`.
