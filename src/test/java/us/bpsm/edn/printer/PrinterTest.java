@@ -85,4 +85,12 @@ public class PrinterTest {
         assertEquals(Parser.END_OF_INPUT, parser.nextValue(pbr));
     }
 
+    @Test
+    public void issue31() {
+        StringWriter sw = new StringWriter();
+        Printer p = Printers.newPrinter(sw);
+        assertEquals("\"'\"", Printers.printString("\'"));
+        assertEquals("\"'\"", Printers.printString("'"));
+    }
+
 }
