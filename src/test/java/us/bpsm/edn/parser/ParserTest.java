@@ -28,10 +28,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import us.bpsm.edn.Tag;
-import us.bpsm.edn.parser.Parseable;
-import us.bpsm.edn.parser.Parser;
-import us.bpsm.edn.parser.Parsers;
-import us.bpsm.edn.parser.TagHandler;
+
 
 
 public class ParserTest {
