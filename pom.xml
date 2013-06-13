@@ -8,7 +8,7 @@
   </parent>
   <groupId>us.bpsm</groupId>
   <artifactId>edn-java</artifactId>
-  <version>0.4.2</version>
+  <version>develop-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>EDN Java</name>
   <description>
