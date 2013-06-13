@@ -39,7 +39,7 @@ class ScannerImpl implements Scanner {
     /**
      * Scanner may throw an IOException during construction, in which case
      * an attempt will be made to close Reader cleanly.
-     * @param reader
+     * @param cfg this scanner's configuration, never null.
      * @throws IOException
      */
     ScannerImpl(Parser.Config cfg) {

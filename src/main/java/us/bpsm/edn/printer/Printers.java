@@ -345,9 +345,6 @@ public class Printers {
                     case '\f':
                         writer.append('\\').append('f');
                         break;
-                    case '\'':
-                        writer.append('\\').append('\'');
-                        break;
                     case '\\':
                         writer.append('\\').append('\\');
                         break;
