@@ -88,6 +88,19 @@ public class ScannerTest {
         scan("+4symbol");
     }
 
+    /** https://github.com/bpsm/edn-java/pull/35 */
+    @Test
+    public void symbolsWithPunctuation() {
+        String[] examples = {
+            "-", "+", ".", "*", "!", "_", "?", "$", "%", "&", "=",
+        };
+        for (String s: examples) {
+            assertEquals(sym(s), scan(s));
+            assertEquals(sym(s+"a"), scan(s+"a"));
+            assertEquals(sym("a"+s), scan("a"+s));
+        }
+    }
+
     @Test
     public void keywordWithoutPrefix() {
         assertEquals(key("+"), scan(":+"));

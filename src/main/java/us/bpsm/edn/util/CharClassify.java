@@ -65,7 +65,7 @@ public class CharClassify {
     static {
         SYMBOL_START = new BitSet(128);
         SYMBOL_START.or(LETTER);
-        for (char c: "!*+-./?_".toCharArray()) {
+        for (char c: "!*+-./?_$%&=".toCharArray()) {
             SYMBOL_START.set(c);
         }
     }

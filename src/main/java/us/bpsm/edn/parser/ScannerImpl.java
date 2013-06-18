@@ -133,6 +133,11 @@ class ScannerImpl implements Scanner {
         case '_':
         case '?':
         case '/':
+        case '$':
+        case '%':
+        case '&':
+        case '=':
+            return readSymbol(curr, pbr);
         case '.':
             return readSymbol(curr, pbr);
         case '+':
