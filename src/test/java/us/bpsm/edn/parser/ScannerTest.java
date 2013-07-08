@@ -235,6 +235,21 @@ public class ScannerTest {
     public void decimalWithFractionAndExponent() {
         assertEquals(new BigDecimal("-1.23456e3"), scan("-1.23456E3M"));
     }
+    
+    /**
+     * This test just documents that end-java currently accepts leading zeros
+     * in integers, interpreting them as decimal integers.
+     * <p>
+     * Issue 33 on edn-format/edn asks whether leading zeros are allowed or not.
+     * <p>
+     * clojure.core/read and clojure.edn/read both accept leading zeros, but then
+     * interpret the integer as *octal*, such that 077 -> 63 and 078 throws an
+     * exception.
+     */
+    @Test
+    public void leadingZeroOnInteger() {
+        assertEquals(77L, scan("077"));
+    }
 
     @Test
     public void emptyString() {
