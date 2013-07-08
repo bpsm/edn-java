@@ -251,6 +251,20 @@ public class ScannerTest {
         assertEquals(77L, scan("077"));
     }
 
+    /**
+     * Issue 33 on edn-format/edn asks whether leading zeros are allowed or not.
+     * 
+     * This test just documents that edn-java does currently accept leading
+     * zeros both in the integer portion and in the exponent portion of
+     * floating point numbers. 
+     */
+    @Test
+    public void leadingZeroOnFloat() {
+        assertEquals(1.0, scan("001."));
+        assertEquals(8.0, scan("008."));
+        assertEquals(1.0e8, scan("001.e+008"));
+    }
+    
     @Test
     public void emptyString() {
         assertEquals("", scan("\"\""));
