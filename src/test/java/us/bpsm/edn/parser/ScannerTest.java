@@ -116,6 +116,11 @@ public class ScannerTest {
     public void keywordWithPrefix() {
         assertEquals(key("foo:bar", ".baz"), scan(":foo:bar/.baz"));
     }
+    
+    @Test(expected=EdnException.class)
+    public void keywordWithDoubleColonPrefix() {
+        scan("::foo");
+    }
 
     @Test
     public void beginList() {
