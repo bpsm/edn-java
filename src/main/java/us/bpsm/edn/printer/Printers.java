@@ -158,6 +158,8 @@ public class Printers {
         };
     }
 
+
+
     static Class<?> getClassOrNull(Object o) {
         return o == null ? null : o.getClass();
     }
@@ -485,5 +487,48 @@ public class Printers {
             }
         };
     }
+
+    static final class Depth {
+        int n = 0;
+    }
+
+    // TODO initialize from null in custom Printer implementation; tear down to null again when done.
+    private static final ThreadLocal<Depth> PRETTY_DEPTH = new ThreadLocal<Depth>();
+    // TODO make this configurable
+    private static final String BASIC_INDENT = "    ";
+
+    // TODO be more efficient
+    private static void prettyIndent(Printer writer, int n) {
+        for (int i = 0; i < n; i++) {
+            writer.append(BASIC_INDENT);
+        }
+    }
+
+    private static void prettyNewline() {
+        writer.append("\n");
+    }
+
+    static Printer.Fn<List<?>> prettyWriteListFn() {
+        return new Printer.Fn<List<?>>() {
+            @Override
+            public void eval(List<?> self, Printer writer) {
+                boolean vec = self instanceof RandomAccess;
+                prettyNewline();
+                prettyIndent(writer, PRETTY_DEPTH.get().n);
+                writer.append(vec ? '[' : '(');
+                prettyNewline();
+                PRETTY_DEPTH.get().n++;
+                for (Object o: self) {
+                    writer.printValue(o);
+                }
+                PRETTY_DEPTH.get().n--;
+                prettyNewLine();
+                prettyIndent(writer, PRETTY_DEPTH.get().n);
+                writer.append(vec ? ']' : ')');
+            }
+        };
+    }
+
+    // TODO provide pretty printers for Set and Map
 
 }
