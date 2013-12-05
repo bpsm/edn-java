@@ -2,7 +2,6 @@
 package us.bpsm.edn.printer;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.io.Closeable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -504,31 +503,64 @@ public class Printers {
         }
     }
 
-    private static void prettyNewline() {
-        writer.append("\n");
-    }
-
     static Printer.Fn<List<?>> prettyWriteListFn() {
         return new Printer.Fn<List<?>>() {
             @Override
             public void eval(List<?> self, Printer writer) {
                 boolean vec = self instanceof RandomAccess;
-                prettyNewline();
-                prettyIndent(writer, PRETTY_DEPTH.get().n);
                 writer.append(vec ? '[' : '(');
-                prettyNewline();
+                writer.append("\n");
                 PRETTY_DEPTH.get().n++;
                 for (Object o: self) {
+                    prettyIndent(writer, PRETTY_DEPTH.get().n);
                     writer.printValue(o);
+                    writer.append("\n");
                 }
                 PRETTY_DEPTH.get().n--;
-                prettyNewLine();
                 prettyIndent(writer, PRETTY_DEPTH.get().n);
                 writer.append(vec ? ']' : ')');
             }
         };
     }
 
-    // TODO provide pretty printers for Set and Map
+    static Printer.Fn<Set<?>> prettyWriteSetFn() {
+        return new Printer.Fn<Set<?>>() {
+            @Override
+            public void eval(Set<?> self, Printer writer) {
+                writer.append("#{");
+                writer.append("\n");
+                PRETTY_DEPTH.get().n++;
+                for (Object o: self) {
+                    prettyIndent(writer, PRETTY_DEPTH.get().n);
+                    writer.printValue(o);
+                    writer.append("\n");
+                }
+                PRETTY_DEPTH.get().n++;
+                prettyIndent(writer, PRETTY_DEPTH.get().n);
+                writer.append('}');
+            }
+        };
+    }
+
+    static Printer.Fn<Map<?, ?>> prettyWriteMapFn() {
+        return new Printer.Fn<Map<?,?>>() {
+            @Override
+            public void eval(Map<?,?> self, Printer writer) {
+                writer.append('{');
+                writer.append("\n");
+                PRETTY_DEPTH.get().n++;
+                for (Map.Entry<?,?> p: self.entrySet()) {
+                    prettyIndent(writer, PRETTY_DEPTH.get().n);
+                    writer.printValue(p.getKey());
+                    writer.softspace();
+                    writer.printValue(p.getValue());
+                    writer.append("\n");
+                }
+                PRETTY_DEPTH.get().n++;
+                prettyIndent(writer, PRETTY_DEPTH.get().n);
+                writer.append('}');
+            }
+        };
+    }
 
 }
