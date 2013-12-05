@@ -193,32 +193,30 @@ public class Printers {
      * </ul>
      */
     public static Protocol.Builder<Printer.Fn<?>> defaultProtocolBuilder() {
-        Protocol.Builder<Printer.Fn<?>> protocolBuilder =
-                Protocols.<Printer.Fn<?>>builder("print")
-                .put(null, writeNullFn())
-                .put(BigDecimal.class, writeBigDecimalFn())
-                .put(BigInteger.class, writeBigIntegerFn())
-                .put(Boolean.class, writeBooleanFn())
-                .put(Byte.class, writeLongValueFn())
-                .put(CharSequence.class, writeCharSequenceFn())
-                .put(Character.class, writeCharacterFn())
-                .put(Date.class, writeDateFn())
-                .put(Double.class, writeDoubleValueFn())
-                .put(Float.class, writeDoubleValueFn())
-                .put(GregorianCalendar.class, writeCalendarFn())
-                .put(Integer.class, writeLongValueFn())
-                .put(Keyword.class, writeKeywordFn())
-                .put(List.class, writeListFn())
-                .put(Long.class, writeLongValueFn())
-                .put(Map.class, writeMapFn())
-                .put(Set.class, writeSetFn())
-                .put(Short.class, writeLongValueFn())
-                .put(Symbol.class, writeSymbolFn())
-                .put(Tag.class, writeTagFn())
-                .put(TaggedValue.class, writeTaggedValueFn())
-                .put(Timestamp.class, writeTimestampFn())
-                .put(UUID.class, writeUuidFn());
-        return protocolBuilder;
+        return Protocols.<Printer.Fn<?>>builder("print")
+            .put(null, writeNullFn())
+            .put(BigDecimal.class, writeBigDecimalFn())
+            .put(BigInteger.class, writeBigIntegerFn())
+            .put(Boolean.class, writeBooleanFn())
+            .put(Byte.class, writeLongValueFn())
+            .put(CharSequence.class, writeCharSequenceFn())
+            .put(Character.class, writeCharacterFn())
+            .put(Date.class, writeDateFn())
+            .put(Double.class, writeDoubleValueFn())
+            .put(Float.class, writeDoubleValueFn())
+            .put(GregorianCalendar.class, writeCalendarFn())
+            .put(Integer.class, writeLongValueFn())
+            .put(Keyword.class, writeKeywordFn())
+            .put(List.class, writeListFn())
+            .put(Long.class, writeLongValueFn())
+            .put(Map.class, writeMapFn())
+            .put(Set.class, writeSetFn())
+            .put(Short.class, writeLongValueFn())
+            .put(Symbol.class, writeSymbolFn())
+            .put(Tag.class, writeTagFn())
+            .put(TaggedValue.class, writeTaggedValueFn())
+            .put(Timestamp.class, writeTimestampFn())
+            .put(UUID.class, writeUuidFn());
     }
 
     /**
