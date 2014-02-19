@@ -1,20 +1,6 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.printer;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.io.Closeable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.RandomAccess;
-import java.util.Set;
-import java.util.UUID;
-
 import us.bpsm.edn.EdnException;
 import us.bpsm.edn.EdnIOException;
 import us.bpsm.edn.Keyword;
@@ -26,6 +12,19 @@ import us.bpsm.edn.parser.Parser;
 import us.bpsm.edn.protocols.Protocol;
 import us.bpsm.edn.protocols.Protocols;
 import us.bpsm.edn.util.CharClassify;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.RandomAccess;
+import java.util.Set;
+import java.util.UUID;
 
 
 /**
@@ -245,11 +244,11 @@ public class Printers {
             @Override
             public void eval(List<?> self, Printer writer) {
                 boolean vec = self instanceof RandomAccess;
-                writer.append(vec ? '[' : '(');
+                writer.softspace().append(vec ? '[' : '(');
                 for (Object o: self) {
                     writer.printValue(o);
                 }
-                writer.append(vec ? ']' : ')');
+                writer.append(vec ? ']' : ')').softspace();
             }
         };
     }
@@ -271,12 +270,12 @@ public class Printers {
         return new Printer.Fn<Map<?,?>>() {
             @Override
             public void eval(Map<?,?> self, Printer writer) {
-                writer.append('{');
+                writer.softspace().append('{');
                 for (Map.Entry<?,?> p: self.entrySet()) {
                     writer.printValue(p.getKey())
                     .printValue(p.getValue());
                 }
-                writer.append('}');
+                writer.append('}').softspace();
             }
         };
     }
@@ -323,7 +322,7 @@ public class Printers {
         return new Printer.Fn<CharSequence>() {
             @Override
             public void eval(CharSequence self, Printer writer) {
-                writer.append('"');
+                writer.softspace().append('"');
                 for (int i = 0; i < self.length(); i++) {
                     final char c = self.charAt(i);
                     switch (c) {
@@ -352,7 +351,7 @@ public class Printers {
                         writer.append(c);
                     }
                 }
-                writer.append('"');
+                writer.append('"').softspace();
             }
         };
     }
