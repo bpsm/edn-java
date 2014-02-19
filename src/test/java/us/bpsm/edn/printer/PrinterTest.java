@@ -1,18 +1,18 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.printer;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringWriter;
-import java.util.ArrayList;
-
 import org.junit.Test;
-
+import us.bpsm.edn.Keyword;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parser;
 import us.bpsm.edn.parser.Parsers;
-import us.bpsm.edn.printer.Printer;
-import us.bpsm.edn.printer.Printers;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class PrinterTest {
@@ -47,6 +47,8 @@ public class PrinterTest {
     public void testComplexValue() {
         assertRoundTrip("{:foo [1 2.0 19023847928034709821374012938749N 91821234112347634.128937467E-3M]\n"
                 + " :bar/baz #{true false nil}\n"
+                + " :bar/bazinga [:test \"test\"]\n"
+                + " :nested [:test :something :else {:test 1} :otherwise :that]\n"
                 + " / (\"abc\\tdef\\n\" #uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\")\n"
                 + " \\formfeed [#inst \"2010\", #inst \"2010-11\", #inst \"2010-11-12T09:08:07.123+02:00\"]\n"
                 + " :omega [a b c d \\a\\b\\c#{}]}");
@@ -62,6 +64,22 @@ public class PrinterTest {
         al.add(2);
         p.printValue(al);
         assertEquals("[1 2]", sw.toString());
+    }
+
+    @Test
+    public void testSoftspaces() {
+        StringWriter sw = new StringWriter();
+        Printer p = Printers.newPrinter(sw);
+
+        ArrayList<Object> al = new ArrayList<Object>();
+        al.add(Keyword.newKeyword("test"));
+        al.add("test");
+        al.add(Keyword.newKeyword("value"));
+        Map map = new HashMap();
+        map.put(Keyword.newKeyword("name"), "Test");
+        al.add(map);
+        p.printValue(al);
+        assertEquals("[:test \"test\" :value {:name \"Test\"}]", sw.toString());
     }
 
     void assertRoundTrip(String ednText) {
