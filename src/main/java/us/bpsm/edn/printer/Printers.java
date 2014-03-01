@@ -6,13 +6,7 @@ import java.io.Closeable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.RandomAccess;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import us.bpsm.edn.EdnException;
 import us.bpsm.edn.EdnIOException;
@@ -485,29 +479,28 @@ public class Printers {
         };
     }
 
-    static final class Depth {
-        int n = 0;
+    static final class PrettyPrintContext {
+        int depth = 0;
+        String basicIndent = "  ";
+        List<String> indents = new ArrayList<String>(Arrays.asList(""));
     }
 
-    private static final ThreadLocal<Depth> PRETTY_DEPTH = new ThreadLocal<Depth>();
+    private static final ThreadLocal<PrettyPrintContext> PRETTY_PRINT_CONTEXT = new ThreadLocal<PrettyPrintContext>();
 
-    // TODO make this configurable
-    private static final String BASIC_INDENT = "  ";
 
     static void printIndent(Printer p) {
-        for (int i = 0; i < PRETTY_DEPTH.get().n; i++) {
-            p.append(BASIC_INDENT);
-        }
+        PrettyPrintContext cx = PRETTY_PRINT_CONTEXT.get();
+        p.append(cx.indents.get(cx.depth));
     }
 
     static void withPretty(Runnable r) {
-        final boolean shouldInit = (PRETTY_DEPTH.get() == null);
+        final boolean shouldInit = (PRETTY_PRINT_CONTEXT.get() == null);
         if (shouldInit) {
-            PRETTY_DEPTH.set(new Depth());
+            PRETTY_PRINT_CONTEXT.set(new PrettyPrintContext());
             try {
                 r.run();
             } finally {
-                PRETTY_DEPTH.remove();
+                PRETTY_PRINT_CONTEXT.remove();
             }
         } else {
             r.run();
@@ -515,11 +508,18 @@ public class Printers {
     }
 
     static void runIndented(Runnable r) {
-        PRETTY_DEPTH.get().n++;
+        PrettyPrintContext cx = PRETTY_PRINT_CONTEXT.get();
+        assert cx.depth < cx.indents.size();
+        if (cx.indents.size() - cx.depth == 1) {
+            cx.indents.add(cx.indents.get(cx.depth) + cx.basicIndent);
+        }
+        cx.depth += 1;
+        assert cx.depth < cx.indents.size();
+
         try {
             r.run();
         } finally {
-            PRETTY_DEPTH.get().n--;
+            cx.depth -= 1;
         }
     }
 
