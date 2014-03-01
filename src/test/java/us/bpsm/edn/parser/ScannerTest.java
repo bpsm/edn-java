@@ -68,6 +68,26 @@ public class ScannerTest {
         scan("a/");
     }
 
+    @Test
+    public void namespacedSlashIsAValidSymbol() {
+       assertEquals(sym("foo", "/"), scan("foo//"));
+    }
+
+    @Test(expected=EdnException.class)
+    public void doubleSlashIfPresentMustEndSymbol1() {
+        scan("foo//x");
+    }
+
+    @Test(expected=EdnException.class)
+    public void doubleSlashIfPresentMustEndSymbol2() {
+        scan("//foo");
+    }
+
+    @Test(expected=EdnException.class)
+    public void doubleSlashIfPresentMustEndSymbol3() {
+        scan("//");
+    }
+
     @Test(expected=EdnException.class)
     public void symbolStartsWithSlash() {
         scan("/a");
