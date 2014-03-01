@@ -8,11 +8,10 @@ import java.util.*;
 
 import org.junit.Test;
 
+import us.bpsm.edn.Keyword;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parser;
 import us.bpsm.edn.parser.Parsers;
-import us.bpsm.edn.printer.Printer;
-import us.bpsm.edn.printer.Printers;
 
 
 public class PrinterTest {
@@ -102,5 +101,22 @@ public class PrinterTest {
         String s = Printers.printString(Printers.prettyPrinterProtocol(), list);
         assertEquals("[\n  #{\n    1\n    2\n  }\n  {\n    3 \"Three\"\n    4 \"Four\"\n  }\n]", s);
     }
+
+
+    @Test
+    public void testLoosePrinter() {
+        StringWriter sw = new StringWriter();
+        Printer p = LoosePrinter.newLoosePrinter(sw);
+        ArrayList<Object> al = new ArrayList<Object>();
+        al.add(Keyword.newKeyword("test"));
+        al.add("test");
+        al.add(Keyword.newKeyword("value"));
+        Map map = new HashMap();
+        map.put(Keyword.newKeyword("name"), "Test");
+        al.add(map);
+        p.printValue(al);
+        assertEquals("[:test \"test\" :value {:name \"Test\"}]", sw.toString());
+    }
+
 
 }
