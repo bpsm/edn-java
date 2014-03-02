@@ -488,31 +488,39 @@ class ScannerImpl implements Scanner {
     private Symbol makeSymbol(StringBuilder b, int slashCount, int slashPos) {
         if (slashCount == 0) {
             return newSymbol(b.toString());
-        } else {
-            assert slashCount == 1;
+        } else if (slashCount == 1) {
             if (slashPos == 0) {
                 assert b.length() == 1 && b.charAt(0) == '/';
                 return newSymbol(b.toString());
             } else {
                 return newSymbol(b.substring(0, slashPos), b.substring(slashPos+1));
             }
+        } else {
+            assert slashCount == 2 && slashPos == b.length() - 1 && b.charAt(b.length() - 2) == '/';
+            return newSymbol(b.substring(0, slashPos - 1), "/");
         }
     }
 
     private void validateUseOfSlash(CharSequence s, int slashCount, int lastSlashPos) {
-        if (slashCount > 1) {
-            throw new EdnSyntaxException(
-                "The name '"+ s +"' must not contain more than one '/'.");
-        }
-        if (lastSlashPos == 0 && s.length() > 1) {
-            throw new EdnSyntaxException(
-                "The name '"+ s +"' must not start with '/'.");
-        }
-        if (s.length() > 1) {
-            if (lastSlashPos == s.length() - 1) {
-                throw new EdnSyntaxException(
-                    "The name '"+ s +"' must not end with '/'.");
+        assert s.length() > 0;
+        if (slashCount == 1) {
+            if (s.length() != 1) {
+                if (lastSlashPos == s.length() - 1) {
+                    throw new EdnSyntaxException(
+                            "The name '"+ s +"' must not end with '/'.");
+                } else if (lastSlashPos == 0) {
+                    throw new EdnSyntaxException(
+                            "The name '"+ s +"' must not start with '/'.");
+                }
             }
+        } else if (slashCount == 2) {
+            if (s.length() == 2) {
+                throw new EdnSyntaxException("The name '//' is not valid.");
+            } else if (lastSlashPos != s.length() - 1 || s.charAt(lastSlashPos - 1) != '/') {
+                throw new EdnSyntaxException("Incorrect use of '/' in name.");
+            }
+        } else if (slashCount > 3) {
+            throw new EdnSyntaxException("Too many '/' in name.");
         }
     }
 
