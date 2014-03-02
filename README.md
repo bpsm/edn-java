@@ -235,6 +235,61 @@ The package `us.bpsm.edn.printer` provides an extensible printer for converting 
 
 The `Printer` writes *characters* to the underlying `Writer`. To serialize this text to a file or across a network you'll need to arrange to convert the characters to bytes. Use *UTF-8*, as *edn* specifies.
 
+### Formatting
+
+The default Printer renders values as compactly as possible, which is beneficial when edn is used for communication. The pretty printer renders values for readability, which is beneficial for debugging and storage in version control.
+
+```java
+package us.bpsm.edn.examples;
+
+import org.junit.Assert;
+import org.junit.Test;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
+import us.bpsm.edn.printer.Printers;
+
+public class PrintingExamples {
+    @Test
+    public void printCompactly() {
+        Assert.assertEquals(
+                EXPECTED_COMPACT_RENDERING,
+                Printers.printString(
+                        Printers.defaultPrinterProtocol(), VALUE_TO_PRINT));
+    }
+
+    @Test
+    public void printPretty() {
+        Assert.assertEquals(
+                EXPECTED_PRETTY_RENDERING,
+                Printers.printString(
+                        Printers.prettyPrinterProtocol(), VALUE_TO_PRINT));
+    }
+
+    static final Object VALUE_TO_PRINT;
+    static {
+        Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
+        VALUE_TO_PRINT = parser.nextValue(Parsers.newParseable(
+                "{:a [1 2 3],\n" +
+                " [x/y] 3.14159}\n"));
+    }
+
+    static final String EXPECTED_COMPACT_RENDERING =
+            "{:a[1 2 3][x/y]3.14159}";
+
+    static final String EXPECTED_PRETTY_RENDERING =
+            "{"           + "\n" +
+            "  :a ["      + "\n" +
+            "    1"       + "\n" +
+            "    2"       + "\n" +
+            "    3"       + "\n" +
+            "  ]"         + "\n" +
+            "  ["         + "\n" +
+            "    x/y"     + "\n" +
+            "  ] 3.14159" + "\n" +
+            "}";
+}
+```
+
 ### Supporting additional types
 
 To support additional types, you'll need to provide a `Protocol<Printer.Fn<?>>` to the `Printer` which binds your custom `Printer.Fn` implementations to the class (or interface) it is responsible for.
@@ -278,8 +333,7 @@ public class CustomTagPrinter {
 ### Limitations
 
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
- - The current Printing support stikes me a as a bit of a hack.
- - Currently, the printer doesn't pretty-print. This is fine when using edn for communication, but less than helpful for debugging or storage in version control.
+ - The current Printing support stikes me a as a bit of a hack. The API may change with 0.5.0.
  - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient.
 
 
