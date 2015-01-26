@@ -113,6 +113,8 @@ public class ScannerTest {
     public void symbolsWithPunctuation() {
         String[] examples = {
             "-", "+", ".", "*", "!", "_", "?", "$", "%", "&", "=",
+            // https://github.com/bpsm/edn-java/issues/40
+            "<", ">",
         };
         for (String s: examples) {
             assertEquals(sym(s), scan(s));
