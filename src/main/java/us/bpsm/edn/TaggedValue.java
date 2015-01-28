@@ -18,7 +18,7 @@ public final class TaggedValue {
      * Return a tagged value for the given tag and value (some edn data).
      * The tag must not be null.
      * @param tag not null.
-     * @param value
+     * @param value may be null.
      * @return a TaggedValue, never null.
      */
     public static TaggedValue newTaggedValue(Tag tag, Object value) {

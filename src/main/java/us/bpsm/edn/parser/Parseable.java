@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * An edn {@link Parser} parses text from Objects implementing this
- * interface. The class {@link Parsers} provides facotry methods for
+ * interface. The class {@link Parsers} provides factory methods for
  * this type.
  */
 public interface Parseable extends Closeable {
@@ -19,6 +19,9 @@ public interface Parseable extends Closeable {
     /**
      * Read and return the next character from this Parseable as a
      * non-negative integer, or {@link #END_OF_INPUT}.
+     * @return a non-negative integer or {@link #END_OF_INPUT}
+     * @throws IOException when we're unexpectedly unable to read the next
+     *         character.
      */
     public int read() throws IOException;
 
@@ -34,6 +37,9 @@ public interface Parseable extends Closeable {
      * undefined. The behavior of calling {@code unread(ch)} more than
      * once without an intervening call to {@code read()} is
      * undefined.
+     * @param ch as returned by the previous call to {@code read()}.
+     * @throws IOException  when we're unexpectedly unable to push back the
+     *         given character.
      */
     public void unread(int ch) throws IOException;
 }

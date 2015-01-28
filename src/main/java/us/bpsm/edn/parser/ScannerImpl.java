@@ -40,7 +40,6 @@ class ScannerImpl implements Scanner {
      * Scanner may throw an IOException during construction, in which case
      * an attempt will be made to close Reader cleanly.
      * @param cfg this scanner's configuration, never null.
-     * @throws IOException
      */
     ScannerImpl(Parser.Config cfg) {
         if (cfg == null) {
@@ -178,8 +177,8 @@ class ScannerImpl implements Scanner {
             return readCharacterLiteral(pbr);
         default:
             throw new EdnSyntaxException(
-                String.format("Unexpected character '%c', \\"+"u%04x",
-                    (char)curr, curr));
+                    String.format("Unexpected character '%c', \\"+"u%04x",
+                            (char)curr, curr));
         }
     }
 
@@ -198,7 +197,7 @@ class ScannerImpl implements Scanner {
     }
 
     private Object readSymbolOrNumber(int curr, Parseable pbr)
-        throws IOException {
+            throws IOException {
         int peek = pbr.read();
         if (peek == END) {
             return readSymbol(curr, pbr);
@@ -218,19 +217,19 @@ class ScannerImpl implements Scanner {
     }
 
     private Object readSymbolOrTrue(int curr, Parseable pbr)
-        throws IOException {
+            throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return TRUE_SYMBOL.equals(sym) ? true : sym;
     }
 
     private Object readSymbolOrNil(int curr, Parseable pbr)
-        throws IOException {
+            throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return NIL_SYMBOL.equals(sym) ? Token.NIL : sym;
     }
 
     private Object readSymbolOrFalse(int curr, Parseable pbr)
-        throws IOException {
+            throws IOException {
         Symbol sym = readSymbol(curr, pbr);
         return FALSE_SYMBOL.equals(sym) ? false : sym;
     }
@@ -267,11 +266,11 @@ class ScannerImpl implements Scanner {
         int curr = pbr.read();
         if (curr == END) {
             throw new EdnSyntaxException(
-                "Unexpected end of input following '\'");
+                    "Unexpected end of input following '\'");
         } else if (isWhitespace((char)curr) && curr != ',') {
             throw new EdnSyntaxException(
-                "A backslash introducing character literal must not be "+
-                "immediately followed by whitespace.");
+                    "A backslash introducing character literal must not be "+
+                    "immediately followed by whitespace.");
         }
         StringBuilder b = new StringBuilder();
         do {
@@ -320,7 +319,7 @@ class ScannerImpl implements Scanner {
             // fall through
         default:
             throw new EdnSyntaxException(
-                "The character \\"+ name +" was not recognized.");
+                    "The character \\"+ name +" was not recognized.");
         }
     }
 
@@ -331,7 +330,7 @@ class ScannerImpl implements Scanner {
             switch (curr) {
             case END:
                 throw new EdnSyntaxException(
-                    "Unexpected end of input in string literal");
+                        "Unexpected end of input in string literal");
             case '"':
                 return b.toString();
             case '\\':
@@ -339,7 +338,7 @@ class ScannerImpl implements Scanner {
                 switch (curr) {
                 case END:
                     throw new EdnSyntaxException(
-                        "Unexpected end of input in string literal");
+                            "Unexpected end of input in string literal");
                 case 'b':
                     b.append('\b');
                     break;
@@ -366,7 +365,7 @@ class ScannerImpl implements Scanner {
                     break;
                 default:
                     throw new EdnSyntaxException("Unsupported '"+ ((char)curr)
-                        +"' escape in string");
+                            +"' escape in string");
                 }
                 break;
             default:
@@ -401,11 +400,11 @@ class ScannerImpl implements Scanner {
                 curr = pbr.read();
                 if (curr == END) {
                     throw new EdnSyntaxException(
-                        "Unexpected end of input in numeric literal");
+                            "Unexpected end of input in numeric literal");
                 }
                 if (!(curr == '-' || curr == '+' || isDigit((char)curr))) {
                     throw new EdnSyntaxException(
-                        "Not a number: '"+ digits + ((char)curr) +"'.");
+                            "Not a number: '"+ digits + ((char)curr) +"'.");
                 }
                 do {
                     digits.append((char)curr);
@@ -420,7 +419,7 @@ class ScannerImpl implements Scanner {
 
             if (curr != END && !separatesTokens((char)curr)) {
                 throw new EdnSyntaxException(
-                    "Not a number: '"+ digits + ((char)curr) +"'.");
+                        "Not a number: '"+ digits + ((char)curr) +"'.");
             }
             unread(pbr, curr);
 
@@ -439,7 +438,7 @@ class ScannerImpl implements Scanner {
 
             if (curr != END && !separatesTokens((char)curr)) {
                 throw new EdnSyntaxException(
-                    "Not a number: '"+ digits + ((char)curr) +"'.");
+                        "Not a number: '"+ digits + ((char)curr) +"'.");
             }
             unread(pbr, curr);
 
@@ -468,7 +467,7 @@ class ScannerImpl implements Scanner {
     private Symbol readSymbol(int curr, Parseable pbr) throws IOException {
         if (curr == END) {
             throw new EdnSyntaxException(
-                "Unexpected end of input while reading an identifier");
+                    "Unexpected end of input while reading an identifier");
         }
         StringBuilder b = new StringBuilder();
         int n = 0;

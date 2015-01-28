@@ -5,12 +5,15 @@ package us.bpsm.edn.protocols;
  * A Protocol is a thread-safe immutable mapping from classes to
  * values of some type {@code F}. Each Protocol is created by a {@link
  * Protocol.Builder}.
+ * @param <F> whatever kind of thing you'd like to map to. Generally this will
+ * be some class or interface representing a function.
  */
 public interface Protocol<F> {
 
     /**
      * The name of this protocol. (This is intended to support
      * debugging scenarios.)
+     * @return The name of this protocol; not null.
      */
     String name();
 
@@ -19,7 +22,8 @@ public interface Protocol<F> {
      *
      * <p>If the Protocol does not contain a mapping for exactly
      * {@code selfClass}, then try {@code selfClass}'s supertypes in
-     * <a href="">C3</a> linearized order, only returning {@code null}
+     * <a href="http://en.wikipedia.org/wiki/C3_linearization">C3</a>
+     * linearized order, only returning {@code null}
      * when all sueprtypes have been tried without finding a match.
      *
      * <p>{@code selfClass} may be {@code null}, in which case return
@@ -38,6 +42,8 @@ public interface Protocol<F> {
      * A single-use builder for Protocol. This builder is not intended
      * for use from more than once thread. Use
      * {@link Protocols#builder(String)} to obtain new instances.
+     * @param <F> whatever kind of thing you'd like to map to. Generally this
+     *            will be some class or interface representing a function.
      */
     public interface Builder<F> {
 

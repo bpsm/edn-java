@@ -10,7 +10,7 @@ import static us.bpsm.edn.Symbol.newSymbol;
  * <p>
  * Note: Keywords print with a leading colon, but this is not part of the
  * keyword's name:
- * 
+ *
  * <pre>
  * {@code // For the keyword ":foo/bar"
  * Keyword k = newKeyword("foo", "bar");
@@ -41,7 +41,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
      * <p>
      * Keywords are interned, which means that any two keywords which are equal
      * (by value) will also be identical (by reference).
-     * 
+     *
      * @param prefix
      *            An empty String or a non-empty String obeying the restrictions
      *            specified by edn. Never null.
@@ -56,7 +56,7 @@ public final class Keyword implements Named, Comparable<Keyword> {
 
     /**
      * This is equivalent to {@code newKeyword("", name)}.
-     * 
+     *
      * @param name
      *            A non-empty string obeying the restrictions specified by edn.
      *            Never null.
@@ -70,7 +70,6 @@ public final class Keyword implements Named, Comparable<Keyword> {
     /**
      * Return a Keyword with the same prefix and name as {@code sym}.
      * @param sym a Symbol, never null
-     * @return a Keyword with the same prefix and name as {@code sym}.
      */
     private Keyword(Symbol sym) {
         if (sym == null) {

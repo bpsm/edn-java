@@ -2,8 +2,8 @@
 package us.bpsm.edn.parser;
 
 /**
- * A Handler for {@code #inst} which translates the intant into a
- * {@link java.sql.TimeStamp}.
+ * A Handler for {@code #inst} which translates the instant into a
+ * {@link java.sql.Timestamp}.
  */
 public class InstantToTimestamp extends AbstractInstantHandler {
 

@@ -1,6 +1,9 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.printer;
 
+import us.bpsm.edn.EdnException;
+import us.bpsm.edn.EdnIOException;
+
 /**
  * A Printer knows how to print edn values in edn syntax to an
  * underlying stream of characters. Use {@link Printers} to create new
@@ -67,7 +70,7 @@ public interface Printer {
         /**
          * Implementations which may provoke an
          * {@link java.io.IOException} should wrapping it in an
-         * {@link us.bpsm.edn.EdnIOException} before rethrowing it.
+         * {@link us.bpsm.edn.EdnIOException} before re-throwing it.
          *
          * @param self some edn value to be printed.
          * @param printer the printer that called us, giving us access to
