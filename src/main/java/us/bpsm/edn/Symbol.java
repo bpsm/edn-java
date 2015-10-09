@@ -5,12 +5,14 @@ import static us.bpsm.edn.util.CharClassify.isDigit;
 import static us.bpsm.edn.util.CharClassify.symbolStart;
 import us.bpsm.edn.util.CharClassify;
 
+import java.io.Serializable;
+
 /**
  * A Symbol is {@linkplain Named}. Additionally it obeys the syntactic
  * restrictions defined for
  * <a href="https://github.com/edn-format/edn#symbols">edn Symbols</a>.
  */
-public final class Symbol implements Named, Comparable<Symbol> {
+public final class Symbol implements Serializable, Named, Comparable<Symbol> {
 
     private final String prefix;
     private final String name;
