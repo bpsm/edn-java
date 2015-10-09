@@ -220,11 +220,10 @@ public class ParserTest {
 
 
     /**
-     * Read the object from Base64 string.
+     * Read the object from a byte array.
      */
-    private static Object fromString(String s) throws IOException,
+    private static Object fromByteArray(byte[] data) throws IOException,
             ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(s);
         ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data));
         Object o = ois.readObject();
@@ -233,36 +232,40 @@ public class ParserTest {
     }
 
     /**
-     * Write the object to a Base64 string.
+     * Write the object to a byte array.
      */
-    private static String toString(Serializable o) throws IOException {
+    private static byte[] toByteArray(Serializable o) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(o);
         oos.close();
-        return Base64.getEncoder().encodeToString(baos.toByteArray());
+        return baos.toByteArray();
+    }
+
+    public Object roundTrip(Serializable o) throws IOException, ClassNotFoundException {
+        return fromByteArray(toByteArray(o));
     }
 
     @Test
     public void keywordIsSerializable() throws IOException, ClassNotFoundException {
         Keyword k = Keyword.newKeyword("test");
-        assertEquals(k.getPrefix(), ((Keyword) fromString(toString(k))).getPrefix());
-        assertEquals(k.getName(), ((Keyword) fromString(toString(k))).getName());
+        assertEquals(k.getPrefix(), ((Keyword) roundTrip(k)).getPrefix());
+        assertEquals(k.getName(), ((Keyword) roundTrip(k)).getName());
 
         k = Keyword.newKeyword("p", "n");
-        assertEquals(k.getPrefix(), ((Keyword) fromString(toString(k))).getPrefix());
-        assertEquals(k.getName(), ((Keyword) fromString(toString(k))).getName());
+        assertEquals(k.getPrefix(), ((Keyword) roundTrip(k)).getPrefix());
+        assertEquals(k.getName(), ((Keyword) roundTrip(k)).getName());
     }
 
     @Test
     public void symbolIsSerializable() throws IOException, ClassNotFoundException {
         Symbol s = Symbol.newSymbol("test");
-        assertEquals(s.getPrefix(), ((Symbol) fromString(toString(s))).getPrefix());
-        assertEquals(s.getName(), ((Symbol) fromString(toString(s))).getName());
+        assertEquals(s.getPrefix(), ((Symbol) roundTrip(s)).getPrefix());
+        assertEquals(s.getName(), ((Symbol) roundTrip(s)).getName());
 
         s = Symbol.newSymbol("p", "n");
-        assertEquals(s.getPrefix(), ((Symbol) fromString(toString(s))).getPrefix());
-        assertEquals(s.getName(), ((Symbol) fromString(toString(s))).getName());
+        assertEquals(s.getPrefix(), ((Symbol) roundTrip(s)).getPrefix());
+        assertEquals(s.getName(), ((Symbol) roundTrip(s)).getName());
     }
 
 }
