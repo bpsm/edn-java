@@ -1,6 +1,7 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.parser;
 
+import java.io.Serializable;
 import java.util.*;
 
 final class DefaultListFactory implements CollectionBuilder.Factory {
@@ -17,7 +18,7 @@ final class DefaultListFactory implements CollectionBuilder.Factory {
     }
 }
 
-final class DelegatingList<E> extends AbstractList<E> {
+final class DelegatingList<E> extends AbstractList<E> implements Serializable {
     final List<E> delegate;
 
     DelegatingList(List<E> delegate) {

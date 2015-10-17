@@ -1,11 +1,13 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn;
 
+import java.io.Serializable;
+
 /**
  * A Tagged value that received no specific handling because the Parser
  * was not configured with a handler for its tag.
  */
-public final class TaggedValue {
+public final class TaggedValue implements Serializable {
     private final Tag tag;
     private final Object value;
 
