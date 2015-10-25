@@ -1,6 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn;
 
+import java.io.Serializable;
+
 import static us.bpsm.edn.Symbol.newSymbol;
 
 /**
@@ -18,7 +20,7 @@ import static us.bpsm.edn.Symbol.newSymbol;
  * t.toString()  => "#foo/bar"}
  * </pre>
  */
-public final class Tag implements Named, Comparable<Tag> {
+public final class Tag implements Named, Comparable<Tag>, Serializable {
     private final Symbol sym;
 
     /** {@inheritDoc} */
