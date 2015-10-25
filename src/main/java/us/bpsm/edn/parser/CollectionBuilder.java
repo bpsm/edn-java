@@ -12,8 +12,12 @@ public interface CollectionBuilder {
      * map, this will be called an even number of times, first for a
      * key and then for its corresponding value until all key-value
      * pairs of the map have been added.
+     * <p>
+     * For other collections is can be called any number of times.
      *
      * <p>{@code add()} may not be called after {@code build()}.
+     * @param o an object to add to the collection under construction. o may
+     *          be null.
      */
     public void add(Object o);
 

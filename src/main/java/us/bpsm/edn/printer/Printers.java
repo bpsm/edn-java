@@ -69,7 +69,7 @@ public class Printers {
      * @return A string in edn syntax. Not null, not empty.
      */
     public static String printString(final Protocol<Printer.Fn<?>> fns,
-                                     Object ednValue) {
+            Object ednValue) {
         StringBuilder sb = new StringBuilder();
         newPrinter(fns, sb).printValue(ednValue);
         return sb.toString();
@@ -89,7 +89,7 @@ public class Printers {
      * @return a Printer, never null.
      */
     public static Printer newPrinter(final Protocol<Printer.Fn<?>> fns,
-                                     final Appendable out) {
+            final Appendable out) {
         return new Printer() {
             int softspace = 0;
 
@@ -133,7 +133,7 @@ public class Printers {
             public Printer printValue(Object ednValue) {
                 @SuppressWarnings("unchecked")
                 Printer.Fn<Object> printFn = (Printer.Fn<Object>)
-                    fns.lookup(getClassOrNull(ednValue));
+                fns.lookup(getClassOrNull(ednValue));
                 if (printFn == null) {
                     throw new EdnException(String.format(
                             "Don't know how to write '%s' of type '%s'",
@@ -159,7 +159,8 @@ public class Printers {
 
     /**
      * Returns a {@link us.bpsm.edn.protocols.Protocol.Builder}
-     * preconfigured knowing how to print classes known to end-java:
+     * configured to produce a Protocol which knows how to print
+     * these types of values:
      *
      * <ul>
      * <li>{@link BigDecimal}</li>
@@ -182,35 +183,37 @@ public class Printers {
      * <li>{@link Symbol}</li>
      * <li>{@link Tag}</li>
      * <li>{@link TaggedValue}</li>
-     * <li>{@link Timestamp} (as {@code #inst})</li>
+     * <li>{@link java.sql.Timestamp} (as {@code #inst})</li>
      * <li>{@link UUID} (as {@code #uuid})</li>
      * </ul>
+     * @return a Protocol.Builder initialized with the default implementations
+     *         for printing.
      */
     public static Protocol.Builder<Printer.Fn<?>> defaultProtocolBuilder() {
         return Protocols.<Printer.Fn<?>>builder("print")
-            .put(null, writeNullFn())
-            .put(BigDecimal.class, writeBigDecimalFn())
-            .put(BigInteger.class, writeBigIntegerFn())
-            .put(Boolean.class, writeBooleanFn())
-            .put(Byte.class, writeLongValueFn())
-            .put(CharSequence.class, writeCharSequenceFn())
-            .put(Character.class, writeCharacterFn())
-            .put(Date.class, writeDateFn())
-            .put(Double.class, writeDoubleValueFn())
-            .put(Float.class, writeDoubleValueFn())
-            .put(GregorianCalendar.class, writeCalendarFn())
-            .put(Integer.class, writeLongValueFn())
-            .put(Keyword.class, writeKeywordFn())
-            .put(List.class, writeListFn())
-            .put(Long.class, writeLongValueFn())
-            .put(Map.class, writeMapFn())
-            .put(Set.class, writeSetFn())
-            .put(Short.class, writeLongValueFn())
-            .put(Symbol.class, writeSymbolFn())
-            .put(Tag.class, writeTagFn())
-            .put(TaggedValue.class, writeTaggedValueFn())
-            .put(Timestamp.class, writeTimestampFn())
-            .put(UUID.class, writeUuidFn());
+                .put(null, writeNullFn())
+                .put(BigDecimal.class, writeBigDecimalFn())
+                .put(BigInteger.class, writeBigIntegerFn())
+                .put(Boolean.class, writeBooleanFn())
+                .put(Byte.class, writeLongValueFn())
+                .put(CharSequence.class, writeCharSequenceFn())
+                .put(Character.class, writeCharacterFn())
+                .put(Date.class, writeDateFn())
+                .put(Double.class, writeDoubleValueFn())
+                .put(Float.class, writeDoubleValueFn())
+                .put(GregorianCalendar.class, writeCalendarFn())
+                .put(Integer.class, writeLongValueFn())
+                .put(Keyword.class, writeKeywordFn())
+                .put(List.class, writeListFn())
+                .put(Long.class, writeLongValueFn())
+                .put(Map.class, writeMapFn())
+                .put(Set.class, writeSetFn())
+                .put(Short.class, writeLongValueFn())
+                .put(Symbol.class, writeSymbolFn())
+                .put(Tag.class, writeTagFn())
+                .put(TaggedValue.class, writeTaggedValueFn())
+                .put(Timestamp.class, writeTimestampFn())
+                .put(UUID.class, writeUuidFn());
     }
 
     /**

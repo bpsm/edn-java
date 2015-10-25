@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.5</version>
+    <version>0.4.6</version>
 </dependency>
 ```
 
@@ -335,5 +335,3 @@ public class CustomTagPrinter {
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
  - The current Printing support stikes me a as a bit of a hack. The API may change with 0.5.0.
  - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient, though I'm open to suggestions.
-
-

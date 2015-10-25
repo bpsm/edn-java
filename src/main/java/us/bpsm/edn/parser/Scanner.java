@@ -19,15 +19,15 @@ public interface Scanner {
      * The next token read from the given {@link Parseable} may be any of the
      * members of {@link Token} or instances of the Java classes used to
      * represent atomic values recognized by Scanner.
-     * 
+     *
      * <p>
      * The value {@link Token#END_OF_INPUT} marks the end of input, indicating
      * that the underlying {@link Parseable} has been fully consumed.
-     * 
+     *
      * <p>
      * In addition to the members of {@link Token}, {@code nextToken(…)} may
      * return any of the following:
-     * 
+     *
      * <ul>
      * <li>A {@link String} with the contents of a string literal.</li>
      * <li>A {@link Character} for a character literal.</li>
@@ -46,13 +46,14 @@ public interface Scanner {
      * <li>A {@link Tag} indicating that the next value parsed from the TokenSeq
      * should be transformed by a function associated with this Tag.</li>
      * </ul>
-     * 
+     * @param pbr a Parseable to read the next token from; must not be null.
+     *
      * @throws EdnIOException
      *             if the underlying Parseable throws an IOException.
      * @throws EdnSyntaxException
      *             if the contents of the underlying Parseable violates the
      *             syntax of edn.
-     * 
+     *
      * @return the next token read from the {@link Parseable} (never
      *         {@code null}).
      */

@@ -2,6 +2,8 @@
 package us.bpsm.edn.parser;
 
 import static us.bpsm.edn.Tag.newTag;
+import us.bpsm.edn.EdnIOException;
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Tag;
 
 /**
@@ -9,7 +11,7 @@ import us.bpsm.edn.Tag;
  * Instances are constructed using factory methods in {@link Parsers}.
  *
  * <p>Any Parser can be shared freely between threads because Parsers are
- * all immutable and therad-safe.
+ * all immutable and thread-safe.
  *
  * @see Parsers
  */
@@ -82,6 +84,7 @@ public interface Parser {
      *     uuid literal</a>.</li>
      *
      * </ul>
+     * @param pbr parse the next value from this Parseable. Must not be null.
      *
      *
      * @throws EdnIOException
@@ -146,7 +149,7 @@ public interface Parser {
          * returned by the parser.
          */
         public static final Tag BIG_DECIMAL_TAG = newTag(
-            "us.bpsm.edn-java", "BigDecimal");
+                "us.bpsm.edn-java", "BigDecimal");
 
         /**
          * Floating point literals not marked by a trailing "M" are
@@ -159,7 +162,7 @@ public interface Parser {
          * the parser.
          */
         public static final Tag DOUBLE_TAG = newTag(
-            "us.bpsm.edn-java", "Double");
+                "us.bpsm.edn-java", "Double");
 
         /**
          * Integer literals marked by a trailing "N", and those not so
@@ -173,7 +176,7 @@ public interface Parser {
          * the parser.
          */
         public static final Tag BIG_INTEGER_TAG = newTag(
-            "us.bpsm.edn-java", "BigInteger");
+                "us.bpsm.edn-java", "BigInteger");
 
         /**
          * Integer literals which lie inside the range of a {@link
@@ -187,7 +190,7 @@ public interface Parser {
          * parser.
          */
         public static final Tag LONG_TAG = newTag(
-            "us.bpsm.edn-java", "Long");
+                "us.bpsm.edn-java", "Long");
 
         /**
          * Provide a {@link CollectionBuilder.Factory} to receive the
@@ -196,6 +199,8 @@ public interface Parser {
          * <p>The default implementation returns an unmodifiable view
          * of a {@link java.util.List} that does not implement {@link
          * java.util.RandomAccess}.
+         *
+         * @return a CollectionBuilder.Factory for building lists; never null.
          */
         public CollectionBuilder.Factory getListFactory();
 
@@ -205,7 +210,9 @@ public interface Parser {
          *
          * <p>The default implementation returns an unmodifiable view
          * of a {@link java.util.List} that implements {@link
-         * java.util.RadomAccess}.</p>
+         * java.util.RandomAccess}.</p>
+         *
+         * @return a CollectionBuilder.Factory for building vectors; never null.
          */
         public CollectionBuilder.Factory getVectorFactory();
 
@@ -215,6 +222,8 @@ public interface Parser {
          *
          * <p>The default implementation returns an unmodifiable view
          * of a {@link java.util.Set} (hashed, not sorted).
+         *
+         * @return a CollectionBuilder.Factory for building sets; never null.
          */
         public CollectionBuilder.Factory getSetFactory();
 
@@ -224,6 +233,8 @@ public interface Parser {
          *
          * <p>The default implementation returns an unmodifiable view
          * of a {@link java.util.Map} (hashed, not sorted).
+         *
+         * @return a CollectionBuilder.Factory for building maps; never null.
          */
         public CollectionBuilder.Factory getMapFactory();
 
