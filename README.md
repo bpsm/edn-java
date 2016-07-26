@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.6</version>
+    <version>0.4.7</version>
 </dependency>
 ```
 
