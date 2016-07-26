@@ -380,6 +380,11 @@ public class Printers {
                     case ' ':
                         writer.append("\\space");
                         break;
+                    case ',':
+                        // The comma is classified as whitespace by isWhitespace
+                        // because it is such for purposes of parsing.
+                        writer.append("\\,");
+                        break;
                     default:
                         throw new EdnException("Whitespace character 0x" + Integer.toHexString(c) + " is unsupported.");
                     }

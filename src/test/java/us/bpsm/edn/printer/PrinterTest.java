@@ -43,6 +43,11 @@ public class PrinterTest {
     }
 
     @Test
+    public void testRoundTripCommaCharacterLiteralIssue45() {
+        assertRoundTrip("\\,");
+    }
+
+    @Test
     public void testComplexValue() {
         assertRoundTrip("{:foo [1 2.0 19023847928034709821374012938749N 91821234112347634.128937467E-3M]\n"
                 + " :bar/baz #{true false nil}\n"
