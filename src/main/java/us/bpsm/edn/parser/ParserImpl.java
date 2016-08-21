@@ -133,36 +133,14 @@ class ParserImpl implements Parser {
         }
 
         private class NamespacedMapBuilder implements CollectionBuilder {
-            private final CollectionBuilder cfgBuilder;
-            boolean key;
-
-            public NamespacedMapBuilder() {
-                this.cfgBuilder = cfg.getMapFactory().builder();;
-                key = true;
-            }
+            private final CollectionBuilder cfgBuilder =
+              cfg.getMapFactory().builder();
+            boolean key = true;
 
             @Override
             public void add(Object o) {
                 if (key) {
-                    if (o instanceof Symbol || o instanceof Keyword) {
-                        final Named n = (Named) o;
-                        final String p = n.getPrefix(), ns;
-                        if ("".equals(p)) {
-                            ns = defaultNs;
-                        } else if ("_".equals(p)) {
-                            ns = "";
-                        } else {
-                            ns = null;
-                        }
-                        if (ns != null) {
-                            if (o instanceof Symbol) {
-                                o = Symbol.newSymbol(ns, n.getName());
-                            } else {
-                                assert o instanceof Keyword;
-                                o = Keyword.newKeyword(ns, n.getName());
-                            }
-                        }
-                    }
+                    o = maybeApplyDefaultNamespace(o);
                 }
                 key = !key;
                 cfgBuilder.add(o);
@@ -171,6 +149,32 @@ class ParserImpl implements Parser {
             @Override
             public Object build() {
                 return cfgBuilder.build();
+            }
+
+            private Object maybeApplyDefaultNamespace(final Object o) {
+                if (!(o instanceof Symbol || o instanceof Keyword)) {
+                    return o;
+                }
+
+                final Named named = (Named) o;
+
+                final String prefix = named.getPrefix();
+                final String ns;
+                if ("".equals(prefix)) {
+                    ns = defaultNs;
+                } else if ("_".equals(prefix)) {
+                    ns = "";
+                } else {
+                    return o;
+                }
+
+                final String name = named.getName();
+                if (o instanceof Symbol) {
+                    return Symbol.newSymbol(ns, name);
+                } else {
+                    assert o instanceof Keyword;
+                    return Keyword.newKeyword(ns, name);
+                }
             }
         }
     }
