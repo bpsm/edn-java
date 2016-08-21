@@ -5,8 +5,8 @@ import static us.bpsm.edn.TaggedValue.newTaggedValue;
 import static us.bpsm.edn.parser.Token.END_LIST;
 import static us.bpsm.edn.parser.Token.END_MAP_OR_SET;
 import static us.bpsm.edn.parser.Token.END_VECTOR;
-import us.bpsm.edn.EdnSyntaxException;
-import us.bpsm.edn.Tag;
+
+import us.bpsm.edn.*;
 
 
 class ParserImpl implements Parser {
@@ -48,6 +48,16 @@ class ParserImpl implements Parser {
             case BEGIN_MAP:
                 return parseIntoCollection(cfg.getMapFactory(),
                                            END_MAP_OR_SET, pbr, discard);
+            case DEFAULT_NAMESPACE_FOLLOWS: {
+                final String ns = parseNamespaceName(pbr, discard);
+                Object t = scanner.nextToken(pbr);
+                if (t != Token.BEGIN_MAP) {
+                    throw new EdnSyntaxException(
+                      "Expected #:" + ns + " to be followed by a map.");
+                }
+                return parseIntoCollection(new NamespacedMapFactory(ns),
+                  END_MAP_OR_SET, pbr, discard);
+            }
             case DISCARD:
                 nextValue(pbr, true);
                 return nextValue(pbr, discard);
@@ -66,6 +76,21 @@ class ParserImpl implements Parser {
         } else {
             return curr;
         }
+    }
+
+    private String parseNamespaceName(Parseable pbr, boolean discard) {
+        final Object nsObj = nextValue(pbr, discard);
+        if (!(nsObj instanceof Symbol)) {
+            throw new EdnSyntaxException(
+              "Expected symbol following #:, but found: " + nsObj);
+        }
+        final Symbol nsSym = (Symbol) nsObj;
+        if (nsSym.getPrefix().length() > 0) {
+            throw new EdnSyntaxException(
+              "Expected symbol following #: to be namespaceless, " +
+                "but found: " + nsSym);
+        }
+        return nsSym.getName();
     }
 
     private Object nextValue(Tag t, Parseable pbr, boolean discard) {
@@ -95,4 +120,58 @@ class ParserImpl implements Parser {
         return !discard ? b.build() : null;
     }
 
+    private class NamespacedMapFactory implements CollectionBuilder.Factory {
+        private final String defaultNs;
+
+        public NamespacedMapFactory(String defaultNs) {
+            this.defaultNs = defaultNs;
+        }
+
+        @Override
+        public CollectionBuilder builder() {
+            return new NamespacedMapBuilder();
+        }
+
+        private class NamespacedMapBuilder implements CollectionBuilder {
+            private final CollectionBuilder cfgBuilder;
+            boolean key;
+
+            public NamespacedMapBuilder() {
+                this.cfgBuilder = cfg.getMapFactory().builder();;
+                key = true;
+            }
+
+            @Override
+            public void add(Object o) {
+                if (key) {
+                    if (o instanceof Symbol || o instanceof Keyword) {
+                        final Named n = (Named) o;
+                        final String p = n.getPrefix(), ns;
+                        if ("".equals(p)) {
+                            ns = defaultNs;
+                        } else if ("_".equals(p)) {
+                            ns = "";
+                        } else {
+                            ns = null;
+                        }
+                        if (ns != null) {
+                            if (o instanceof Symbol) {
+                                o = Symbol.newSymbol(ns, n.getName());
+                            } else {
+                                assert o instanceof Keyword;
+                                o = Keyword.newKeyword(ns, n.getName());
+                            }
+                        }
+                    }
+                }
+                key = !key;
+                cfgBuilder.add(o);
+            }
+
+            @Override
+            public Object build() {
+                return cfgBuilder.build();
+            }
+        }
+    }
 }

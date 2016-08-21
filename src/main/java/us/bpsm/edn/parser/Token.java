@@ -38,5 +38,10 @@ public enum Token {
      * A '#_', which instructs the parser to ignore the next value
      * parsed from the input.
      */
-    DISCARD;
+    DISCARD,
+
+    /**
+     * A '#:', which introduces a namespaced map as per CLJ-1910.
+     */
+    DEFAULT_NAMESPACE_FOLLOWS;
 }
