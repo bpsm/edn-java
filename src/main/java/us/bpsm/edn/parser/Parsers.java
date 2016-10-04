@@ -44,23 +44,23 @@ import us.bpsm.edn.parser.Parser.Config.Builder;
  *     {@link #newParseable(Readable)}.</li>
  *
  * <li>Use {@link Parser#nextValue(Parseable)} to get
- *     the edn values contained in your Parseables</li>
+ *     the edn values contained in your Parseable</li>
  *
  * </ol>
  */
 public class Parsers {
 
     static final CollectionBuilder.Factory DEFAULT_LIST_FACTORY =
-        new DefaultListFactory();
+            new DefaultListFactory();
 
     static final CollectionBuilder.Factory DEFAULT_VECTOR_FACTORY =
-        new DefaultVectorFactory();
+            new DefaultVectorFactory();
 
     static final CollectionBuilder.Factory DEFAULT_SET_FACTORY =
-        new DefaultSetFactory();
+            new DefaultSetFactory();
 
     static final CollectionBuilder.Factory DEFAULT_MAP_FACTORY =
-        new DefaultMapFactory();
+            new DefaultMapFactory();
 
     static final TagHandler INSTANT_TO_DATE = new InstantToDate();
 
@@ -105,9 +105,11 @@ public class Parsers {
     /**
      * Create a new {@link Parseable} wrapping the given {@link
      * CharSequence}.
-
+     *
      * <p>The {@link java.io.Closeable#close()} method of the resulting
      * Parseable is a no-op.
+     *
+     * @param cs must not be null.
      *
      * @return a Parseable, never null.
      */
@@ -123,7 +125,7 @@ public class Parsers {
 			public int read() throws IOException {
                 try {
                     return cs.charAt(i++);
-                } catch (IndexOutOfBoundsException _) {
+                } catch (IndexOutOfBoundsException suppressed) {
                     return Parseable.END_OF_INPUT;
                 }
             }
@@ -140,7 +142,9 @@ public class Parsers {
      *
      * <p>The {@link java.io.Closeable#close()} method of the
      * resulting Parseable closes the {@code r} if {@code r} is itself
-     * Closeable.
+     * Closable.
+     * @param r a Readable which must not be null.
+     * @return a Parseable over the given Readable.
      */
     public static Parseable newParseable(final Readable r) {
         return new Parseable() {
@@ -275,7 +279,7 @@ public class Parsers {
             private void checkState() {
                 if (used) {
                     throw new IllegalStateException(
-                        "Builder is single-use. Not usable after build()");
+                            "Builder is single-use. Not usable after build()");
                 }
             }
         };

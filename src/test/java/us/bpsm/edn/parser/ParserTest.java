@@ -2,6 +2,8 @@
 package us.bpsm.edn.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static us.bpsm.edn.Symbol.newSymbol;
 import static us.bpsm.edn.Tag.newTag;
 import static us.bpsm.edn.TaggedValue.newTaggedValue;
@@ -24,14 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.RandomAccess;
 
 import org.junit.Test;
 
 import us.bpsm.edn.Tag;
-import us.bpsm.edn.parser.Parseable;
-import us.bpsm.edn.parser.Parser;
-import us.bpsm.edn.parser.Parsers;
-import us.bpsm.edn.parser.TagHandler;
+
 
 
 public class ParserTest {
@@ -176,6 +176,14 @@ public class ParserTest {
             -2.0d, 0.0d, 2.0d);
         List<?> results = (List<?>) parse(cfg, "[-1M, 0M, 1M, -1.0, 0.0, 1.0]");
         assertEquals(expected, results);
+    }
+
+    @Test
+    public void issue32() {
+        assertFalse(parse("()") instanceof RandomAccess);
+        assertTrue(parse("[]") instanceof RandomAccess);
+        assertFalse(parse("(1)") instanceof RandomAccess);
+        assertTrue(parse("[1]") instanceof RandomAccess);
     }
 
     //@Test

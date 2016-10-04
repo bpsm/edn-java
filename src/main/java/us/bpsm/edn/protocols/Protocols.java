@@ -19,7 +19,7 @@ public class Protocols {
 
     static final String NO_MODIFY_MSG =
             "This builder is single-use and may not be modified after " +
-            "the Protocol has been built.";
+                    "the Protocol has been built.";
 
     static final String MUST_HAVE_NAME =
             "Each Protocol must have a name";
@@ -36,7 +36,7 @@ public class Protocols {
      * the given name.
      *
      * @param name not null.
-     *
+     * @param <F> the type of the returned Builder
      * @return an empty {@code Protocol.Builder}, never null.
      */
     public static <F> Protocol.Builder<F> builder(final String name) {

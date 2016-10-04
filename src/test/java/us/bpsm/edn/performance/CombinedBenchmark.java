@@ -1,8 +1,14 @@
 package us.bpsm.edn.performance;
 
 
+/**
+ * Combined parsing benchmark over all test inputs.
+ */
 public class CombinedBenchmark extends ABenchmark {
 
+    /**
+     * @param reps number of times to parse each of the test documents.
+     */
     public void time_combined(int reps) {
         parse(reps, "large-keyword-map.edn");
         parse(reps, "large-symbol-map.edn");
@@ -31,6 +37,9 @@ public class CombinedBenchmark extends ABenchmark {
         parse(reps, "vector-tree.edn");
     }
 
+    /**
+     * @param args ignored
+     */
     public static void main(String[] args) {
         new CombinedBenchmark().run();
     }

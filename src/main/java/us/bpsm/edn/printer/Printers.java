@@ -1,18 +1,12 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.printer;
 
-import java.io.Closeable;
 import java.io.IOException;
+import java.io.Closeable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.RandomAccess;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import us.bpsm.edn.EdnException;
 import us.bpsm.edn.EdnIOException;
@@ -75,7 +69,7 @@ public class Printers {
      * @return A string in edn syntax. Not null, not empty.
      */
     public static String printString(final Protocol<Printer.Fn<?>> fns,
-                                     Object ednValue) {
+            Object ednValue) {
         StringBuilder sb = new StringBuilder();
         newPrinter(fns, sb).printValue(ednValue);
         return sb.toString();
@@ -95,7 +89,7 @@ public class Printers {
      * @return a Printer, never null.
      */
     public static Printer newPrinter(final Protocol<Printer.Fn<?>> fns,
-                                     final Appendable out) {
+            final Appendable out) {
         return new Printer() {
             int softspace = 0;
 
@@ -143,7 +137,7 @@ public class Printers {
 			public Printer printValue(Object ednValue) {
                 @SuppressWarnings("unchecked")
                 Printer.Fn<Object> printFn = (Printer.Fn<Object>)
-                    fns.lookup(getClassOrNull(ednValue));
+                fns.lookup(getClassOrNull(ednValue));
                 if (printFn == null) {
                     throw new EdnException(String.format(
                             "Don't know how to write '%s' of type '%s'",
@@ -162,13 +156,16 @@ public class Printers {
         };
     }
 
+
+
     static Class<?> getClassOrNull(Object o) {
         return o == null ? null : o.getClass();
     }
 
     /**
      * Returns a {@link us.bpsm.edn.protocols.Protocol.Builder}
-     * preconfigured knowing how to print classes known to end-java:
+     * configured to produce a Protocol which knows how to print
+     * these types of values:
      *
      * <ul>
      * <li>{@link BigDecimal}</li>
@@ -191,13 +188,14 @@ public class Printers {
      * <li>{@link Symbol}</li>
      * <li>{@link Tag}</li>
      * <li>{@link TaggedValue}</li>
-     * <li>{@link Timestamp} (as {@code #inst})</li>
+     * <li>{@link java.sql.Timestamp} (as {@code #inst})</li>
      * <li>{@link UUID} (as {@code #uuid})</li>
      * </ul>
+     * @return a Protocol.Builder initialized with the default implementations
+     *         for printing.
      */
     public static Protocol.Builder<Printer.Fn<?>> defaultProtocolBuilder() {
-        Protocol.Builder<Printer.Fn<?>> protocolBuilder =
-                Protocols.<Printer.Fn<?>>builder("print")
+        return Protocols.<Printer.Fn<?>>builder("print")
                 .put(null, writeNullFn())
                 .put(BigDecimal.class, writeBigDecimalFn())
                 .put(BigInteger.class, writeBigIntegerFn())
@@ -221,7 +219,6 @@ public class Printers {
                 .put(TaggedValue.class, writeTaggedValueFn())
                 .put(Timestamp.class, writeTimestampFn())
                 .put(UUID.class, writeUuidFn());
-        return protocolBuilder;
     }
 
     /**
@@ -349,9 +346,6 @@ public class Printers {
                     case '\f':
                         writer.append('\\').append('f');
                         break;
-                    case '\'':
-                        writer.append('\\').append('\'');
-                        break;
                     case '\\':
                         writer.append('\\').append('\\');
                         break;
@@ -390,6 +384,11 @@ public class Printers {
                         break;
                     case ' ':
                         writer.append("\\space");
+                        break;
+                    case ',':
+                        // The comma is classified as whitespace by isWhitespace
+                        // because it is such for purposes of parsing.
+                        writer.append("\\,");
                         break;
                     default:
                         throw new EdnException("Whitespace character 0x" + Integer.toHexString(c) + " is unsupported.");
@@ -492,5 +491,147 @@ public class Printers {
             }
         };
     }
+
+    static final class PrettyPrintContext {
+        int depth = 0;
+        String basicIndent = "  ";
+        List<String> indents = new ArrayList<String>(Arrays.asList(""));
+    }
+
+    private static final ThreadLocal<PrettyPrintContext> PRETTY_PRINT_CONTEXT = new ThreadLocal<PrettyPrintContext>();
+
+
+    static void printIndent(Printer p) {
+        PrettyPrintContext cx = PRETTY_PRINT_CONTEXT.get();
+        p.append(cx.indents.get(cx.depth));
+    }
+
+    static void withPretty(Runnable r) {
+        final boolean shouldInit = (PRETTY_PRINT_CONTEXT.get() == null);
+        if (shouldInit) {
+            PRETTY_PRINT_CONTEXT.set(new PrettyPrintContext());
+            try {
+                r.run();
+            } finally {
+                PRETTY_PRINT_CONTEXT.remove();
+            }
+        } else {
+            r.run();
+        }
+    }
+
+    static void runIndented(Runnable r) {
+        PrettyPrintContext cx = PRETTY_PRINT_CONTEXT.get();
+        assert cx.depth < cx.indents.size();
+        if (cx.indents.size() - cx.depth == 1) {
+            cx.indents.add(cx.indents.get(cx.depth) + cx.basicIndent);
+        }
+        cx.depth += 1;
+        assert cx.depth < cx.indents.size();
+
+        try {
+            r.run();
+        } finally {
+            cx.depth -= 1;
+        }
+    }
+
+
+    static Printer.Fn<List<?>> prettyWriteListFn() {
+        return new Printer.Fn<List<?>>() {
+            @Override
+            public void eval(final List<?> self, final Printer writer) {
+                withPretty(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean vec = self instanceof RandomAccess;
+                        writer.append(vec ? '[' : '(');
+                        writer.append("\n");
+                        runIndented(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (Object o: self) {
+                                    printIndent(writer);
+                                    writer.printValue(o);
+                                    writer.append("\n");
+                                }
+                            }
+                        });
+                        printIndent(writer);
+                        writer.append(vec ? ']' : ')');
+                    }
+                });
+            }
+        };
+    }
+
+    static Printer.Fn<Set<?>> prettyWriteSetFn() {
+        return new Printer.Fn<Set<?>>() {
+            @Override
+            public void eval(final Set<?> self, final Printer writer) {
+                withPretty(new Runnable() {
+                    @Override
+                    public void run() {
+                        writer.append("#{");
+                        writer.append("\n");
+                        runIndented(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (Object o : self) {
+                                    printIndent(writer);
+                                    writer.printValue(o);
+                                    writer.append("\n");
+                                }
+                            }
+                        });
+                        printIndent(writer);
+                        writer.append("}");
+                    }
+                });
+            }
+        };
+    }
+
+    static Printer.Fn<Map<?, ?>> prettyWriteMapFn() {
+        return new Printer.Fn<Map<?,?>>() {
+            @Override
+            public void eval(final Map<?,?> self, final Printer writer) {
+                withPretty(new Runnable() {
+                    @Override
+                    public void run() {
+                        writer.append("{");
+                        writer.append("\n");
+                        runIndented(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (Map.Entry<?,?> o: self.entrySet()) {
+                                    printIndent(writer);
+                                    writer.printValue(o.getKey());
+                                    writer.softspace();
+                                    writer.softspace();
+                                    writer.printValue(o.getValue());
+                                    writer.append("\n");
+                                }
+                            }
+                        });
+                        printIndent(writer);
+                        writer.append("}");
+                    }
+                });
+            }
+        };
+    }
+
+    public static Protocol.Builder<Printer.Fn<?>> prettyProtocolBuilder() {
+        return defaultProtocolBuilder()
+                .put(Map.class, prettyWriteMapFn())
+                .put(Set.class, prettyWriteSetFn())
+                .put(List.class, prettyWriteListFn());
+    }
+
+    public static Protocol<Printer.Fn<?>> prettyPrinterProtocol() {
+        return prettyProtocolBuilder().build();
+    }
+
 
 }

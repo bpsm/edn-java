@@ -12,15 +12,17 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.7</version>
 </dependency>
 ```
 
-You'll have to build it form source yourself using Maven.  This library is not currently available in any public repository.
+It is available through the OSS Sonatype Releases repository:
+
+    https://oss.sonatype.org/content/repositories/releases
 
 ## Parsing
 
-You'll need to create a Parser and supply it with some input. Factory methods are provided which accept either a `java.lang.CharSequence` or a `java.io.Reader`. You can then call `nextValue()` on the Parser to read values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
+You'll need to create a Parser and supply it with some input. Factory methods to create Parseable input are provided which accept either a `java.lang.CharSequence` or a `java.lang.Readable`. You can then call `nextValue()` on the Parser to get values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
 
 
 ```java
@@ -51,7 +53,7 @@ public class ParseASingleMapTest {
 
 ### Mapping from EDN to Java
 
-Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `bpsm.edn`.
+Most *edn* values map to regular Java types, except in such cases where Java doesn't provide something suitable. Implementations of the types peculiar to edn are provided by the package `us.bpsm.edn`.
 
 `Symbol` and `Keyword` have an optional `prefix` and a mandatory `name`. Both implement the interface `Named`.
 
@@ -114,11 +116,11 @@ public class SimpleParserConfigTest {
 
 ### Tagged Values
 
-By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `bpsm.edn.TaggedValue`.
+By default, handlers are provided automatically for `#inst` and `#uuid`, which return a `java.util.Date` and a `java.util.UUID` respectively. Tagged values with an unrecognized tag are mapped to `us.bpsm.edn.TaggedValue`.
 
 #### Customizing the parsing of instants
 
-The package `bpsm.edn.parser.inst` makes three handlers for `#inst` available:
+The package `us.bpsm.edn.parser` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
  - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
@@ -207,11 +209,11 @@ public class CustomLongHandler {
 
 ## Printing
 
-The package `bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
+The package `us.bpsm.edn.printer` provides an extensible printer for converting java data structures to valid *edn* text. The default configuration can print values of the following types, as well as Java's `null`, which prints as `nil`:
 
- - `bpsm.edn.Keyword`
- - `bpsm.edn.Symbol`
- - `bpsm.edn.TaggedValue`
+ - `us.bpsm.edn.Keyword`
+ - `us.bpsm.edn.Symbol`
+ - `us.bpsm.edn.TaggedValue`
  - `java.lang.Boolean`
  - `java.lang.Byte`
  - `java.lang.CharSequence`, which includes `java.lang.String`.
@@ -232,6 +234,78 @@ The package `bpsm.edn.printer` provides an extensible printer for converting jav
  - `java.util.UUID`, as `#uuid`.
 
 The `Printer` writes *characters* to the underlying `Writer`. To serialize this text to a file or across a network you'll need to arrange to convert the characters to bytes. Use *UTF-8*, as *edn* specifies.
+
+### Formatting
+
+The default Printer renders values as compactly as possible, which is beneficial when edn is used for communication. The pretty printer renders values for readability, which is beneficial for debugging and storage in version control.
+
+```java
+package us.bpsm.edn.examples;
+
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Test;
+import us.bpsm.edn.parser.Parser;
+import us.bpsm.edn.parser.Parsers;
+import us.bpsm.edn.printer.Printers;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class PrintingExamples {
+    @Test
+    public void printCompactly() {
+        Assert.assertThat(ACCEPTABLE_COMPACT_RENDERINGS,
+                CoreMatchers.hasItem(Printers.printString(
+                        Printers.defaultPrinterProtocol(),
+                        VALUE_TO_PRINT)));
+    }
+
+    @Test
+    public void printPretty() {
+        Assert.assertThat(ACCEPTABLE_PRETTY_RENDERINGS,
+                CoreMatchers.hasItem(Printers.printString(
+                        Printers.prettyPrinterProtocol(),
+                        VALUE_TO_PRINT)));
+    }
+
+    static final Object VALUE_TO_PRINT;
+    static {
+        Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
+        VALUE_TO_PRINT = parser.nextValue(Parsers.newParseable(
+                "{:a [1 2 3],\n" +
+                " [x/y] 3.14159}\n"));
+    }
+
+    static final List<String> ACCEPTABLE_COMPACT_RENDERINGS = Arrays.asList(
+            "{:a[1 2 3][x/y]3.14159}",
+            "{[x/y]3.14159 :a[1 2 3]}"
+    );
+
+    static final List<String> ACCEPTABLE_PRETTY_RENDERINGS = Arrays.asList(
+            "{"           + "\n" +
+            "  :a ["      + "\n" +
+            "    1"       + "\n" +
+            "    2"       + "\n" +
+            "    3"       + "\n" +
+            "  ]"         + "\n" +
+            "  ["         + "\n" +
+            "    x/y"     + "\n" +
+            "  ] 3.14159" + "\n" +
+            "}",
+            "{"           + "\n" +
+            "  ["         + "\n" +
+            "    x/y"     + "\n" +
+            "  ] 3.14159" + "\n" +
+            "  :a ["      + "\n" +
+            "    1"       + "\n" +
+            "    2"       + "\n" +
+            "    3"       + "\n" +
+            "  ]"         + "\n" +
+            "}"
+    );
+}
+```
 
 ### Supporting additional types
 
@@ -276,8 +350,5 @@ public class CustomTagPrinter {
 ### Limitations
 
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
- - The current Printing support stikes me a as a bit of a hack.
- - Currently, the printer doesn't pretty-print. This is fine when using edn for communication, but less than helpful for debugging or storage in version control.
- - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient.
-
-
+ - The current Printing support stikes me a as a bit of a hack. The API may change with 0.5.0.
+ - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient, though I'm open to suggestions.

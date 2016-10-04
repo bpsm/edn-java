@@ -16,7 +16,7 @@ public class InstantUtils {
 
     private static final Pattern INSTANT = Pattern.compile(
             "(\\d\\d\\d\\d)(?:-(\\d\\d)(?:-(\\d\\d)" +
-            "(?:[T](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:[.](\\d{1,9}))?)?)?)?)?)?" +
+                    "(?:[T](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:[.](\\d{1,9}))?)?)?)?)?)?" +
             "(?:[Z]|([-+])(\\d\\d):(\\d\\d))?");
 
     static ParsedInstant parse(String value) {
@@ -175,6 +175,7 @@ public class InstantUtils {
     /**
      * Return a String suitable for use as an edn {@code #inst}, given
      * a {@link GregorianCalendar}.
+     * @param cal must not be null.
      * @return an RFC3339 compatible string.
      */
     public static String calendarToString(GregorianCalendar cal) {
@@ -188,6 +189,7 @@ public class InstantUtils {
     /**
      * Return a String suitable for use as an edn {@code #inst}, given
      * a {@link Date}.
+     * @param date must not be null.
      * @return an RFC3339 compatible string.
      */
     public static String dateToString(Date date) {
@@ -204,11 +206,12 @@ public class InstantUtils {
     /**
      * Return a String suitable for use as an edn {@code #inst}, given
      * a {@link Timestamp}.
+     * @param ts must not be null.
      * @return an RFC3339 compatible string.
      */
     public static String timestampToString(Timestamp ts) {
         return TIMESTAMP_FORMAT.get().format(ts)
-             + String.format(".%09d-00:00", ts.getNanos());
+                + String.format(".%09d-00:00", ts.getNanos());
     }
 
     private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT =
