@@ -23,12 +23,14 @@ public final class Keyword implements Named, Comparable<Keyword> {
     private final Symbol sym;
 
     /** {@inheritDoc} */
-    public final String getPrefix() {
+    @Override
+	public final String getPrefix() {
         return sym.getPrefix();
     }
 
     /** {@inheritDoc} */
-    public final String getName() {
+    @Override
+	public final String getName() {
         return sym.getName();
     }
 
@@ -79,11 +81,13 @@ public final class Keyword implements Named, Comparable<Keyword> {
         this.sym = sym;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ":" + sym.toString();
     }
 
-    public int compareTo(Keyword o) {
+    @Override
+	public int compareTo(Keyword o) {
         if (this == o) {
             return 0;
         }

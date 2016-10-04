@@ -24,11 +24,14 @@ public class SimpleParserConfigTest {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder().setSetFactory(
                     new CollectionBuilder.Factory() {
-                public CollectionBuilder builder() {
+                @Override
+				public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
-                        public void add(Object o) { s.add(o); }
-                        public Object build() { return s; }
+                        @Override
+						public void add(Object o) { s.add(o); }
+                        @Override
+						public Object build() { return s; }
                     };
                 }
             }).build();

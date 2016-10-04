@@ -88,7 +88,8 @@ public class ParsedInstant {
         this.offsetMinutes = offsetMinutes;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return String.format("%04d-%02d-%02dT%02d:%02d:%02d.%09d%s%02d:%02d",
                 years, months, days, hours, minutes, seconds, nanoseconds,
                 offsetSign > 0 ? "+" : "-", offsetHours, offsetMinutes);

@@ -23,7 +23,8 @@ public class CustomTagHandler {
             Parsers.newParserConfigBuilder()
             .putTagHandler(Tag.newTag("us.bpsm", "uri"),
                 new TagHandler() {
-                public Object transform(Tag tag, Object value) {
+                @Override
+				public Object transform(Tag tag, Object value) {
                     return URI.create((String) value);
                 }
             }).build();

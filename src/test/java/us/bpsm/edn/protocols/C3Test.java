@@ -17,7 +17,8 @@ import us.bpsm.edn.protocols.C3;
 
 public class C3Test {
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testMroExample1() {
         assertEquals(Arrays.asList(X1.A.class, X1.B.class, X1.C.class,
                 X1.D.class, X1.E.class, X1.F.class, X1.O.class),
@@ -47,7 +48,8 @@ public class C3Test {
         }
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testMroExample2() {
         assertEquals(Arrays.asList(X2.A.class, X2.B.class, X2.E.class,
                 X2.C.class, X2.D.class, X2.F.class, X2.O.class),
@@ -78,7 +80,8 @@ public class C3Test {
         }
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testMroExample3() {
         assertEquals(Arrays.<Class<?>> asList(X3.A.class, X3.O.class),
                 C3.methodResolutionOrder(X3.A.class));
@@ -204,7 +207,8 @@ public class C3Test {
         }
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testArrayList() {
         assertEquals(Arrays.asList(ArrayList.class, AbstractList.class,
                 AbstractCollection.class, List.class, Collection.class,

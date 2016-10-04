@@ -6,13 +6,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 final class DefaultSetFactory implements CollectionBuilder.Factory {
-    public CollectionBuilder builder() {
+    @Override
+	public CollectionBuilder builder() {
         return new CollectionBuilder() {
             Set<Object> set = new HashSet<Object>();
-            public void add(Object o) {
+            @Override
+			public void add(Object o) {
                 set.add(o);
             }
-            public Object build() {
+            @Override
+			public Object build() {
                 return Collections.unmodifiableSet(set);
             }
         };

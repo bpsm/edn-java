@@ -56,7 +56,8 @@ class ScannerImpl implements Scanner {
     /* (non-Javadoc)
      * @see us.bpsm.edn.parser.ScannerIf#nextToken(us.bpsm.edn.parser.Parseable)
      */
-    public Object nextToken(Parseable pbr) {
+    @Override
+	public Object nextToken(Parseable pbr) {
         try {
             return scanNextToken(pbr);
         } catch (IOException e) {
