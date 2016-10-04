@@ -21,7 +21,8 @@ public class CustomLongHandler {
         Parser.Config cfg =
             Parsers.newParserConfigBuilder()
                 .putTagHandler(Parser.Config.LONG_TAG, new TagHandler() {
-                    public Object transform(Tag tag, Object value) {
+                    @Override
+					public Object transform(Tag tag, Object value) {
                         long n = (Long) value;
                         if (Integer.MIN_VALUE <= n && n <= Integer.MAX_VALUE) {
                             return Integer.valueOf((int) n);

@@ -67,7 +67,8 @@ public class Parsers {
     static final TagHandler UUID_HANDLER = new UuidHandler();
 
     static final TagHandler IDENTITY = new TagHandler() {
-        public Object transform(Tag tag, Object value) {
+        @Override
+		public Object transform(Tag tag, Object value) {
             return value;
         }
     };
@@ -116,10 +117,12 @@ public class Parsers {
         return new Parseable() {
             int i = 0;
 
-            public void close() throws IOException {
+            @Override
+			public void close() throws IOException {
             }
 
-            public int read() throws IOException {
+            @Override
+			public int read() throws IOException {
                 try {
                     return cs.charAt(i++);
                 } catch (IndexOutOfBoundsException suppressed) {
@@ -127,7 +130,8 @@ public class Parsers {
                 }
             }
 
-            public void unread(int ch) throws IOException {
+            @Override
+			public void unread(int ch) throws IOException {
                 i--;
             }
         };
@@ -149,14 +153,16 @@ public class Parsers {
             boolean end = false;
             boolean closed = false;
 
-            public void close() throws IOException {
+            @Override
+			public void close() throws IOException {
                 closed = true;
                 if (r instanceof Closeable) {
                     ((Closeable) r).close();
                 }
             }
 
-            public int read() throws IOException {
+            @Override
+			public int read() throws IOException {
                 if (closed) {
                     throw new IOException("Can not read from closed Parseable");
                 }
@@ -179,7 +185,8 @@ public class Parsers {
                 }
             }
 
-            public void unread(int ch) throws IOException {
+            @Override
+			public void unread(int ch) throws IOException {
                 if (unread != Integer.MIN_VALUE) {
                     throw new IOException("Can't unread after unread.");
                 }
@@ -202,57 +209,68 @@ public class Parsers {
             CollectionBuilder.Factory mapFactory = DEFAULT_MAP_FACTORY;
             Map<Tag, TagHandler> tagHandlers = defaultTagHandlers();
 
-            public Builder setListFactory(CollectionBuilder.Factory listFactory) {
+            @Override
+			public Builder setListFactory(CollectionBuilder.Factory listFactory) {
                 checkState();
                 this.listFactory = listFactory;
                 return this;
             }
 
-            public Builder setVectorFactory(CollectionBuilder.Factory vectorFactory) {
+            @Override
+			public Builder setVectorFactory(CollectionBuilder.Factory vectorFactory) {
                 checkState();
                 this.vectorFactory = vectorFactory;
                 return this;
             }
 
-            public Builder setSetFactory(CollectionBuilder.Factory setFactory) {
+            @Override
+			public Builder setSetFactory(CollectionBuilder.Factory setFactory) {
                 checkState();
                 this.setFactory = setFactory;
                 return this;
             }
 
-            public Builder setMapFactory(CollectionBuilder.Factory mapFactory) {
+            @Override
+			public Builder setMapFactory(CollectionBuilder.Factory mapFactory) {
                 checkState();
                 this.mapFactory = mapFactory;
                 return this;
             }
 
-            public Builder putTagHandler(Tag tag, TagHandler handler) {
+            @Override
+			public Builder putTagHandler(Tag tag, TagHandler handler) {
                 checkState();
                 this.tagHandlers.put(tag, handler);
                 return this;
             }
 
-            public Config build() {
+            @Override
+			public Config build() {
                 checkState();
                 used = true;
                 return new Config() {
-                    public Factory getListFactory() {
+                    @Override
+					public Factory getListFactory() {
                         return listFactory;
                     }
 
-                    public Factory getVectorFactory() {
+                    @Override
+					public Factory getVectorFactory() {
                         return vectorFactory;
                     }
 
-                    public Factory getSetFactory() {
+                    @Override
+					public Factory getSetFactory() {
                         return setFactory;
                     }
 
-                    public Factory getMapFactory() {
+                    @Override
+					public Factory getMapFactory() {
                         return mapFactory;
                     }
 
-                    public TagHandler getTagHandler(Tag tag) {
+                    @Override
+					public TagHandler getTagHandler(Tag tag) {
                         return tagHandlers.get(tag);
                     }
                 };

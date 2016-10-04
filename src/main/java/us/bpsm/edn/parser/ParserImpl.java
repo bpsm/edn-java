@@ -24,7 +24,8 @@ class ParserImpl implements Parser {
         this.cfg = cfg;
     }
 
-    public Object nextValue(Parseable pbr) {
+    @Override
+	public Object nextValue(Parseable pbr) {
         Object value = nextValue(pbr, false);
         if (value instanceof Token && value != END_OF_INPUT) {
             throw new EdnSyntaxException("Unexpected "+ value);

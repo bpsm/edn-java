@@ -138,11 +138,13 @@ public class ParserTest {
     public void canCustomizeParsingOfInteger() {
         Parser.Config cfg = newParserConfigBuilder()
             .putTagHandler(LONG_TAG, new TagHandler() {
-                public Object transform(Tag tag, Object value) {
+                @Override
+				public Object transform(Tag tag, Object value) {
                     return Integer.valueOf(((Long)value).intValue());
                 }})
                 .putTagHandler(BIG_INTEGER_TAG, new TagHandler() {
-                    public Object transform(Tag tag, Object value) {
+                    @Override
+					public Object transform(Tag tag, Object value) {
                         return Integer.valueOf(((BigInteger)value).intValue());
                     }})
                     .build();
@@ -155,12 +157,14 @@ public class ParserTest {
     public void canCustomizeParsingOfFloats() {
         Parser.Config cfg = newParserConfigBuilder()
             .putTagHandler(DOUBLE_TAG, new TagHandler() {
-                public Object transform(Tag tag, Object value) {
+                @Override
+				public Object transform(Tag tag, Object value) {
                     Double d = (Double) value;
                     return d * 2.0;
                 }})
                 .putTagHandler(BIG_DECIMAL_TAG, new TagHandler() {
-                    public Object transform(Tag tag, Object value) {
+                    @Override
+					public Object transform(Tag tag, Object value) {
                         BigDecimal d = (BigDecimal)value;
                         return d.multiply(BigDecimal.TEN);
                     }})

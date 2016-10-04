@@ -216,7 +216,8 @@ public class InstantUtils {
 
     private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT =
             new ThreadLocal<SimpleDateFormat>() {
-        protected SimpleDateFormat initialValue() {
+        @Override
+		protected SimpleDateFormat initialValue() {
             SimpleDateFormat f = new SimpleDateFormat(
                     "yyyy-MM-dd'T'HH:mm:ss");
             f.setTimeZone(GMT);

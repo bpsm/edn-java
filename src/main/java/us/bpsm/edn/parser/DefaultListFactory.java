@@ -5,19 +5,24 @@ import java.io.Serializable;
 import java.util.*;
 
 final class DefaultListFactory implements CollectionBuilder.Factory {
-    public CollectionBuilder builder() {
+    @Override
+	public CollectionBuilder builder() {
         return new CollectionBuilder() {
             ArrayList<Object> list = new ArrayList<Object>();
-            public void add(Object o) {
+            @Override
+			public void add(Object o) {
                 list.add(o);
             }
-            public Object build() {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+			@Override
+			public Object build() {
                 return new DelegatingList(list);
             }
         };
     }
 }
 
+@SuppressWarnings("serial")
 final class DelegatingList<E> extends AbstractList<E> implements Serializable {
     final List<E> delegate;
 

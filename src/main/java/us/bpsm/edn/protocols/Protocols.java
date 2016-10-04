@@ -49,7 +49,8 @@ public class Protocols {
         final Map<Class<?>, F> m = new HashMap<Class<?>, F>();
         boolean built = false;
 
-        public String toString() {
+        @Override
+		public String toString() {
             if (built) {
                 return "Protocol '" + name + "'";
             } else {
@@ -64,7 +65,8 @@ public class Protocols {
             this.name = name;
         }
 
-        public Protocol.Builder<F> put(Class selfClass, F fn) {
+        @Override
+		public Protocol.Builder<F> put(Class selfClass, F fn) {
             if (built) {
                 throw new IllegalStateException(NO_MODIFY_MSG);
             }
@@ -79,7 +81,8 @@ public class Protocols {
             return this;
         }
 
-        public Protocol<F> build() {
+        @Override
+		public Protocol<F> build() {
             if (built) {
                 throw new IllegalStateException(SINGLE_USE_MSG);
             }

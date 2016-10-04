@@ -20,14 +20,16 @@ public final class Symbol implements Named, Comparable<Symbol>, Serializable {
     /**
      * {@inheritDoc}
      */
-    public final String getPrefix() {
+    @Override
+	public final String getPrefix() {
         return prefix;
     }
 
     /**
      * {@inheritDoc}
      */
-    public final String getName() {
+    @Override
+	public final String getName() {
         return name;
     }
 
@@ -150,7 +152,8 @@ public final class Symbol implements Named, Comparable<Symbol>, Serializable {
         }
     }
 
-    public int compareTo(Symbol right) {
+    @Override
+	public int compareTo(Symbol right) {
         int cmp = prefix.compareTo(right.prefix);
         return cmp != 0 ? cmp : name.compareTo(right.name);
     }

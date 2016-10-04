@@ -93,7 +93,8 @@ public class Printers {
         return new Printer() {
             int softspace = 0;
 
-            public void close() {
+            @Override
+			public void close() {
                 if (out instanceof Closeable) {
                     try {
                         ((Closeable)out).close();
@@ -103,7 +104,8 @@ public class Printers {
                 }
             }
 
-            public Printer append(CharSequence csq) {
+            @Override
+			public Printer append(CharSequence csq) {
                 try {
                     if (softspace > 1 && csq.length() > 0 &&
                             !CharClassify.isWhitespace(csq.charAt(0))) {
@@ -117,7 +119,8 @@ public class Printers {
                 }
             }
 
-            public Printer append(char c) {
+            @Override
+			public Printer append(char c) {
                 try {
                     if (softspace > 1 && !CharClassify.isWhitespace(c)) {
                         out.append(' ');
@@ -130,7 +133,8 @@ public class Printers {
                 }
             }
 
-            public Printer printValue(Object ednValue) {
+            @Override
+			public Printer printValue(Object ednValue) {
                 @SuppressWarnings("unchecked")
                 Printer.Fn<Object> printFn = (Printer.Fn<Object>)
                 fns.lookup(getClassOrNull(ednValue));
@@ -143,7 +147,8 @@ public class Printers {
                 return this;
             }
 
-            public Printer softspace() {
+            @Override
+			public Printer softspace() {
                 softspace += 1;
                 return this;
             }
