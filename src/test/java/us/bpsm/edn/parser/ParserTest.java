@@ -30,6 +30,8 @@ import java.util.RandomAccess;
 
 import org.junit.Test;
 
+import us.bpsm.edn.Keyword;
+import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 
 
@@ -99,9 +101,6 @@ public class ParserTest {
      * Furthermore, symbol and keyword keys in the map with the namespace "_" will
      * emerge unnamespaced from the parsing.
      * </p>
-     * <pre>#:foo{ :a 1, b 2, _/c 3, :_/d 4, bar/e 5, :bar/f 6}</pre>
-     * <p>Will parse to the same value as:</p>
-     * <pre>{:foo/a 1, foo/b 2, c 3, :d 4, bar/e 5, :bar/f 6}</pre>
      */
     @Test
     public void parserUnderstandsNamespacedMaps() {
@@ -109,6 +108,19 @@ public class ParserTest {
           parse("#:foo{ :a 1, b 2, _/c 3, :_/d 4, bar/e 5, :bar/f 6}"),
           parse("{:foo/a 1, foo/b 2, c 3, :d 4, bar/e 5, :bar/f 6}")
         );
+    }
+
+    /**
+     * This is just a sanity check to make sure that the fact that we add
+     * support of namespaced maps (which assign "_" a special meaning as a
+     * namespace prefix on keys) does not interfere with the use of "_" as
+     * a namespace on keys in non-namespaced maps.
+     */
+    @Test
+    public void parserShouldNotBeConfusedByUnderscoreInNonNamespacedMaps() {
+        Map<?,?> m = (Map<?, ?>) parse("{:_/foo 1, _/bar 2}");
+        assertEquals(1L, m.get(Keyword.newKeyword("_", "foo")));
+        assertEquals(2L, m.get(Symbol.newSymbol("_", "bar")));
     }
 
 
