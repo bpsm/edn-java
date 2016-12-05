@@ -30,6 +30,7 @@ import java.util.RandomAccess;
 
 import org.junit.Test;
 
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Tag;
 
 
@@ -180,6 +181,13 @@ public class ParserTest {
         assertTrue(parse("[]") instanceof RandomAccess);
         assertFalse(parse("(1)") instanceof RandomAccess);
         assertTrue(parse("[1]") instanceof RandomAccess);
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void duplicateMapKeys() {
+        Parseable pbr = Parsers.newParseable(IOUtil.stringFromResource("us/bpsm/edn/duplicate-map-keys.edn"));
+        Parser parser = Parsers.newParser(Parsers.defaultConfiguration());
+        Object o = parser.nextValue(pbr);
     }
 
     //@Test

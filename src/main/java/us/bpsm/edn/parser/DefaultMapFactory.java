@@ -1,6 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.parser;
 
+import us.bpsm.edn.EdnSyntaxException;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,9 @@ final class DefaultMapFactory implements CollectionBuilder.Factory {
                 if (key == none) {
                     key = o;
                 } else {
+                    if (map.containsKey(key)) {
+                        throw new EdnSyntaxException(String.format("Duplicate map key: %s", key));
+                    }
                     map.put(key, o);
                     key = none;
                 }
