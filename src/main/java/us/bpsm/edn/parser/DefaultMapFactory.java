@@ -16,6 +16,10 @@ final class DefaultMapFactory implements CollectionBuilder.Factory {
             public void add(Object o) {
                 if (key == none) {
                     key = o;
+                    if (map.containsKey(key)) {
+                        throw new EdnSyntaxException(
+                          "Map contains duplicate key '" + key + "'.");
+                    }
                 } else {
                     map.put(key, o);
                     key = none;
