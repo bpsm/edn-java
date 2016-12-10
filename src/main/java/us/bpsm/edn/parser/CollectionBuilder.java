@@ -14,6 +14,11 @@ public interface CollectionBuilder {
      * pairs of the map have been added.
      * <p>
      * For other collections is can be called any number of times.
+     * <p>
+     * Implementations which construct Maps or Sets an should throw an
+     * EdnSyntaxException if they detect a duplicate key (in the case of
+     * a map) or a duplicate element (in the case of a set).
+     * </p>
      *
      * <p>{@code add()} may not be called after {@code build()}.
      * @param o an object to add to the collection under construction. o may

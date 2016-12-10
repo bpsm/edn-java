@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.parser.CollectionBuilder;
 import us.bpsm.edn.parser.Parseable;
 import us.bpsm.edn.parser.Parser;
@@ -27,7 +28,13 @@ public class SimpleParserConfigTest {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
-                        public void add(Object o) { s.add(o); }
+                        public void add(Object o) {
+                            if (!s.add(o)) {
+                                throw new EdnSyntaxException(
+                                  "Set contains duplicate element '" + o + "'."
+                                );
+                            }
+                        }
                         public Object build() { return s; }
                     };
                 }

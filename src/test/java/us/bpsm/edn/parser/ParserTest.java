@@ -30,6 +30,7 @@ import java.util.RandomAccess;
 
 import org.junit.Test;
 
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
@@ -123,6 +124,20 @@ public class ParserTest {
         assertEquals(2L, m.get(Symbol.newSymbol("_", "bar")));
     }
 
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateMapKeys() {
+        parse("{:a 1, :a 2}");
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateMapKeysInNamespacedMaps() {
+        parse("#:foo{:foo/a 1, :a 2}");
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateSetElements() {
+        parse("#{1 1}");
+    }
 
     @Test(expected=UnsupportedOperationException.class)
     public void parserShouldReturnUnmodifiableListByDefault() {

@@ -1,6 +1,8 @@
 // (c) 2012 B Smith-Mannschott -- Distributed under the Eclipse Public License
 package us.bpsm.edn.parser;
 
+import us.bpsm.edn.EdnSyntaxException;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,10 @@ final class DefaultMapFactory implements CollectionBuilder.Factory {
             public void add(Object o) {
                 if (key == none) {
                     key = o;
+                    if (map.containsKey(key)) {
+                        throw new EdnSyntaxException(
+                          "Map contains duplicate key '" + key + "'.");
+                    }
                 } else {
                     map.put(key, o);
                     key = none;
@@ -21,7 +27,7 @@ final class DefaultMapFactory implements CollectionBuilder.Factory {
             }
             public Object build() {
                 if (key != none) {
-                    throw new IllegalStateException(
+                    throw new EdnSyntaxException(
                             "Every map must have an equal number of keys and values.");
                 }
                 return Collections.unmodifiableMap(map);
