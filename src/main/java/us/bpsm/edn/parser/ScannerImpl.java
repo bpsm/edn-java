@@ -191,6 +191,8 @@ class ScannerImpl implements Scanner {
             return Token.BEGIN_SET;
         case '_':
             return Token.DISCARD;
+        case ':':
+            return Token.DEFAULT_NAMESPACE_FOLLOWS;
         default:
             return newTag(readSymbol(peek, pbr));
         }

@@ -30,6 +30,9 @@ import java.util.RandomAccess;
 
 import org.junit.Test;
 
+import us.bpsm.edn.EdnSyntaxException;
+import us.bpsm.edn.Keyword;
+import us.bpsm.edn.Symbol;
 import us.bpsm.edn.Tag;
 
 
@@ -86,6 +89,54 @@ public class ParserTest {
         // it would throw an exception and cause this test to fail.
 
         assertEquals(123L, parse("#_ " + INVALID_UUID + " 123"));
+    }
+
+    /**
+     * <p>
+     * This tests parsing of Namespaced maps as per
+     * <a href="http://dev.clojure.org/jira/browse/CLJ-1910">CLJ-1910</a>.
+     * </p>
+     * <p>
+     * A map may be optionally preceded by #:SYM, where SYM will be taken to be the
+     * namespace off all unnamespaced symbol or keyword keys in the map so introduced.
+     * Furthermore, symbol and keyword keys in the map with the namespace "_" will
+     * emerge unnamespaced from the parsing.
+     * </p>
+     */
+    @Test
+    public void parserUnderstandsNamespacedMaps() {
+        assertEquals(
+          parse("#:foo{ :a 1, b 2, _/c 3, :_/d 4, bar/e 5, :bar/f 6}"),
+          parse("{:foo/a 1, foo/b 2, c 3, :d 4, bar/e 5, :bar/f 6}")
+        );
+    }
+
+    /**
+     * This is just a sanity check to make sure that the fact that we add
+     * support of namespaced maps (which assign "_" a special meaning as a
+     * namespace prefix on keys) does not interfere with the use of "_" as
+     * a namespace on keys in non-namespaced maps.
+     */
+    @Test
+    public void parserShouldNotBeConfusedByUnderscoreInNonNamespacedMaps() {
+        Map<?,?> m = (Map<?, ?>) parse("{:_/foo 1, _/bar 2}");
+        assertEquals(1L, m.get(Keyword.newKeyword("_", "foo")));
+        assertEquals(2L, m.get(Symbol.newSymbol("_", "bar")));
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateMapKeys() {
+        parse("{:a 1, :a 2}");
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateMapKeysInNamespacedMaps() {
+        parse("#:foo{:foo/a 1, :a 2}");
+    }
+
+    @Test(expected=EdnSyntaxException.class)
+    public void parserShouldDetectDuplicateSetElements() {
+        parse("#{1 1}");
     }
 
     @Test(expected=UnsupportedOperationException.class)

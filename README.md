@@ -2,7 +2,7 @@
 
 *edn-java* is a library to parse (read) and print (write) [edn](https://github.com/edn-format/edn).
 
-This is very early days. There are still rough edges in the design which may see me moving things around some before I'm happy with the result.
+[![Build Status](https://travis-ci.org/bpsm/edn-java.svg?branch=master)](https://travis-ci.org/bpsm/edn-java)
 
 ## Installation
 
@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.7</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 
@@ -98,7 +98,13 @@ public class SimpleParserConfigTest {
                 public CollectionBuilder builder() {
                     return new CollectionBuilder() {
                         SortedSet<Object> s = new TreeSet<Object>();
-                        public void add(Object o) { s.add(o); }
+                        public void add(Object o) {
+                            if (!s.add(o)) {
+                                throw new EdnSyntaxException(
+                                  "Set contains duplicate element '" + o + "'."
+                                );
+                            }
+                        }
                         public Object build() { return s; }
                     };
                 }
@@ -350,5 +356,5 @@ public class CustomTagPrinter {
 ### Limitations
 
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
- - The current Printing support stikes me a as a bit of a hack. The API may change with 0.5.0.
+ - The current Printing support stikes me a as a bit of a hack. The API may change with 1.0.0.
  - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient, though I'm open to suggestions.
