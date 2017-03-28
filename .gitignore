@@ -3,5 +3,8 @@ target
 .project
 .settings
 .idea
-edn-java.iml
-hello/hello.iml
+*.iml
+*.ipr
+*.iws
+.project
+.settings
