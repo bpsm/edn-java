@@ -2,7 +2,7 @@
 package us.bpsm.edn.parser;
 
 /**
- * A Handler for {@code #inst} which translates the intant into a
+ * A Handler for {@code #inst} which translates the instant into a
  * {@link java.util.Date}.
  */
 public final class InstantToDate extends AbstractInstantHandler {
