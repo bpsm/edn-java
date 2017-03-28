@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.6</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 
@@ -20,6 +20,10 @@ It is available through the OSS Sonatype Releases repository:
 
     https://oss.sonatype.org/content/repositories/releases
 
+or the Gradle coordinates:
+```groovy
+compile 'us.bpsm:edn-java:0.5.0'
+```
 ## Parsing
 
 You'll need to create a Parser and supply it with some input. Factory methods to create Parseable input are provided which accept either a `java.lang.CharSequence` or a `java.lang.Readable`. You can then call `nextValue()` on the Parser to get values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
