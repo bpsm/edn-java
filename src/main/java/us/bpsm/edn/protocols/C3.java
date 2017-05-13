@@ -23,8 +23,8 @@ class C3 {
      *
      * @return The linearization of c: never null and never empty.
      *
-     * @throws EdnException if the inheritance hiearchy of {@code c}
-     *         makes it impossible to compuate a consistent hierarchy
+     * @throws EdnException if the inheritance hierarchy of {@code c}
+     *         makes it impossible to compute a consistent hierarchy
      *         for {@code c}.
      */
     static List<Class<?>> methodResolutionOrder(Class<?> c) {

@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.4.6</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 
@@ -20,6 +20,10 @@ It is available through the OSS Sonatype Releases repository:
 
     https://oss.sonatype.org/content/repositories/releases
 
+or the Gradle coordinates:
+```groovy
+compile 'us.bpsm:edn-java:0.5.0'
+```
 ## Parsing
 
 You'll need to create a Parser and supply it with some input. Factory methods to create Parseable input are provided which accept either a `java.lang.CharSequence` or a `java.lang.Readable`. You can then call `nextValue()` on the Parser to get values form the input. When the input is exhausted, `nextValue()` will return `Parser.END_OF_INPUT`.
@@ -59,7 +63,7 @@ Most *edn* values map to regular Java types, except in such cases where Java doe
 
 Integers map to, `Long` or `BigInteger` depending on the magnitude of the number. Appending `N` to an integer literal maps to `BigInteger` irrespective of the magnitude.
 
-Floating point numbers with the suffix `M` are  mapeped to `BigDecimal`. All others are mapped to `Double`.
+Floating point numbers with the suffix `M` are  mapped to `BigDecimal`. All others are mapped to `Double`.
 
 Characters are mapped to `Character`, booleans to `Boolean` and strings to `String`. No great shock there, I trust.
 
@@ -130,7 +134,7 @@ The package `us.bpsm.edn.parser` makes three handlers for `#inst` available:
 
  - `InstantToDate` is the default and converts each `#inst` to a `java.util.Date`.
  - `InstantToCalendar` converts each `#inst` to a `java.util.Calendar`, which preserves the original GTM offset.
- - `InstantToTimestamp` converts each `#inst` to a `java.sql.Timstamp`, which presrves nanoseconds.
+ - `InstantToTimestamp` converts each `#inst` to a `java.sql.Timstamp`, which preserves nanoseconds.
 
 Extend `AbstractInstantHandler` to provide your own implementation of `#inst`.
 
@@ -356,5 +360,5 @@ public class CustomTagPrinter {
 ### Limitations
 
  - Edn values must be *acyclic*. Any attempt to print a data structure containing cycles will surely end in a stack overflow.
- - The current Printing support stikes me a as a bit of a hack. The API may change with 0.5.0.
+ - The current Printing support strikes me a as a bit of a hack. The API may change with 1.0.0.
  - Edn-Java does not provide much by way of "convenience" methods. As a library it's still to young to really know what would be convenient, though I'm open to suggestions.
