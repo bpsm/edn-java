@@ -66,7 +66,7 @@ public class InstantUtils {
         assert 0 <= nanoseconds && nanoseconds <= 999999999:
             "nanoseconds are assured to be in [0..999999999] by INSTANT Pattern";
         assert -1 <= offsetSign && offsetSign <= 1:
-            "parser assuers offsetSign is -1, 0 or 1.";
+            "parser assures offsetSign is -1, 0 or 1.";
         if (offsetHours < 0 || 23 < offsetHours) {
             throw new EdnSyntaxException(
                     String.format("'%02d' is not a valid offset hour in '%s'",
