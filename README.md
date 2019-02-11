@@ -2,7 +2,7 @@
 
 *edn-java* is a library to parse (read) and print (write) [edn](https://github.com/edn-format/edn).
 
-[![Build Status](https://travis-ci.org/bpsm/edn-java.svg?branch=develop)](https://travis-ci.org/bpsm/edn-java)
+[![Build Status](https://travis-ci.org/bpsm/edn-java.svg?branch=master)](https://travis-ci.org/bpsm/edn-java)
 
 ## Installation
 
@@ -12,7 +12,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
@@ -22,7 +22,7 @@ It is available through the OSS Sonatype Releases repository:
 
 or the Gradle coordinates:
 ```groovy
-compile 'us.bpsm:edn-java:0.5.0'
+compile 'us.bpsm:edn-java:0.6.0'
 ```
 ## Parsing
 
