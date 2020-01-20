@@ -8,7 +8,7 @@
   </parent>
   <groupId>us.bpsm</groupId>
   <artifactId>edn-java</artifactId>
-  <version>0.6.0</version>
+  <version>0.6.1</version>
   <packaging>jar</packaging>
   <name>EDN Java</name>
   <description>
@@ -67,6 +67,18 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>us.bpsm.edn</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
