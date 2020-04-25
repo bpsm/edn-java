@@ -289,6 +289,18 @@ class ScannerImpl implements Scanner {
 
     private static char charForName(String name) {
         switch (name.charAt(0)) {
+        case 'u':
+            if (name.length() == 5) {
+                try {
+                    int n = Integer.parseInt(name.substring(1), 16);
+                    if (Character.MIN_VALUE <= n && n <= Character.MAX_VALUE) {
+                        return (char) n;
+                    }
+                    // Fall through to default, which throws EdnSyntaxException
+                } catch (NumberFormatException e) {
+                    // Fall through to default, which throws EdnSyntaxException
+                }
+            }
         case 'n':
             if ("newline".equals(name)) {
                 return '\n';

@@ -353,6 +353,20 @@ public class ScannerTest {
     }
 
     @Test
+    public void unicodeEscapeCharacterLiterals() {
+        String txt = "\\" + "u1234" + "  \\" + "u0000" + "\\" + "u0Ff0";
+        Character[] expected = {
+          (char) 0x1234,
+          (char) 0x0000,
+          (char) 0x0Ff0
+        };
+        Parseable pbr = Parsers.newParseable(txt);
+        Scanner s = scanner();
+        for (Character c: expected)
+            assertEquals(c, s.nextToken(pbr));
+    }
+
+    @Test
     public void simpleStringWithLinebreak() {
         assertEquals("\n", scan("\"\n\""));
     }
