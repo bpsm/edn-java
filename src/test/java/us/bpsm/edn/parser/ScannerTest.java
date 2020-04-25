@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import org.junit.Test;
 
 import us.bpsm.edn.EdnException;
+import us.bpsm.edn.EdnSyntaxException;
 import us.bpsm.edn.Keyword;
 import us.bpsm.edn.Symbol;
 import us.bpsm.edn.parser.Parseable;
@@ -364,6 +365,35 @@ public class ScannerTest {
         Scanner s = scanner();
         for (Character c: expected)
             assertEquals(c, s.nextToken(pbr));
+    }
+
+    @Test
+    public void unicodeEscapesInStringLiterals() {
+        String txt = "\"" +
+          "\\" + "u0000" +
+          "\\" + "u1234" +
+          "\\" + "u0Ff0" +
+          "\"";
+        String expected = "\u0000\u1234\u0Ff0";
+        assertEquals(3, expected.length());
+        Parseable pbr = Parsers.newParseable(txt);
+        Scanner s = scanner();
+        assertEquals(expected, s.nextToken(pbr));
+    }
+
+    @Test(expected = EdnSyntaxException.class)
+    public void truncatedUnicodeEscapeInStringLiteral() {
+        scanner().nextToken(Parsers.newParseable("\"\\" + "u123\""));
+    }
+
+    @Test(expected = EdnSyntaxException.class)
+    public void truncatedInputInUnicodeEscapeInStringLiteral() {
+        scanner().nextToken(Parsers.newParseable("\"\\" + "u123"));
+    }
+
+    @Test(expected = EdnSyntaxException.class)
+    public void nonDigitInUnicodeEscapeInStringLiteral() {
+        scanner().nextToken(Parsers.newParseable("\"\\" + "u123?\""));
     }
 
     @Test

@@ -7,9 +7,7 @@ import static us.bpsm.edn.parser.Parser.Config.BIG_DECIMAL_TAG;
 import static us.bpsm.edn.parser.Parser.Config.BIG_INTEGER_TAG;
 import static us.bpsm.edn.parser.Parser.Config.DOUBLE_TAG;
 import static us.bpsm.edn.parser.Parser.Config.LONG_TAG;
-import static us.bpsm.edn.util.CharClassify.isDigit;
-import static us.bpsm.edn.util.CharClassify.isWhitespace;
-import static us.bpsm.edn.util.CharClassify.separatesTokens;
+import static us.bpsm.edn.util.CharClassify.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -35,6 +33,7 @@ class ScannerImpl implements Scanner {
     private final TagHandler bigDecimalHandler;
     private final TagHandler bigIntegerHandler;
     private final TagHandler doubleHandler;
+    private final boolean unicodeEscapesInStringLiteralsAreAccepted;
 
     /**
      * Scanner may throw an IOException during construction, in which case
@@ -50,6 +49,8 @@ class ScannerImpl implements Scanner {
         this.bigIntegerHandler = cfg.getTagHandler(BIG_INTEGER_TAG);
         this.doubleHandler = cfg.getTagHandler(DOUBLE_TAG);
         this.bigDecimalHandler = cfg.getTagHandler(BIG_DECIMAL_TAG);
+        this.unicodeEscapesInStringLiteralsAreAccepted =
+          cfg.unicodeEscapesInStringLiteralsAreAccepted();
     }
 
     /* (non-Javadoc)
@@ -376,6 +377,31 @@ class ScannerImpl implements Scanner {
                     break;
                 case '\\':
                     b.append('\\');
+                    break;
+                case 'u':
+                    if (!unicodeEscapesInStringLiteralsAreAccepted) {
+                        throw new EdnSyntaxException(
+                          "Unsupported '" + ((char) curr)
+                            + "' escape in string. "
+                            + "(Unicode escapes disabled by Parser.Config)"
+                        );
+                    }
+                    /*
+                    2020-05-01 Support for reading unicode escapes within
+                    string literals is an extension to EDN. It is not part of
+                    the spec described here: https://github.com/edn-format/edn
+                    */
+                    int v = 0;
+                    for (int i = 0; i < 4; i++) {
+                        curr = pbr.read();
+                        int d = Character.digit(curr, 16);
+                        if (d == -1) {
+                            throw new EdnSyntaxException(
+                              "Invalid \\u Unicode escape in string.");
+                        }
+                        v = v * 16 + d;
+                    }
+                    b.append((char)v);
                     break;
                 default:
                     throw new EdnSyntaxException("Unsupported '"+ ((char)curr)

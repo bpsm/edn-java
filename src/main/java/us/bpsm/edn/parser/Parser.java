@@ -249,6 +249,25 @@ public interface Parser {
         public TagHandler getTagHandler(Tag tag);
 
         /**
+         * When true, the parser will accept ∖uXXXX escape sequences in string
+         * literals and replace them with the corresponding java char in the
+         * parsed string. When false, such escape sequences will throw an.
+         * <p>
+         * The default is true, which is not in strict accodance with the
+         * letter of edn-format/README, but:
+         * <ul>
+         * <li>Clojure's own edn reader behaves in this way.</li>
+         * <li>Character literals do allow this syntax according to
+         *     edn-format/README</li>
+         * </ul>
+         * {@link EdnSyntaxException}.
+         * @return
+         */
+        public default boolean unicodeEscapesInStringLiteralsAreAccepted() {
+            return true;
+        }
+
+        /**
          * This Builder is used to create a {@link Parser.Config}.
          * Fresh Builder instances are provided by
          * {@link Parsers#newParserConfigBuilder()}.  Each Builder can
@@ -325,6 +344,16 @@ public interface Parser {
              *         previously called on this Builder.
              */
             public Builder putTagHandler(Tag tag, TagHandler handler);
+
+            /**
+             * Toggle the Parser's willingness to accept unicode escapes
+             * in string literals. By default unicode escapes will be
+             * accepted.
+             * {@link Config#unicodeEscapesInStringLiteralsAreAccepted()}
+             */
+            public Builder acceptUnicodeEscapesInStringLiterals(
+              boolean acceptUnicodeEscapes
+            );
 
             /**
              * Build and return the {@link Config} described by the

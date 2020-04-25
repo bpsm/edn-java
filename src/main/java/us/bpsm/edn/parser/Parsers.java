@@ -196,6 +196,7 @@ public class Parsers {
     public static Builder newParserConfigBuilder() {
         return new Builder() {
             boolean used = false;
+            boolean acceptUnicodeEscapes = true;
             CollectionBuilder.Factory listFactory = DEFAULT_LIST_FACTORY;
             CollectionBuilder.Factory vectorFactory = DEFAULT_VECTOR_FACTORY;
             CollectionBuilder.Factory setFactory = DEFAULT_SET_FACTORY;
@@ -232,6 +233,13 @@ public class Parsers {
                 return this;
             }
 
+            @Override
+            public Builder acceptUnicodeEscapesInStringLiterals(boolean acceptUnicodeEscapes) {
+                checkState();
+                this.acceptUnicodeEscapes = acceptUnicodeEscapes;
+                return this;
+            }
+
             public Config build() {
                 checkState();
                 used = true;
@@ -254,6 +262,11 @@ public class Parsers {
 
                     public TagHandler getTagHandler(Tag tag) {
                         return tagHandlers.get(tag);
+                    }
+
+                    @Override
+                    public boolean unicodeEscapesInStringLiteralsAreAccepted() {
+                        return acceptUnicodeEscapes;
                     }
                 };
             }
