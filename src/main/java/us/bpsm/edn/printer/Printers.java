@@ -254,6 +254,7 @@ public class Printers {
         return new Printer.Fn<Set<?>>() {
             @Override
             public void eval(Set<?> self, Printer writer) {
+                writer.softspace();
                 writer.append("#{");
                 for (Object o: self) {
                     writer.printValue(o);

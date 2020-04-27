@@ -519,7 +519,7 @@ class ScannerImpl implements Scanner {
             }
             b.append((char)curr);
             curr = pbr.read();
-        } while (curr != END && !separatesTokens((char)curr));
+        } while (curr != END && symbolConstituent((char)curr));
         unread(pbr, curr);
 
         validateUseOfSlash(b, n, p);

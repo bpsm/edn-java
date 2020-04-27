@@ -124,6 +124,14 @@ public class ScannerTest {
         }
     }
 
+    @Test // Issue 62
+    public void symbolWithEmbeddedHashOrColon() {
+        assertEquals(sym("a#"), scan("a#"));
+        assertEquals(sym("a#b"), scan("a#b"));
+        assertEquals(sym("a:"), scan("a:"));
+        assertEquals(sym("a:b"), scan("a:b"));
+    }
+
     @Test
     public void keywordWithoutPrefix() {
         assertEquals(key("+"), scan(":+"));
