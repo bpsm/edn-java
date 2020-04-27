@@ -2,8 +2,6 @@
 
 *edn-java* is a library to parse (read) and print (write) [edn](https://github.com/edn-format/edn).
 
-[![Build Status](https://travis-ci.org/bpsm/edn-java.svg?branch=master)](https://travis-ci.org/bpsm/edn-java)
-
 ## Installation
 
 This is a Maven project with the following coordinates:
