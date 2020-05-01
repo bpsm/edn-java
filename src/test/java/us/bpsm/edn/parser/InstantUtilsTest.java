@@ -121,7 +121,7 @@ public class InstantUtilsTest {
             try {
                 parse(x);
                 fail(x);
-            } catch (EdnException _) {
+            } catch (EdnException ignored) {
                 // pass
             }
         }
