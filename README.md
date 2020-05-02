@@ -10,7 +10,7 @@ This is a Maven project with the following coordinates:
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ It is available through the OSS Sonatype Releases repository:
 
 or the Gradle coordinates:
 ```groovy
-compile 'us.bpsm:edn-java:0.6.0'
+compile 'us.bpsm:edn-java:0.7.0'
 ```
 ## Parsing
 
