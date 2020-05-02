@@ -4,6 +4,8 @@
 
 ## Installation
 
+⚠️ **0.7.0 is currently not available via Maven Central.** You'll have to build from source. See also #64.
+
 This is a Maven project with the following coordinates:
 
 ```xml
