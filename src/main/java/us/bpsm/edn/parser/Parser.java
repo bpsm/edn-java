@@ -261,7 +261,8 @@ public interface Parser {
          *     edn-format/README</li>
          * </ul>
          * {@link EdnSyntaxException}.
-         * @return
+         * @return true iff unicode escapes in string literals should be
+         *         accepted when parsing.
          */
         public default boolean unicodeEscapesInStringLiteralsAreAccepted() {
             return true;
@@ -350,6 +351,11 @@ public interface Parser {
              * in string literals. By default unicode escapes will be
              * accepted.
              * {@link Config#unicodeEscapesInStringLiteralsAreAccepted()}
+             *
+             * @param acceptUnicodeEscapes true iff unicode escapes in string
+             *                             literals should be accepted.
+             *
+             * @return this Builder (for method chaining).
              */
             public Builder acceptUnicodeEscapesInStringLiterals(
               boolean acceptUnicodeEscapes
