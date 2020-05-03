@@ -4,15 +4,13 @@
 
 ## Installation
 
-⚠️ **0.7.0 is currently not available via Maven Central.** You'll have to build from source. See also #64.
-
 This is a Maven project with the following coordinates:
 
 ```xml
 <dependency>
     <groupId>us.bpsm</groupId>
     <artifactId>edn-java</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
 </dependency>
 ```
 
@@ -22,7 +20,7 @@ It is available through the OSS Sonatype Releases repository:
 
 or the Gradle coordinates:
 ```groovy
-compile 'us.bpsm:edn-java:0.7.0'
+compile 'us.bpsm:edn-java:0.7.1'
 ```
 ## Parsing
 
