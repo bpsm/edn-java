@@ -136,6 +136,11 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <gpgArguments>
+                  <arg>--batch</arg>
+                  <arg>--pinentry-mode</arg>
+                  <arg>loopback</arg>
+                </gpgArguments>
               </execution>
             </executions>
           </plugin>
