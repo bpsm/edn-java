@@ -137,6 +137,8 @@
                   <goal>sign</goal>
                 </goals>
                 <gpgArguments>
+                  <arg>--verbose</arg>
+                  <arg>--verbose</arg>
                   <arg>--batch</arg>
                   <arg>--pinentry-mode</arg>
                   <arg>loopback</arg>
