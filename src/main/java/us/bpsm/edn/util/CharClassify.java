@@ -77,6 +77,7 @@ public class CharClassify {
         SYMBOL_CONSTITUENTS.or(DIGIT);
         SYMBOL_CONSTITUENTS.set('#');
         SYMBOL_CONSTITUENTS.set(':');
+        SYMBOL_CONSTITUENTS.set('\'');
     }
 
     private static final BitSet TOKEN_SEPARATORS;
