@@ -558,9 +558,9 @@ public class EdnFormatTest {
             char f;
             b.append(f = choose(".+-abcdzABCDZ*!_?$%&=<>"));
             if (f == '.' || f == '+' || f == '-')
-                b.append(choose("#:.+-abcdzABCDZ*!_?$%&=<>"));
+                b.append(choose("#:'.+-abcdzABCDZ*!_?$%&=<>"));
             while (b.length() < n)
-                b.append(choose("059#:.+-abcdzABCDZ*!_?$%&=<>"));
+                b.append(choose("059#:'.+-abcdzABCDZ*!_?$%&=<>"));
             //s = b.subSequence(0, n).toString();
             while (b.length() > n)
                 b.deleteCharAt(b.length()-1);
